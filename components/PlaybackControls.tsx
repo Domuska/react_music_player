@@ -21,12 +21,10 @@ export const PlaybackControls = ({
         <button onClick={() => pausePlayback()}>Staph/go</button>
         <button>next</button>
       </div>
-      {/* <div className={styles.progressbarContainer}> */}
       <ProgressBar
         currentPlaybackTime={currentPlaybackTime}
         totalPlaybackDuration={totalPlaybackDuration}
       />
-      {/* </div> */}
     </div>
   );
 };

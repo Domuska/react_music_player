@@ -12,8 +12,3 @@
   justify-content: center;
   gap: 15px;
 }
-
-.progressbarContainer {
-  display: flex;
-  justify-content: center;
-}
