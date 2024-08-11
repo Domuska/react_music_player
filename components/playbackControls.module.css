@@ -1,0 +1,19 @@
+.playbackControls {
+  background-color: black;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.progressbarContainer {
+  display: flex;
+  justify-content: center;
+}

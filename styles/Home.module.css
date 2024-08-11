@@ -1,3 +1,55 @@
+.playButton {
+  background-color: whitesmoke;
+}
+
+.gridContainer {
+  display: grid;
+  /* width: 100%; */
+  min-height: 100vh;
+  padding: 0;
+  /* grid-template-columns: [leftnav] 1fr [maincontent] 2fr [rightnav] 1fr;
+  grid-template-rows: [topnavrow] 1fr [maincontentrow] 8fr [bottomnavrow] 1fr; */
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 1fr 8fr 1fr;
+  grid-template-areas:
+    "header header header"
+    "leftnav maincontent rightnav"
+    "bottomleft bottomcenter bottomright";
+}
+
+.bottomLeft {
+  grid-area: bottomleft;
+}
+
+.bottomCenter {
+  grid-area: bottomcenter;
+}
+
+.bottomRight {
+  grid-area: bottomright;
+}
+
+.searchNavBar {
+  background-color: darkcyan;
+  grid-area: header;
+}
+
+.leftNav {
+  background-color: darkcyan;
+  grid-area: leftnav;
+}
+
+.mainContent {
+  background-color: peru;
+  grid-area: maincontent;
+}
+
+.rightNav {
+  background-color: darkcyan;
+  grid-area: rightnav;
+}
+
+/* tästä alle on alkuperäiset shitit */
 .container {
   min-height: 100vh;
   padding: 0 0.5rem;
@@ -57,9 +109,7 @@
   text-decoration: none;
   border: 1px solid #eaeaea;
   border-radius: 10px;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .card:hover,
