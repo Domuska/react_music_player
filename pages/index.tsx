@@ -116,13 +116,14 @@ export default function Home() {
 
       <span id="player-controls" className={`${styles.bottomCenter}`}>
         <PlaybackControls
-          pausePlayback={() =>
+          pausePlayOnclick={() =>
             musicPlayer.current.paused ? playPlayback() : pausePlayback()
           }
           totalPlaybackDuration={
             musicPlayer.current?.duration ? musicPlayer.current.duration : null
           }
           currentPlaybackTime={currentPlaybackTime}
+          isPaused={musicPlayer.current?.paused || currentSong === null}
         />
       </span>
 

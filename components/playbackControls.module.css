@@ -11,4 +11,5 @@
   display: flex;
   justify-content: center;
   gap: 15px;
+  min-height: 45px;
 }

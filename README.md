@@ -22,3 +22,7 @@ https://creativecommons.org/licenses/by/3.0/deed.en_US
 # Picture copyright
 
 MS Copilot was used to generate the pictures
+
+# Icons
+
+https://fonts.google.com/icons

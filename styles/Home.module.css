@@ -3,12 +3,9 @@
 }
 
 .gridContainer {
-  display: grid;
-  /* width: 100%; */
   min-height: 100vh;
   padding: 0;
-  /* grid-template-columns: [leftnav] 1fr [maincontent] 2fr [rightnav] 1fr;
-  grid-template-rows: [topnavrow] 1fr [maincontentrow] 8fr [bottomnavrow] 1fr; */
+  display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: 1fr 8fr 1fr;
   grid-template-areas:
