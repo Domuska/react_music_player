@@ -3,56 +3,11 @@
 import styles from "../styles/Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
-
-type Song = {
-  songName: string;
-  audioUri: string;
-  imgUri?: string;
-  songId: string;
-};
-
-const SongRow = ({
-  song,
-  setCurrentSong,
-}: {
-  song: Song;
-  setCurrentSong: (param: string) => void;
-}) => {
-  return (
-    <div>
-      <button
-        className={styles.playButton}
-        onClick={() => setCurrentSong(song.songId)}
-      >
-        &#9658;
-      </button>
-      <span>{song.songName}</span>
-    </div>
-  );
-};
-
-const MusicList = ({
-  songs,
-  setCurrentSong,
-}: {
-  songs: Song[];
-  setCurrentSong: React.ComponentProps<typeof SongRow>["setCurrentSong"];
-}) => {
-  return (
-    <>
-      {songs.map((song) => (
-        <SongRow
-          song={song}
-          setCurrentSong={setCurrentSong}
-          key={song.songId}
-        />
-      ))}
-    </>
-  );
-};
+import { Track } from "../components/types";
+import { TracksList } from "../components/TracksList";
 
 export default function Home() {
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  const [currentSong, setCurrentSong] = useState<Track | null>(null);
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState<number | null>(
     null
   );
@@ -80,22 +35,22 @@ export default function Home() {
 
   const changeSong = (songId: string) => {
     console.log("setting song to ", songId);
-    const song = songs.find((s) => s.songId === songId);
+    const song = songs.find((s) => s.id === songId);
     setCurrentSong(song);
   };
 
-  const songs: Song[] = [
+  const songs: Track[] = [
     {
-      audioUri: "/alex-productions-action.mp3",
+      uri: "/alex-productions-action.mp3",
       imgUri: "/action.jfif",
-      songName: "Action",
-      songId: "1",
+      name: "Action",
+      id: "1",
     },
     {
-      audioUri: "/alex-productions-tension.mp3",
+      uri: "/alex-productions-tension.mp3",
       imgUri: "/action.jfif",
-      songName: "tension",
-      songId: "2",
+      name: "tension",
+      id: "2",
     },
   ];
   return (
@@ -103,14 +58,14 @@ export default function Home() {
       <audio
         id="music_player"
         ref={musicPlayer}
-        src={currentSong?.audioUri}
+        src={currentSong?.uri}
         onTimeUpdate={() => onTimeUpdate(musicPlayer.current.currentTime)}
       />
 
       <span className={styles.searchNavBar}>searchi</span>
       <span className={styles.leftNav}>vasen nav</span>
       <span className={styles.mainContent}>
-        <MusicList songs={songs} setCurrentSong={changeSong} />
+        <TracksList tracks={songs} setCurrentTrack={changeSong} />
       </span>
       <span className={styles.rightNav}>oikea nav</span>
 
@@ -127,7 +82,7 @@ export default function Home() {
         />
       </span>
 
-      {/* For styling the automatic padding & margin on the web page */}
+      {/* For styling the automatic padding & margin on the whole web page */}
       <style jsx global>{`
         html,
         body {
