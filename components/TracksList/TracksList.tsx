@@ -1,20 +1,44 @@
 import styled from "styled-components";
-import { Track } from "./types";
+import { Track } from "../types";
+import { useState } from "react";
+import { PlayPauseButton } from "./PlayPauseButton";
 
 const TrackRow = ({
   track,
-  setCurrentTrack,
+  playCurrentTrack,
   index,
+  isPlaying,
+  pausePlayback,
 }: {
   track: Track;
-  setCurrentTrack: (param: string) => void;
+  playCurrentTrack: (param: string) => void;
+  pausePlayback: VoidFunction;
   index: number;
+  isPlaying: boolean;
 }) => {
+  const [displayAction, setDisplayAction] = useState<boolean>(false);
+
+  const onHover = () => {
+    setDisplayAction(true);
+  };
+
+  const onMouseLeave = () => {
+    setDisplayAction(false);
+  };
+
   return (
-    <tr>
-      <CenteredTd>{index}</CenteredTd>
-      {/* todo display this button on hover */}
-      {/* <button onClick={() => setCurrentTrack(track.id)}>&#9658;</button> */}
+    <tr onMouseEnter={() => onHover()} onMouseLeave={() => onMouseLeave()}>
+      <TrackNumberTd>
+        {displayAction ? (
+          <PlayPauseButton
+            onPause={pausePlayback}
+            onPlay={() => playCurrentTrack(track.id)}
+            playing={isPlaying}
+          />
+        ) : (
+          index
+        )}
+      </TrackNumberTd>
       <td>
         <span>{track.name}</span>
       </td>
@@ -24,17 +48,16 @@ const TrackRow = ({
   );
 };
 
-const CenteredTd = styled.td`
-  display: flex;
-  justify-content: center;
-`;
-
 export const TracksList = ({
   tracks,
-  setCurrentTrack,
+  playCurrentTrack,
+  currentlyPlayingTrack,
+  pausePlayback,
 }: {
   tracks: Track[];
-  setCurrentTrack: React.ComponentProps<typeof TrackRow>["setCurrentTrack"];
+  playCurrentTrack: React.ComponentProps<typeof TrackRow>["playCurrentTrack"];
+  currentlyPlayingTrack?: Track;
+  pausePlayback: React.ComponentProps<typeof TrackRow>["pausePlayback"];
 }) => {
   return (
     <Container className="card">
@@ -64,9 +87,11 @@ export const TracksList = ({
           {tracks.map((track, index) => (
             <TrackRow
               track={track}
-              setCurrentTrack={setCurrentTrack}
+              playCurrentTrack={playCurrentTrack}
               key={track.id}
-              index={index}
+              index={index + 1}
+              isPlaying={track.id === currentlyPlayingTrack?.id}
+              pausePlayback={pausePlayback}
             />
           ))}
         </tbody>
@@ -80,6 +105,7 @@ const Container = styled.div`
   /* the color gradient change should stop sooner and just be all gray after that */
   background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
   height: 100%;
+  color: var(--text-on-main-bg);
 `;
 
 const THead = styled.thead`
@@ -97,4 +123,15 @@ const HeaderTh = styled.th`
 const TracksTable = styled.table`
   width: 100%;
   border-collapse: separate;
+  border-spacing: 0;
+`;
+
+const TrackNumberTd = styled.td`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  /* so the on-hover play button doesn't make the row jump */
+  min-width: 40px;
+  min-height: 40px;
 `;

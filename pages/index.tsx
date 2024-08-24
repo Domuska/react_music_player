@@ -4,7 +4,7 @@ import styles from "../styles/Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
 import { Track } from "../components/types";
-import { TracksList } from "../components/TracksList";
+import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
 
 export default function App() {
@@ -68,7 +68,12 @@ export default function App() {
         <Library />
       </div>
       <div className={styles.mainContent}>
-        <TracksList tracks={songs} setCurrentTrack={changeSong} />
+        <TracksList
+          tracks={songs}
+          playCurrentTrack={changeSong}
+          currentlyPlayingTrack={currentSong}
+          pausePlayback={pausePlayback}
+        />
       </div>
       <span className={styles.rightNav}>oikea nav</span>
 
