@@ -69,24 +69,16 @@ export const TracksList = ({
       <TracksTable>
         <THead>
           <tr>
-            <TrackNumberTh>#</TrackNumberTh>
-            <HeaderTh>Title</HeaderTh>
-            <HeaderTh>Album</HeaderTh>
-            <HeaderTh>
+            <TrackNumberTh scope="col">#</TrackNumberTh>
+            <HeaderTh scope="col">Title</HeaderTh>
+            <HeaderTh scope="col">Album</HeaderTh>
+            <ClockHeaderTh scope="col">
               <ClockButton />
-            </HeaderTh>
+            </ClockHeaderTh>
           </tr>
-          {/* row for displaying a border below header */}
+
           <tr>
-            <th
-              style={{
-                height: "1px",
-                padding: "0px",
-                color: "black",
-                backgroundColor: "black",
-              }}
-              colSpan={5}
-            ></th>
+            <DividerTh colSpan={5} />
           </tr>
         </THead>
 
@@ -113,8 +105,8 @@ const Container = styled.div`
   /* the color gradient change should stop sooner and just be all gray after that */
   background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
   height: 100%;
-  /* color: var(--text-on-main-bg); */
   color: var(--diminished-text-color);
+  padding: 20px;
 `;
 
 const THead = styled.thead`
@@ -123,16 +115,24 @@ const THead = styled.thead`
 
 const TrackNumberTh = styled.th`
   text-align: center;
+  margin-right: 30px;
+  width: 10%;
 `;
 
 const HeaderTh = styled.th`
   text-align: start;
+  width: 45%;
+`;
+
+const ClockHeaderTh = styled.th`
+  width: 10%;
 `;
 
 const TracksTable = styled.table`
   width: 100%;
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 0;
+  table-layout: fixed;
 `;
 
 const TrackNumberTd = styled.td`
@@ -141,10 +141,15 @@ const TrackNumberTd = styled.td`
   justify-content: center;
   align-content: center;
   /* so the on-hover play button doesn't make the row jump */
-  min-width: 40px;
   min-height: 40px;
 `;
 
 const TrackNameTd = styled.td`
   color: var(--text-on-main-bg);
+`;
+
+const DividerTh = styled.th`
+  height: 1px;
+  padding: 0px;
+  background-color: #7e7d7d;
 `;
