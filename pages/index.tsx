@@ -14,6 +14,8 @@ export default function App() {
   );
   const musicPlayer = useRef<HTMLAudioElement>(null);
 
+  const isPlaybackPaused = musicPlayer.current?.paused || currentSong === null;
+
   useEffect(() => {
     if (currentSong) {
       playPlayback();
@@ -72,6 +74,7 @@ export default function App() {
           tracks={songs}
           playCurrentTrack={changeSong}
           currentlyPlayingTrack={currentSong}
+          isPlaybackPaused={isPlaybackPaused}
           pausePlayback={pausePlayback}
         />
       </div>
@@ -89,7 +92,7 @@ export default function App() {
             musicPlayer.current?.duration ? musicPlayer.current.duration : null
           }
           currentPlaybackTime={currentPlaybackTime}
-          isPaused={musicPlayer.current?.paused || currentSong === null}
+          isPlaybackPaused={isPlaybackPaused}
         />
       </span>
 

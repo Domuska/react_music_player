@@ -7,14 +7,16 @@ const TrackRow = ({
   track,
   playCurrentTrack,
   index,
-  isPlaying,
+  trackIsPlaying,
   pausePlayback,
+  isPlaybackPaused,
 }: {
   track: Track;
   playCurrentTrack: (param: string) => void;
   pausePlayback: VoidFunction;
   index: number;
-  isPlaying: boolean;
+  trackIsPlaying: boolean;
+  isPlaybackPaused: boolean;
 }) => {
   const [displayAction, setDisplayAction] = useState<boolean>(false);
 
@@ -33,7 +35,7 @@ const TrackRow = ({
           <PlayPauseButton
             onPause={pausePlayback}
             onPlay={() => playCurrentTrack(track.id)}
-            playing={isPlaying}
+            playing={trackIsPlaying && !isPlaybackPaused}
           />
         ) : (
           index
@@ -53,11 +55,13 @@ export const TracksList = ({
   playCurrentTrack,
   currentlyPlayingTrack,
   pausePlayback,
+  isPlaybackPaused,
 }: {
   tracks: Track[];
   playCurrentTrack: React.ComponentProps<typeof TrackRow>["playCurrentTrack"];
   currentlyPlayingTrack?: Track;
   pausePlayback: React.ComponentProps<typeof TrackRow>["pausePlayback"];
+  isPlaybackPaused: boolean;
 }) => {
   return (
     <Container className="card">
@@ -90,8 +94,9 @@ export const TracksList = ({
               playCurrentTrack={playCurrentTrack}
               key={track.id}
               index={index + 1}
-              isPlaying={track.id === currentlyPlayingTrack?.id}
+              trackIsPlaying={track.id === currentlyPlayingTrack?.id}
               pausePlayback={pausePlayback}
+              isPlaybackPaused={isPlaybackPaused}
             />
           ))}
         </tbody>
