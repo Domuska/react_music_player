@@ -80,7 +80,7 @@ export const PlaybackControls = ({
   pausePlayOnclick,
   totalPlaybackDuration,
   currentPlaybackTime,
-  isPaused,
+  isPlaybackPaused,
 }: {
   pausePlayOnclick: () => void;
   totalPlaybackDuration: React.ComponentProps<
@@ -89,7 +89,7 @@ export const PlaybackControls = ({
   currentPlaybackTime: React.ComponentProps<
     typeof ProgressBar
   >["currentPlaybackTime"];
-  isPaused: boolean;
+  isPlaybackPaused: boolean;
 }) => {
   return (
     <div className={styles.playbackControls}>
@@ -99,7 +99,10 @@ export const PlaybackControls = ({
           <SkipPreviousIcon fill="grey" />
         </ButtonWithoutBackground>
 
-        <PlayPauseButton onClick={pausePlayOnclick} isPaused={isPaused} />
+        <PlayPauseButton
+          onClick={pausePlayOnclick}
+          isPaused={isPlaybackPaused}
+        />
 
         <ButtonWithoutBackground>
           <SkipNextIcon fill="grey" />

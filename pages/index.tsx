@@ -4,7 +4,7 @@ import styles from "../styles/Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
 import { Track } from "../components/types";
-import { TracksList } from "../components/TracksList";
+import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
 
 export default function App() {
@@ -13,6 +13,8 @@ export default function App() {
     null
   );
   const musicPlayer = useRef<HTMLAudioElement>(null);
+
+  const isPlaybackPaused = musicPlayer.current?.paused || currentSong === null;
 
   useEffect(() => {
     if (currentSong) {
@@ -68,7 +70,13 @@ export default function App() {
         <Library />
       </div>
       <div className={styles.mainContent}>
-        <TracksList tracks={songs} setCurrentTrack={changeSong} />
+        <TracksList
+          tracks={songs}
+          playCurrentTrack={changeSong}
+          currentlyPlayingTrack={currentSong}
+          isPlaybackPaused={isPlaybackPaused}
+          pausePlayback={pausePlayback}
+        />
       </div>
       <span className={styles.rightNav}>oikea nav</span>
 
@@ -84,7 +92,7 @@ export default function App() {
             musicPlayer.current?.duration ? musicPlayer.current.duration : null
           }
           currentPlaybackTime={currentPlaybackTime}
-          isPaused={musicPlayer.current?.paused || currentSong === null}
+          isPlaybackPaused={isPlaybackPaused}
         />
       </span>
 
