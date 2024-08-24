@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Track } from "../types";
 import { useState } from "react";
 import { PlayPauseButton } from "./PlayPauseButton";
+import { ClockButton } from "../IconButtons/IconButtons";
 
 const TrackRow = ({
   track,
@@ -41,9 +42,9 @@ const TrackRow = ({
           index
         )}
       </TrackNumberTd>
-      <td>
+      <TrackNameTd>
         <span>{track.name}</span>
-      </td>
+      </TrackNameTd>
       <td>albuminnimi</td>
       <td>3.14</td>
     </tr>
@@ -71,7 +72,9 @@ export const TracksList = ({
             <TrackNumberTh>#</TrackNumberTh>
             <HeaderTh>Title</HeaderTh>
             <HeaderTh>Album</HeaderTh>
-            <HeaderTh>kelloikoni</HeaderTh>
+            <HeaderTh>
+              <ClockButton />
+            </HeaderTh>
           </tr>
           {/* row for displaying a border below header */}
           <tr>
@@ -110,7 +113,8 @@ const Container = styled.div`
   /* the color gradient change should stop sooner and just be all gray after that */
   background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
   height: 100%;
-  color: var(--text-on-main-bg);
+  /* color: var(--text-on-main-bg); */
+  color: var(--diminished-text-color);
 `;
 
 const THead = styled.thead`
@@ -139,4 +143,8 @@ const TrackNumberTd = styled.td`
   /* so the on-hover play button doesn't make the row jump */
   min-width: 40px;
   min-height: 40px;
+`;
+
+const TrackNameTd = styled.td`
+  color: var(--text-on-main-bg);
 `;
