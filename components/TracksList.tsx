@@ -37,7 +37,7 @@ export const TracksList = ({
   setCurrentTrack: React.ComponentProps<typeof TrackRow>["setCurrentTrack"];
 }) => {
   return (
-    <>
+    <Container className="card">
       <TracksTable>
         <THead>
           <tr>
@@ -71,9 +71,16 @@ export const TracksList = ({
           ))}
         </tbody>
       </TracksTable>
-    </>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  /* todo this gradient isn't correct */
+  /* the color gradient change should stop sooner and just be all gray after that */
+  background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
+  height: 100%;
+`;
 
 const THead = styled.thead`
   position: sticky;

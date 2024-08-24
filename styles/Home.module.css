@@ -15,34 +15,40 @@
 }
 
 .bottomLeft {
+  background-color: var(--main-bg-black);
   grid-area: bottomleft;
 }
 
 .bottomCenter {
+  background-color: var(--main-bg-black);
   grid-area: bottomcenter;
 }
 
 .bottomRight {
+  background-color: var(--main-bg-black);
   grid-area: bottomright;
 }
 
 .searchNavBar {
-  background-color: darkcyan;
+  background-color: var(--main-bg-black);
   grid-area: header;
 }
 
 .leftNav {
-  background-color: darkcyan;
+  background-color: var(--main-bg-black);
   grid-area: leftnav;
+  padding: 5px;
 }
 
 .mainContent {
-  background-color: peru;
+  background-color: var(--main-bg-black);
   grid-area: maincontent;
+  padding: 5px;
 }
 
 .rightNav {
-  background-color: darkcyan;
+  /* background-color: var(--main-bg-color); */
+  background-color: var(--main-bg-black);
   grid-area: rightnav;
 }
 

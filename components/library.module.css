@@ -1,0 +1,10 @@
+.libraryContainer {
+  background-color: var(--main-bg-color);
+  height: 100%;
+  padding: 15px;
+}
+
+.libraryContainer p {
+  color: var(--text-on-main-bg);
+  margin: 0;
+}

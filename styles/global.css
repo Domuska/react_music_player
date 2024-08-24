@@ -19,3 +19,13 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+:root {
+  --main-bg-color: #262121;
+  --main-bg-black: black;
+  --text-on-main-bg: #efefef;
+}
+
+.card {
+  border-radius: 10px;
+}

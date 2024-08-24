@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
 import { Track } from "../components/types";
 import { TracksList } from "../components/TracksList";
+import { Library } from "../components/Library";
 
-export default function Home() {
+export default function App() {
   const [currentSong, setCurrentSong] = useState<Track | null>(null);
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState<number | null>(
     null
@@ -63,11 +64,16 @@ export default function Home() {
       />
 
       <span className={styles.searchNavBar}>searchi</span>
-      <span className={styles.leftNav}>vasen nav</span>
-      <span className={styles.mainContent}>
+      <div className={styles.leftNav}>
+        <Library />
+      </div>
+      <div className={styles.mainContent}>
         <TracksList tracks={songs} setCurrentTrack={changeSong} />
-      </span>
+      </div>
       <span className={styles.rightNav}>oikea nav</span>
+
+      <span className={styles.bottomLeft}></span>
+      <span className={styles.bottomRight}></span>
 
       <span id="player-controls" className={`${styles.bottomCenter}`}>
         <PlaybackControls
