@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { SliderInput } from "./SliderInput";
 
 const getWholeMinutesAndSeconds = (time: number) => {
   const currentProgressMinutes = Math.floor(time / 60);
@@ -49,9 +50,11 @@ const formatMinutesAndSecondsToDisplayString = ({
 export const ProgressBar = ({
   totalPlaybackDuration,
   currentPlaybackTime,
+  onSeek,
 }: {
   totalPlaybackDuration: number | null;
   currentPlaybackTime: number | null;
+  onSeek: (param: number) => void;
 }) => {
   const currentFlooredTime = getWholeMinutesAndSeconds(currentPlaybackTime);
   const formattedCurrentProgress =
@@ -60,10 +63,20 @@ export const ProgressBar = ({
   const formattedTotalTime =
     formatMinutesAndSecondsToDisplayString(totalFlooredTime);
 
+  const onProgressUpdate = (percentage: number) => {
+    const newPosition = totalPlaybackDuration * percentage;
+    console.log(newPosition);
+    onSeek(newPosition);
+  };
+
   return (
     <PlaybackContainer>
       <span>{formattedCurrentProgress}</span>
-      <Progress value={currentPlaybackTime} max={totalPlaybackDuration} />
+      {/* <Progress value={currentPlaybackTime} max={totalPlaybackDuration} /> */}
+      <SliderInput
+        currentValue={currentPlaybackTime}
+        onSeek={onProgressUpdate}
+      />
       <span>{formattedTotalTime}</span>
     </PlaybackContainer>
   );

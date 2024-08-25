@@ -37,9 +37,13 @@ export default function App() {
   };
 
   const changeSong = (songId: string) => {
-    console.log("setting song to ", songId);
     const song = songs.find((s) => s.id === songId);
     setCurrentSong(song);
+  };
+
+  const onSeek = (time: number) => {
+    musicPlayer.current.currentTime = time;
+    setCurrentPlaybackTime(time);
   };
 
   const songs: Track[] = [
@@ -93,6 +97,7 @@ export default function App() {
           }
           currentPlaybackTime={currentPlaybackTime}
           isPlaybackPaused={isPlaybackPaused}
+          onSeek={onSeek}
         />
       </span>
 

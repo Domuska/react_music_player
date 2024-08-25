@@ -25,6 +25,7 @@ img {
   --main-bg-black: black;
   --text-on-main-bg: #efefef;
   --diminished-text-color: #b8b8b8;
+  --mainActionColor: #1db954;
 }
 
 .card {

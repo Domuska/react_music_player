@@ -26,3 +26,7 @@ MS Copilot was used to generate the pictures
 # Icons
 
 https://fonts.google.com/icons
+
+# progress bar inspiration
+
+https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
