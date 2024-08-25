@@ -19,20 +19,20 @@ const TrackRow = ({
   trackIsPlaying: boolean;
   isPlaybackPaused: boolean;
 }) => {
-  const [displayAction, setDisplayAction] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const onHover = () => {
-    setDisplayAction(true);
+    setIsHovered(true);
   };
 
   const onMouseLeave = () => {
-    setDisplayAction(false);
+    setIsHovered(false);
   };
 
   return (
-    <tr onMouseEnter={() => onHover()} onMouseLeave={() => onMouseLeave()}>
-      <TrackNumberTd>
-        {displayAction ? (
+    <tr onMouseEnter={onHover} onMouseLeave={onMouseLeave}>
+      <TrackNumberTd $hovered={isHovered}>
+        {isHovered ? (
           <PlayPauseButton
             onPause={pausePlayback}
             onPlay={() => playCurrentTrack(track.id)}
@@ -42,11 +42,11 @@ const TrackRow = ({
           index
         )}
       </TrackNumberTd>
-      <TrackNameTd>
+      <TrackNameTd $hovered={isHovered}>
         <span>{track.name}</span>
       </TrackNameTd>
-      <td>albuminnimi</td>
-      <td>3.14</td>
+      <HoverHighlightTd $hovered={isHovered}>albuminnimi</HoverHighlightTd>
+      <HoverHighlightTd $hovered={isHovered}>3.14</HoverHighlightTd>
     </tr>
   );
 };
@@ -133,9 +133,23 @@ const TracksTable = styled.table`
   border-collapse: collapse;
   border-spacing: 0;
   table-layout: fixed;
+
+  /* get rounded borders for the table */
+  td:first-child {
+    border-radius: 5px 0 0 5px;
+  }
+  td:last-child {
+    border-radius: 0 5px 5px 0;
+  }
 `;
 
-const TrackNumberTd = styled.td`
+// base component for setting opaque layer on hover
+const HoverHighlightTd = styled.td<{ $hovered?: boolean }>`
+  background-color: ${(props) =>
+    props.$hovered ? "rgba(255, 255, 255, 0.1)" : "auto"};
+`;
+
+const TrackNumberTd = styled(HoverHighlightTd)`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -144,7 +158,7 @@ const TrackNumberTd = styled.td`
   min-height: 40px;
 `;
 
-const TrackNameTd = styled.td`
+const TrackNameTd = styled(HoverHighlightTd)`
   color: var(--text-on-main-bg);
 `;
 
