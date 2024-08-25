@@ -9,6 +9,7 @@
 .buttonContainer {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 15px;
   min-height: 45px;
 }

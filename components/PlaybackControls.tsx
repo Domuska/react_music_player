@@ -61,18 +61,14 @@ export const PlaybackControls = ({
   return (
     <div className={styles.playbackControls}>
       <div id="button-container" className={styles.buttonContainer}>
-        <ButtonWithoutBackground>
-          <SkipPreviousButton />
-        </ButtonWithoutBackground>
+        <SkipPreviousButton />
 
         <PlayPauseButton
           onClick={pausePlayOnclick}
           isPaused={isPlaybackPaused}
         />
 
-        <ButtonWithoutBackground>
-          <SkipNextButton />
-        </ButtonWithoutBackground>
+        <SkipNextButton />
       </div>
       <ProgressBar
         currentPlaybackTime={currentPlaybackTime}
