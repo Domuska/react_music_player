@@ -16,23 +16,6 @@ const PlaybackContainer = styled.div`
   width: 100%;
 `;
 
-const Progress = styled.progress`
-  border-radius: 7px;
-  height: 6px;
-  width: 70%;
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
-
-  &::-webkit-progress-bar {
-    background-color: #615e55;
-    border-radius: 7px;
-  }
-
-  &::-webkit-progress-value {
-    background-color: white;
-    border-radius: 7px;
-  }
-`;
-
 const formatMinutesAndSecondsToDisplayString = ({
   minutes,
   seconds,
