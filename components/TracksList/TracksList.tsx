@@ -65,7 +65,7 @@ export const TracksList = ({
   isPlaybackPaused: boolean;
 }) => {
   return (
-    <Container className="card">
+    <Container>
       <TracksTable>
         <THead>
           <tr>
