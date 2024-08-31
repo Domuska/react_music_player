@@ -3,6 +3,21 @@ import { Track } from "../types";
 import { useState } from "react";
 import { PlayPauseButton } from "./PlayPauseButton";
 import { ClockButton } from "../IconButtons/IconButtons";
+import { AnimatedPlayback } from "../../weird-components/AnimatedPlayback";
+
+const TextOrPlayingAnimation = ({
+  displayAnimation,
+  text,
+}: {
+  displayAnimation: boolean;
+  text: number;
+}) => {
+  return (
+    <AnimationContainer>
+      {displayAnimation ? <AnimatedPlayback /> : <>{text}</>}
+    </AnimationContainer>
+  );
+};
 
 const TrackRow = ({
   track,
@@ -29,25 +44,34 @@ const TrackRow = ({
     setIsHovered(false);
   };
 
+  const isRowPlaybackOngoing = trackIsPlaying && !isPlaybackPaused;
+
   return (
-    <tr onMouseEnter={onHover} onMouseLeave={onMouseLeave}>
+    <NoBorderTr
+      onMouseEnter={onHover}
+      onMouseLeave={onMouseLeave}
+      $isRowActive={trackIsPlaying}
+    >
       <TrackNumberTd $hovered={isHovered}>
         {isHovered ? (
           <PlayPauseButton
             onPause={pausePlayback}
             onPlay={() => playCurrentTrack(track.id)}
-            playing={trackIsPlaying && !isPlaybackPaused}
+            playing={isRowPlaybackOngoing}
           />
         ) : (
-          index
+          <TextOrPlayingAnimation
+            displayAnimation={isRowPlaybackOngoing}
+            text={index}
+          />
         )}
       </TrackNumberTd>
-      <TrackNameTd $hovered={isHovered}>
+      <TrackNameTd $hovered={isHovered} $isRowActive={trackIsPlaying}>
         <span>{track.name}</span>
       </TrackNameTd>
       <HoverHighlightTd $hovered={isHovered}>albuminnimi</HoverHighlightTd>
       <HoverHighlightTd $hovered={isHovered}>3.14</HoverHighlightTd>
-    </tr>
+    </NoBorderTr>
   );
 };
 
@@ -149,6 +173,9 @@ const HoverHighlightTd = styled.td<{ $hovered?: boolean }>`
     props.$hovered ? "rgba(255, 255, 255, 0.1)" : "auto"};
 `;
 
+// TODO https://styled-components.com/docs/advanced#style-objects
+// could that be used to deal with the hover highlighting?
+
 const TrackNumberTd = styled(HoverHighlightTd)`
   display: flex;
   flex-wrap: wrap;
@@ -158,12 +185,26 @@ const TrackNumberTd = styled(HoverHighlightTd)`
   min-height: 40px;
 `;
 
-const TrackNameTd = styled(HoverHighlightTd)`
-  color: var(--text-on-main-bg);
+const TrackNameTd = styled(HoverHighlightTd)<{ $isRowActive?: boolean }>`
+  // todo can the variables be accessed without writing a string here?
+  color: ${(props) =>
+    props.$isRowActive ? "var(--mainActionColor)" : "var(--text-on-main-bg)"};
 `;
 
 const DividerTh = styled.th`
   height: 1px;
   padding: 0px;
   background-color: #7e7d7d;
+`;
+
+const NoBorderTr = styled.tr<{ $isRowActive?: boolean }>`
+  border: none;
+  color: ${(props) => (props.$isRowActive ? "var(--mainActionColor)" : "auto")};
+`;
+
+const AnimationContainer = styled.span`
+  width: 80%;
+  display: flex;
+  align-content: center;
+  justify-content: center;
 `;
