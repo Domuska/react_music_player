@@ -48,6 +48,7 @@ export const PlaybackControls = ({
   totalPlaybackDuration,
   currentPlaybackTime,
   isPlaybackPaused,
+  onSeek,
 }: {
   pausePlayOnclick: () => void;
   totalPlaybackDuration: React.ComponentProps<
@@ -56,6 +57,7 @@ export const PlaybackControls = ({
   currentPlaybackTime: React.ComponentProps<
     typeof ProgressBar
   >["currentPlaybackTime"];
+  onSeek: React.ComponentProps<typeof ProgressBar>["onSeek"];
   isPlaybackPaused: boolean;
 }) => {
   return (
@@ -73,6 +75,7 @@ export const PlaybackControls = ({
       <ProgressBar
         currentPlaybackTime={currentPlaybackTime}
         totalPlaybackDuration={totalPlaybackDuration}
+        onSeek={onSeek}
       />
     </div>
   );
