@@ -63,20 +63,26 @@ export const ProgressBar = ({
   const formattedTotalTime =
     formatMinutesAndSecondsToDisplayString(totalFlooredTime);
 
+  const currentPercentageValue =
+    currentPlaybackTime && totalPlaybackDuration
+      ? (currentPlaybackTime / totalPlaybackDuration) * 100
+      : 0;
+
   const onProgressUpdate = (percentage: number) => {
-    const newPosition = totalPlaybackDuration * percentage;
-    console.log(newPosition);
+    const asFraction = percentage / 100;
+    const newPosition = totalPlaybackDuration * asFraction;
     onSeek(newPosition);
   };
 
   return (
     <PlaybackContainer>
       <span>{formattedCurrentProgress}</span>
-      {/* <Progress value={currentPlaybackTime} max={totalPlaybackDuration} /> */}
+
       <SliderInput
-        currentValue={currentPlaybackTime}
+        currentPercentageValue={currentPercentageValue}
         onSeek={onProgressUpdate}
       />
+
       <span>{formattedTotalTime}</span>
     </PlaybackContainer>
   );

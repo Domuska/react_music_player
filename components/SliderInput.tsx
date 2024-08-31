@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { BaseSyntheticEvent, SyntheticEvent, useRef, useState } from "react";
 
 const SliderWithBackground = styled.input<{ $sliderValue: number }>`
   /* removing default appearance */
@@ -49,32 +48,29 @@ const SliderWithBackground = styled.input<{ $sliderValue: number }>`
 `;
 
 export const SliderInput = ({
-  currentValue,
+  currentPercentageValue,
   onSeek,
 }: {
-  currentValue: number;
+  currentPercentageValue: number;
   onSeek: (param: number) => void;
 }) => {
-  const defaulted = currentValue ?? 0;
-  const slider = useRef<HTMLInputElement>();
+  const defaulted = currentPercentageValue ?? 0;
 
-  const onChange = (e: BaseSyntheticEvent) => {
-    console.log(e);
-    const val = e.target.value / 100;
-    console.log(val);
-    onSeek(val);
+  const onChange = (value: string) => {
+    const asInt = Number.parseInt(value, 10);
+    onSeek(asInt);
   };
 
   return (
     <>
       <SliderWithBackground
-        ref={slider}
         $sliderValue={defaulted}
         type="range"
         value={defaulted}
         max="100"
+        min="0"
         step="1"
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
       />
     </>
   );
