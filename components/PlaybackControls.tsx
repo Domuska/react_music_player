@@ -38,11 +38,6 @@ const PlayPauseButton = ({
   );
 };
 
-// todo type children to react component / jsx
-const ButtonWithoutBackground = ({ children }: { children: any }) => {
-  return <StyledButton $bgColor="black">{children}</StyledButton>;
-};
-
 export const PlaybackControls = ({
   pausePlayOnclick,
   totalPlaybackDuration,

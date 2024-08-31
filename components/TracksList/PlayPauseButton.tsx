@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { PauseButton, PlayButton } from "../IconButtons/IconButtons";
 
 export const PlayPauseButton = ({
