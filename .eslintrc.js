@@ -39,5 +39,6 @@ module.exports = {
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "prettier/prettier": "error",
+    "linebreak-style": 0,
   },
 };

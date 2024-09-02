@@ -10,7 +10,7 @@ import { Library } from "../components/Library";
 export default function App() {
   const [currentSong, setCurrentSong] = useState<Track | null>(null);
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState<number | null>(
-    null
+    null,
   );
   const musicPlayer = useRef<HTMLAudioElement>(null);
 
