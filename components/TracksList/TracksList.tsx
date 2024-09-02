@@ -170,7 +170,7 @@ const TracksTable = styled.table`
 // base component for setting opaque layer on hover
 const HoverHighlightTd = styled.td<{ $hovered?: boolean }>`
   background-color: ${(props) =>
-    props.$hovered ? "rgba(255, 255, 255, 0.1)" : "auto"};
+    props.$hovered ? "rgba(255, 255, 255, 0.1)" : "unset"};
 `;
 
 // TODO https://styled-components.com/docs/advanced#style-objects
@@ -199,12 +199,15 @@ const DividerTh = styled.th`
 
 const NoBorderTr = styled.tr<{ $isRowActive?: boolean }>`
   border: none;
-  color: ${(props) => (props.$isRowActive ? "var(--mainActionColor)" : "auto")};
+  color: ${(props) =>
+    props.$isRowActive ? "var(--mainActionColor)" : "unset"};
 `;
 
 const AnimationContainer = styled.span`
   width: 80%;
+  height: 30px;
   display: flex;
+  flex-wrap: wrap;
   align-content: center;
   justify-content: center;
 `;
