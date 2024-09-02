@@ -6,15 +6,23 @@ import { PlaybackControls } from "../components/PlaybackControls";
 import { Track } from "../components/types";
 import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
+import { VolumeControls } from "../components/VolumeBar/VolumeControls";
 
 export default function App() {
   const [currentSong, setCurrentSong] = useState<Track | null>(null);
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState<number | null>(
     null
   );
+  const [currentVolume, setCurrentVolume] = useState<number>(0.5);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
   const musicPlayer = useRef<HTMLAudioElement>(null);
 
   const isPlaybackPaused = musicPlayer.current?.paused || currentSong === null;
+
+  if (musicPlayer.current) {
+    musicPlayer.current.volume = currentVolume;
+    musicPlayer.current.muted = isMuted;
+  }
 
   useEffect(() => {
     if (currentSong) {
@@ -44,6 +52,14 @@ export default function App() {
   const onSeek = (time: number) => {
     musicPlayer.current.currentTime = time;
     setCurrentPlaybackTime(time);
+  };
+
+  const onVolumeChange = (newVolume: number) => {
+    setCurrentVolume(newVolume);
+  };
+
+  const onMuteClick = () => {
+    setIsMuted(!isMuted);
   };
 
   const songs: Track[] = [
@@ -85,7 +101,14 @@ export default function App() {
       <span className={styles.rightNav}>oikea nav</span>
 
       <span className={styles.bottomLeft}></span>
-      <span className={styles.bottomRight}></span>
+      <span className={styles.bottomRight}>
+        <VolumeControls
+          onVolumeChange={onVolumeChange}
+          currentVolumeFraction={isMuted ? 0 : currentVolume}
+          onMuteClick={onMuteClick}
+          isMuted={isMuted}
+        />
+      </span>
 
       <span id="player-controls" className={`${styles.bottomCenter}`}>
         <PlaybackControls
