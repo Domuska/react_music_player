@@ -2,6 +2,12 @@ This is a starter template for [Learn Next.js](https://nextjs.org/learn).
 
 This is a project for learning, attempt is to create a light version of Spotify
 
+# TODO
+
+- bottom bar could be a single area instead of being divided into 3, similar as Spotify's
+- warning in console about classes being created should be fixed
+- error thrown in the animated playback svg
+
 # Music Copyright
 
 ACTION by Alex-Productions | https://onsound.eu/

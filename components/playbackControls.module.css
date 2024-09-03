@@ -1,15 +1,15 @@
 .playbackControls {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 10px;
 }
 
 .buttonContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  min-height: 45px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 15px;
+	min-height: 45px;
 }
