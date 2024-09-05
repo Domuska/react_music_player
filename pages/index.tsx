@@ -7,6 +7,7 @@ import { Track } from "../components/types";
 import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
 import { VolumeControls } from "../components/VolumeBar/VolumeControls";
+import { TracksResponse } from "./api/songs";
 
 export default function App() {
   const [currentSong, setCurrentSong] = useState<Track | null>(null);
@@ -15,6 +16,7 @@ export default function App() {
   );
   const [currentVolume, setCurrentVolume] = useState<number>(0.5);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [songs, setSongs] = useState<Track[]>([]);
   const musicPlayer = useRef<HTMLAudioElement>(null);
 
   const isPlaybackPaused = musicPlayer.current?.paused || currentSong === null;
@@ -32,12 +34,27 @@ export default function App() {
     }
   }, [currentSong]);
 
+  useEffect(() => {
+    fetch("/api/songs").then(async (resp) => {
+      const asJson = (await resp.json()) as TracksResponse;
+      console.log(asJson);
+      setSongs(asJson.data);
+    });
+    // fetchAllSongs()
+    // 	.then((res) => {
+    // 		setSongs(res.data);
+    // 	})
+    // 	.catch((error) => {
+    // 		console.log(error);
+    // 	});
+  }, []);
+
   const pausePlayback = () => {
-    musicPlayer.current.pause();
+    musicPlayer.current?.pause();
   };
 
   const playPlayback = () => {
-    musicPlayer.current.play();
+    musicPlayer.current?.play();
   };
 
   const onTimeUpdate = (currentTime: number) => {
@@ -62,20 +79,20 @@ export default function App() {
     setIsMuted(!isMuted);
   };
 
-  const songs: Track[] = [
-    {
-      uri: "/alex-productions-action.mp3",
-      imgUri: "/action.jfif",
-      name: "Action",
-      id: "1",
-    },
-    {
-      uri: "/alex-productions-tension.mp3",
-      imgUri: "/action.jfif",
-      name: "tension",
-      id: "2",
-    },
-  ];
+  // const songs: Track[] = [
+  // 	{
+  // 		uri: "/alex-productions-action.mp3",
+  // 		imgUri: "/action.jfif",
+  // 		name: "Action",
+  // 		id: "1",
+  // 	},
+  // 	{
+  // 		uri: "/alex-productions-tension.mp3",
+  // 		imgUri: "/action.jfif",
+  // 		name: "tension",
+  // 		id: "2",
+  // 	},
+  // ];
   return (
     <div className={styles.gridContainer}>
       <audio
