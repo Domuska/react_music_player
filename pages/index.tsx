@@ -7,6 +7,19 @@ import { Track } from "../components/types";
 import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
 import { VolumeControls } from "../components/VolumeBar/VolumeControls";
+import WebPlayback from "../components/Spotify/WebPlayback";
+
+const Login = () => {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <a className="btn-spotify" href="api/auth/login">
+          Login with Spotify
+        </a>
+      </header>
+    </div>
+  );
+};
 
 export default function App() {
   const [currentSong, setCurrentSong] = useState<Track | null>(null);
@@ -16,6 +29,18 @@ export default function App() {
   const [currentVolume, setCurrentVolume] = useState<number>(0.5);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const musicPlayer = useRef<HTMLAudioElement>(null);
+
+  const [token, setToken] = useState<string>("");
+
+  useEffect(() => {
+    async function getToken() {
+      const response = await fetch("/api/auth/token");
+      const json = await response.json();
+      setToken(json.access_token);
+    }
+
+    getToken();
+  }, []);
 
   const isPlaybackPaused = musicPlayer.current?.paused || currentSong === null;
 
@@ -33,11 +58,11 @@ export default function App() {
   }, [currentSong]);
 
   const pausePlayback = () => {
-    musicPlayer.current.pause();
+    musicPlayer.current?.pause();
   };
 
   const playPlayback = () => {
-    musicPlayer.current.play();
+    musicPlayer.current?.play();
   };
 
   const onTimeUpdate = (currentTime: number) => {
@@ -50,8 +75,10 @@ export default function App() {
   };
 
   const onSeek = (time: number) => {
-    musicPlayer.current.currentTime = time;
-    setCurrentPlaybackTime(time);
+    if (musicPlayer.current) {
+      musicPlayer.current.currentTime = time;
+      setCurrentPlaybackTime(time);
+    }
   };
 
   const onVolumeChange = (newVolume: number) => {
@@ -76,77 +103,87 @@ export default function App() {
       id: "2",
     },
   ];
+
   return (
     <div className={styles.gridContainer}>
-      <audio
-        id="music_player"
-        ref={musicPlayer}
-        src={currentSong?.uri}
-        onTimeUpdate={() => onTimeUpdate(musicPlayer.current.currentTime)}
-      />
+      {!token || token === "" ? (
+        <Login />
+      ) : (
+        <>
+          <WebPlayback token={token} />
+          <audio
+            id="music_player"
+            ref={musicPlayer}
+            src={currentSong?.uri}
+            onTimeUpdate={() => onTimeUpdate(musicPlayer.current.currentTime)}
+          />
 
-      <span className={styles.searchNavBar}>searchi</span>
-      <div className={styles.leftNav}>
-        <Library />
-      </div>
-      <div className={styles.mainContent}>
-        <TracksList
-          tracks={songs}
-          playCurrentTrack={changeSong}
-          currentlyPlayingTrack={currentSong}
-          isPlaybackPaused={isPlaybackPaused}
-          pausePlayback={pausePlayback}
-        />
-      </div>
-      <span className={styles.rightNav}>oikea nav</span>
+          <span className={styles.searchNavBar}>searchi</span>
+          <div className={styles.leftNav}>
+            <Library />
+          </div>
+          <div className={styles.mainContent}>
+            <TracksList
+              tracks={songs}
+              playCurrentTrack={changeSong}
+              currentlyPlayingTrack={currentSong}
+              isPlaybackPaused={isPlaybackPaused}
+              pausePlayback={pausePlayback}
+            />
+          </div>
+          <span className={styles.rightNav}>oikea nav</span>
 
-      <span className={styles.bottomLeft}></span>
-      <span className={styles.bottomRight}>
-        <VolumeControls
-          onVolumeChange={onVolumeChange}
-          currentVolumeFraction={isMuted ? 0 : currentVolume}
-          onMuteClick={onMuteClick}
-          isMuted={isMuted}
-        />
-      </span>
+          <span className={styles.bottomLeft}></span>
+          <span className={styles.bottomRight}>
+            <VolumeControls
+              onVolumeChange={onVolumeChange}
+              currentVolumeFraction={isMuted ? 0 : currentVolume}
+              onMuteClick={onMuteClick}
+              isMuted={isMuted}
+            />
+          </span>
 
-      <span id="player-controls" className={`${styles.bottomCenter}`}>
-        <PlaybackControls
-          pausePlayOnclick={() =>
-            musicPlayer.current.paused ? playPlayback() : pausePlayback()
-          }
-          totalPlaybackDuration={
-            musicPlayer.current?.duration ? musicPlayer.current.duration : null
-          }
-          currentPlaybackTime={currentPlaybackTime}
-          isPlaybackPaused={isPlaybackPaused}
-          onSeek={onSeek}
-        />
-      </span>
+          <span id="player-controls" className={`${styles.bottomCenter}`}>
+            <PlaybackControls
+              pausePlayOnclick={() =>
+                musicPlayer.current.paused ? playPlayback() : pausePlayback()
+              }
+              totalPlaybackDuration={
+                musicPlayer.current?.duration
+                  ? musicPlayer.current.duration
+                  : null
+              }
+              currentPlaybackTime={currentPlaybackTime}
+              isPlaybackPaused={isPlaybackPaused}
+              onSeek={onSeek}
+            />
+          </span>
+        </>
+      )}
 
       {/* For styling the automatic padding & margin on the whole web page */}
       <style>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            Segoe UI,
-            Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            Fira Sans,
-            Droid Sans,
-            Helvetica Neue,
-            sans-serif;
-        }
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        font-family:
+          -apple-system,
+          BlinkMacSystemFont,
+          Segoe UI,
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          Fira Sans,
+          Droid Sans,
+          Helvetica Neue,
+          sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+    `}</style>
     </div>
   );
 }
