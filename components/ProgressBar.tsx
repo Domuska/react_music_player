@@ -31,29 +31,35 @@ const formatMinutesAndSecondsToDisplayString = ({
 };
 
 export const ProgressBar = ({
-  totalPlaybackDuration,
-  currentPlaybackTime,
+  totalPlaybackDurationMs,
+  currentPlaybackTimeMs,
   onSeek,
 }: {
-  totalPlaybackDuration: number | null;
-  currentPlaybackTime: number | null;
-  onSeek: (param: number) => void;
+  totalPlaybackDurationMs: number | undefined;
+  currentPlaybackTimeMs: number | undefined;
+  onSeek: (timeMs: number) => Promise<void>;
 }) => {
-  const currentFlooredTime = getWholeMinutesAndSeconds(currentPlaybackTime);
+  const totalPlaybackSeconds = totalPlaybackDurationMs
+    ? totalPlaybackDurationMs / 1000
+    : 0;
+  const currentPlaybackSeconds = currentPlaybackTimeMs
+    ? currentPlaybackTimeMs / 1000
+    : 0;
+  const currentFlooredTime = getWholeMinutesAndSeconds(currentPlaybackSeconds);
   const formattedCurrentProgress =
     formatMinutesAndSecondsToDisplayString(currentFlooredTime);
-  const totalFlooredTime = getWholeMinutesAndSeconds(totalPlaybackDuration);
+  const totalFlooredTime = getWholeMinutesAndSeconds(totalPlaybackSeconds);
   const formattedTotalTime =
     formatMinutesAndSecondsToDisplayString(totalFlooredTime);
 
   const currentPercentageValue =
-    currentPlaybackTime && totalPlaybackDuration
-      ? (currentPlaybackTime / totalPlaybackDuration) * 100
+    currentPlaybackTimeMs && totalPlaybackDurationMs
+      ? (currentPlaybackTimeMs / totalPlaybackDurationMs) * 100
       : 0;
 
   const onProgressUpdate = (percentage: number) => {
     const asFraction = percentage / 100;
-    const newPosition = totalPlaybackDuration * asFraction;
+    const newPosition = Math.round(totalPlaybackSeconds * asFraction * 1000);
     onSeek(newPosition);
   };
 
