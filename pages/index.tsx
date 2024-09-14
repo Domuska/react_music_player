@@ -8,6 +8,7 @@ import {
   SpotifyDevice,
   SpotifyTrackItem,
   LegacyTrack,
+  Album,
 } from "../components/types";
 import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
@@ -33,10 +34,6 @@ const Login = () => {
   );
 };
 
-function lastFromArray<Type>(arr: Type[] | undefined): Type | undefined {
-  return arr ? arr[arr.length - 1] : undefined;
-}
-
 export default function App() {
   const [volumeState, setVolumeState] = useState<{
     isMuted: boolean;
@@ -44,6 +41,8 @@ export default function App() {
   }>({ isMuted: false, volumeBeforeMute: 0 });
 
   const [isSpotifyPlaying, setIsSpotifyPlaying] = useState<boolean>(false);
+
+  const [currentAlbumData, setCurrentAlbumData] = useState<Album | undefined>();
 
   const [currentSpotifyItem, setCurrentSpotifyItem] = useState<
     SpotifyTrackItem | undefined
@@ -120,8 +119,8 @@ export default function App() {
     refreshSpotifyData(spotifyApiRef.current);
   };
 
-  const changeSong = (songId: string) => {
-    // todo use Spotify API
+  const changeSong = (trackId: string) => {
+    console.log("todo play spotify api", trackId);
   };
 
   const onArtistClick = (artist: SimplifiedArtist) => {
@@ -129,9 +128,9 @@ export default function App() {
     // todo something
   };
 
-  const onTrackClick = () => {
-    console.log("onTrackClick");
-    // todo something
+  const openAlbumData = async (albumId: string) => {
+    const result = await spotifyApiRef.current?.fetchAlbum(albumId);
+    setCurrentAlbumData(result);
   };
 
   const onSeek = async (timeMs: number) => {
@@ -188,23 +187,25 @@ export default function App() {
         <Library />
       </div>
       <div className={styles.mainContent}>
-        <TracksList
-          tracks={songs}
-          playCurrentTrack={changeSong}
-          currentlyPlayingTrack={undefined}
-          isPlaybackPaused={false}
-          pausePlayback={() => {}}
-        />
+        {currentAlbumData && spotifyApiRef.current && (
+          <TracksList
+            album={currentAlbumData}
+            playTrack={changeSong}
+            currentlyPlayingTrackId={currentSpotifyItem?.id}
+            isPlaybackPaused={!isSpotifyPlaying}
+            pausePlayback={spotifyOnPlayPauseClick}
+          />
+        )}
       </div>
       <span className={styles.rightNav}>oikea nav</span>
 
       <span className={styles.bottomGrid}>
         <CurrentPlaybackInfo
-          imgUrl={lastFromArray(currentSpotifyItem?.album.images)?.url}
+          album={currentSpotifyItem?.album}
           trackTitle={currentSpotifyItem?.name}
           artists={currentSpotifyItem?.artists}
           onArtistClick={onArtistClick}
-          onTrackClick={onTrackClick}
+          onTrackClick={openAlbumData}
         />
 
         <PlaybackControls

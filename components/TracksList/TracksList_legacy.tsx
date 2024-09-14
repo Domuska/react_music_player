@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Album, Track } from "../types";
+import { LegacyTrack } from "../types";
 import { useState } from "react";
 import { PlayPauseButton } from "./PlayPauseButton";
 import { ClockButton } from "../IconButtons/IconButtons";
@@ -21,14 +21,14 @@ const TextOrPlayingAnimation = ({
 
 const TrackRow = ({
   track,
-  playTrack,
+  playCurrentTrack,
   index,
   trackIsPlaying,
   pausePlayback,
   isPlaybackPaused,
 }: {
-  track: Track;
-  playTrack: (param: string) => void;
+  track: LegacyTrack;
+  playCurrentTrack: (param: string) => void;
   pausePlayback: VoidFunction;
   index: number;
   trackIsPlaying: boolean;
@@ -46,14 +46,6 @@ const TrackRow = ({
 
   const isRowPlaybackOngoing = trackIsPlaying && !isPlaybackPaused;
 
-  const onPlayPauseClick = () => {
-    if (trackIsPlaying) {
-      pausePlayback();
-    } else {
-      playTrack(track.id);
-    }
-  };
-
   return (
     <NoBorderTr
       onMouseEnter={onHover}
@@ -63,7 +55,8 @@ const TrackRow = ({
       <TrackNumberTd $hovered={isHovered}>
         {isHovered ? (
           <PlayPauseButton
-            onClick={onPlayPauseClick}
+            onPause={pausePlayback}
+            onPlay={() => playCurrentTrack(track.id)}
             playing={isRowPlaybackOngoing}
           />
         ) : (
@@ -83,20 +76,20 @@ const TrackRow = ({
 };
 
 export const TracksList = ({
-  playTrack,
-  currentlyPlayingTrackId,
+  tracks,
+  playCurrentTrack,
+  currentlyPlayingTrack,
   pausePlayback,
   isPlaybackPaused,
-  album,
 }: {
-  album?: Album;
-  playTrack: React.ComponentProps<typeof TrackRow>["playTrack"];
-  currentlyPlayingTrackId?: string;
+  tracks: LegacyTrack[];
+  playCurrentTrack: React.ComponentProps<typeof TrackRow>["playCurrentTrack"];
+  currentlyPlayingTrack?: LegacyTrack;
   pausePlayback: React.ComponentProps<typeof TrackRow>["pausePlayback"];
   isPlaybackPaused: boolean;
 }) => {
   return (
-    <Container className="card">
+    <Container>
       <TracksTable>
         <THead>
           <tr>
@@ -114,20 +107,17 @@ export const TracksList = ({
         </THead>
 
         <tbody>
-          {album &&
-            album.tracks.items.map((track) => {
-              return (
-                <TrackRow
-                  key={track.id}
-                  index={track.track_number}
-                  playTrack={playTrack}
-                  isPlaybackPaused={isPlaybackPaused}
-                  pausePlayback={pausePlayback}
-                  track={track}
-                  trackIsPlaying={track.id == currentlyPlayingTrackId}
-                />
-              );
-            })}
+          {tracks.map((track, index) => (
+            <TrackRow
+              track={track}
+              playCurrentTrack={playCurrentTrack}
+              key={track.id}
+              index={index + 1}
+              trackIsPlaying={track.id === currentlyPlayingTrack?.id}
+              pausePlayback={pausePlayback}
+              isPlaybackPaused={isPlaybackPaused}
+            />
+          ))}
         </tbody>
       </TracksTable>
     </Container>
@@ -137,10 +127,10 @@ export const TracksList = ({
 const Container = styled.div`
   /* todo this gradient isn't correct */
   /* the color gradient change should stop sooner and just be all gray after that */
-  /* background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%); */
+  background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
+  height: 100%;
   color: var(--diminished-text-color);
   padding: 20px;
-  border-radius: 10px;
 `;
 
 const THead = styled.thead`

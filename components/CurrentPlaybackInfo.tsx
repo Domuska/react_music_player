@@ -1,24 +1,34 @@
 import styled from "styled-components";
-import { SimplifiedArtist } from "./types";
+import { SimplifiedArtist, SimplifiedAlbum } from "./types";
+
+function lastFromArray<Type>(arr: Type[] | undefined): Type | undefined {
+  return arr ? arr[arr.length - 1] : undefined;
+}
 
 export const CurrentPlaybackInfo = ({
-  imgUrl,
   trackTitle,
   artists,
+  album,
   onTrackClick,
   onArtistClick,
 }: {
-  imgUrl?: string;
   trackTitle?: string;
   artists?: SimplifiedArtist[];
-  onTrackClick: VoidFunction;
+  album?: SimplifiedAlbum;
+  onTrackClick: (albumId: string) => void;
   onArtistClick: (artist: SimplifiedArtist) => void;
 }) => {
+  const imgUrl = lastFromArray(album?.images)?.url;
+
   return (
     <Container>
       <img src={imgUrl} width={64} height={64} />
       <LinksContainer>
-        <ArtistNameButton onClick={onTrackClick}>{trackTitle}</ArtistNameButton>
+        <ArtistNameButton
+          onClick={album ? () => onTrackClick(album?.id) : () => {}}
+        >
+          {trackTitle}
+        </ArtistNameButton>
         <div>
           {artists?.map((artist, index) => {
             const lastItem = index == artists.length - 1;

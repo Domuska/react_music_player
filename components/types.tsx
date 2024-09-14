@@ -1,5 +1,3 @@
-import { URL } from "url";
-
 export type PromiseVoidFunction = () => Promise<void>;
 
 // todo this is not a spotify track
@@ -16,14 +14,22 @@ type Image = {
   width: number;
 };
 
+export type Track = {
+  name: string;
+  track_number: number;
+  id: string;
+  is_playable: boolean;
+  artists: SimplifiedArtist[];
+};
+
 export type SimplifiedArtist = {
-  href: URL;
+  href: string;
   id: string;
   name: string;
   uri: string;
 };
 
-type Album = {
+export type Album = {
   total_tracks: number;
   href: string;
   images: Image[];
@@ -31,11 +37,31 @@ type Album = {
   release_date: string;
   uri: string;
   artists: SimplifiedArtist[];
+  id: string;
+  tracks: {
+    items: Track[];
+  };
 };
+
+export type SimplifiedAlbum = Pick<
+  Album,
+  "artists" | "href" | "id" | "images" | "name" | "total_tracks" | "uri"
+>;
+
+// export type SimplifiedAlbum = {
+//   total_tracks: number;
+//   href: string;
+//   images: Image[];
+//   name: string;
+//   release_date: string;
+//   uri: string;
+//   artists: SimplifiedArtist[];
+//   id: string;
+// };
 
 // music
 export type SpotifyTrackItem = {
-  album: Album;
+  album: SimplifiedAlbum;
   artists: SimplifiedArtist[];
   duration_ms: number;
   id: string;

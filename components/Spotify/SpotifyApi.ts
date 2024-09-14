@@ -1,4 +1,4 @@
-import { PlaybackStatusResponse, PromiseVoidFunction } from "../types";
+import { Album, PlaybackStatusResponse, PromiseVoidFunction } from "../types";
 
 export type SpotifyAPi = {
   getPlaybackStatus: () => Promise<PlaybackStatusResponse | undefined>;
@@ -8,6 +8,7 @@ export type SpotifyAPi = {
   pausePlayback: PromiseVoidFunction;
   seek: (timeMs: number) => Promise<void>;
   setVolume: (newValue: number) => Promise<void>;
+  fetchAlbum: (albumId: string) => Promise<Album>;
 };
 
 export const api: (token: string) => SpotifyAPi = (token: string) => {
@@ -79,6 +80,14 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
         method: "PUT",
         headers,
       });
+    },
+    fetchAlbum: async (albumId: string) => {
+      const url = `https://api.spotify.com/v1/albums/${albumId}`;
+      const result = await fetch(url, {
+        method: "GET",
+        headers,
+      });
+      return (await result.json()) as Album;
     },
   };
 };
