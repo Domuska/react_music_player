@@ -4,21 +4,18 @@ import { MutedButton, VolumeDownButton } from "../IconButtons/IconButtons";
 
 export const VolumeControls = ({
   onVolumeChange,
-  currentVolumeFraction,
+  volumePercentage,
   onMuteClick,
   isMuted,
 }: {
   onVolumeChange: (newVolumeFraction: number) => void;
-  currentVolumeFraction: number;
+  volumePercentage: number;
   onMuteClick: VoidFunction;
   isMuted: boolean;
 }) => {
-  const onSeek = (newVal: number) => {
-    const fraction = newVal / 100;
-    onVolumeChange(fraction);
+  const onSeek = (newPercentage: number) => {
+    onVolumeChange(newPercentage);
   };
-
-  const volumePercentage = currentVolumeFraction * 100;
 
   return (
     <Container>

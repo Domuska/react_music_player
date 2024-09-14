@@ -23,6 +23,8 @@ https://creativecommons.org/licenses/by/3.0/deed.en_US
 
 https://developer.spotify.com/documentation/web-playback-sdk/howtos/web-app-player
 
+https://developer.spotify.com/documentation/web-api/reference/get-the-users-currently-playing-track
+
 # Picture copyright
 
 MS Copilot was used to generate the pictures

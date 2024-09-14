@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-export const WebPlayback = ({ token }) => {
+export const SpotifyWebPlayback = ({ token }) => {
   const [player, setPlayer] = useState(undefined);
 
   useEffect(() => {
@@ -29,7 +29,23 @@ export const WebPlayback = ({ token }) => {
         console.log("Device ID has gone offline", device_id);
       });
 
+      player.addListener(
+        "player_state_changed",
+        ({ position, duration, track_window: { current_track } }) => {
+          // todo inform parent playback changed
+          console.log("Currently Playing", current_track);
+          console.log("Position in Song", position);
+          console.log("Duration of Song", duration);
+        }
+      );
+
+      player.setName("Spawtify");
+
       player.connect();
+
+      return () => {
+        player.disconnect();
+      };
     };
   }, [token]);
 
@@ -42,4 +58,4 @@ export const WebPlayback = ({ token }) => {
   );
 };
 
-export default WebPlayback;
+export default SpotifyWebPlayback;

@@ -17,7 +17,8 @@ const generateRandomString = function (length: number) {
   return text;
 };
 
-// auth/login
+// login endpoint that client calls when token doesn't exist,
+// reroute the request to Spotify and tell what scopes(claims) we wish to have
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -25,7 +26,9 @@ export default async function handler(
   const scope =
     "streaming \
     user-read-email \
-    user-read-private";
+    user-read-private \
+    user-modify-playback-state \
+    user-read-playback-state";
 
   const state = generateRandomString(16);
 
