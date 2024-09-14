@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Track } from "../types";
+import { LegacyTrack } from "../types";
 import { useState } from "react";
 import { PlayPauseButton } from "./PlayPauseButton";
 import { ClockButton } from "../IconButtons/IconButtons";
@@ -27,7 +27,7 @@ const TrackRow = ({
   pausePlayback,
   isPlaybackPaused,
 }: {
-  track: Track;
+  track: LegacyTrack;
   playCurrentTrack: (param: string) => void;
   pausePlayback: VoidFunction;
   index: number;
@@ -82,9 +82,9 @@ export const TracksList = ({
   pausePlayback,
   isPlaybackPaused,
 }: {
-  tracks: Track[];
+  tracks: LegacyTrack[];
   playCurrentTrack: React.ComponentProps<typeof TrackRow>["playCurrentTrack"];
-  currentlyPlayingTrack?: Track;
+  currentlyPlayingTrack?: LegacyTrack;
   pausePlayback: React.ComponentProps<typeof TrackRow>["pausePlayback"];
   isPlaybackPaused: boolean;
 }) => {

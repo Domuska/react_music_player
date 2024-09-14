@@ -3,7 +3,12 @@
 import styles from "../styles/Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
-import { SpotifyDevice, SpotifyItem, Track } from "../components/types";
+import {
+  SimplifiedArtist,
+  SpotifyDevice,
+  SpotifyTrackItem,
+  LegacyTrack,
+} from "../components/types";
 import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
 import { VolumeControls } from "../components/VolumeBar/VolumeControls";
@@ -12,6 +17,7 @@ import { api, SpotifyAPi } from "../components/Spotify/SpotifyApi";
 import { ACCESS_TOKEN_COOKIE_NAME } from "./api/auth/callback";
 import { getCookieByName } from "../utils/getCookieByName";
 import { sleep } from "../utils/sleep";
+import { CurrentPlaybackInfo } from "../components/CurrentPlaybackInfo";
 
 const ONE_SECOND = 1000;
 
@@ -27,6 +33,10 @@ const Login = () => {
   );
 };
 
+function lastFromArray<Type>(arr: Type[] | undefined): Type | undefined {
+  return arr ? arr[arr.length - 1] : undefined;
+}
+
 export default function App() {
   const [volumeState, setVolumeState] = useState<{
     isMuted: boolean;
@@ -36,7 +46,7 @@ export default function App() {
   const [isSpotifyPlaying, setIsSpotifyPlaying] = useState<boolean>(false);
 
   const [currentSpotifyItem, setCurrentSpotifyItem] = useState<
-    SpotifyItem | undefined
+    SpotifyTrackItem | undefined
   >();
   const [currentSpotifyDevice, setCurrentSpotifyDevice] = useState<
     SpotifyDevice | undefined
@@ -78,11 +88,17 @@ export default function App() {
     try {
       const response = await apiObject.getPlaybackStatus();
 
-      if (response) {
+      if (response && response.currently_playing_type == "track") {
         setIsSpotifyPlaying(response.is_playing);
         setCurrentSpotifyItem(response.item);
         setCurrentPlaybackDurationMs(response.progress_ms);
         setCurrentSpotifyDevice(response.device);
+      } else {
+        console.log(
+          "response currently playing type is " +
+            response?.currently_playing_type +
+            ". Not supported yet."
+        );
       }
     } catch (e) {
       console.error(e);
@@ -106,6 +122,16 @@ export default function App() {
 
   const changeSong = (songId: string) => {
     // todo use Spotify API
+  };
+
+  const onArtistClick = (artist: SimplifiedArtist) => {
+    console.log("onArtistClick", artist);
+    // todo something
+  };
+
+  const onTrackClick = () => {
+    console.log("onTrackClick");
+    // todo something
   };
 
   const onSeek = async (timeMs: number) => {
@@ -137,7 +163,7 @@ export default function App() {
     }
   };
 
-  const songs: Track[] = [
+  const songs: LegacyTrack[] = [
     {
       uri: "/alex-productions-action.mp3",
       imgUri: "/action.jfif",
@@ -154,7 +180,7 @@ export default function App() {
 
   return (
     <div className={styles.gridContainer}>
-      {/* The spotify playback component */}
+      {/* The Spotify playback component */}
       <SpotifyWebPlayback token={token} />
 
       <span className={styles.searchNavBar}>searchi</span>
@@ -172,17 +198,15 @@ export default function App() {
       </div>
       <span className={styles.rightNav}>oikea nav</span>
 
-      <span className={styles.bottomLeft}></span>
-      <span className={styles.bottomRight}>
-        <VolumeControls
-          onVolumeChange={onVolumeChange}
-          volumePercentage={currentSpotifyDevice?.volume_percent ?? 0}
-          onMuteClick={onMuteClick}
-          isMuted={volumeState.isMuted}
+      <span className={styles.bottomGrid}>
+        <CurrentPlaybackInfo
+          imgUrl={lastFromArray(currentSpotifyItem?.album.images)?.url}
+          trackTitle={currentSpotifyItem?.name}
+          artists={currentSpotifyItem?.artists}
+          onArtistClick={onArtistClick}
+          onTrackClick={onTrackClick}
         />
-      </span>
 
-      <span id="player-controls" className={`${styles.bottomCenter}`}>
         <PlaybackControls
           pausePlayOnclick={spotifyOnPlayPauseClick}
           skipToNextOnClick={spotifyApiRef.current?.skipToNext}
@@ -191,6 +215,13 @@ export default function App() {
           currentPlaybackTime={currentPlaybackDurationMs}
           isPlaybackPaused={!isSpotifyPlaying}
           onSeek={onSeek}
+        />
+
+        <VolumeControls
+          onVolumeChange={onVolumeChange}
+          volumePercentage={currentSpotifyDevice?.volume_percent ?? 0}
+          onMuteClick={onMuteClick}
+          isMuted={volumeState.isMuted}
         />
       </span>
 

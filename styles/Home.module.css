@@ -11,22 +11,17 @@
   grid-template-areas:
     "header header header"
     "leftnav maincontent rightnav"
-    "bottomleft bottomcenter bottomright";
+    "bottom bottom bottom";
 }
 
-.bottomLeft {
+.bottomGrid {
   background-color: var(--main-bg-black);
-  grid-area: bottomleft;
-}
-
-.bottomCenter {
-  background-color: var(--main-bg-black);
-  grid-area: bottomcenter;
-}
-
-.bottomRight {
-  background-color: var(--main-bg-black);
-  grid-area: bottomright;
+  grid-area: bottom;
+  padding: 0 25px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 1fr;
+  align-items: center;
 }
 
 .searchNavBar {
@@ -112,7 +107,9 @@
   text-decoration: none;
   border: 1px solid #eaeaea;
   border-radius: 10px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .card:hover,
