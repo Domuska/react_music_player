@@ -82,8 +82,6 @@ export const TrackRow = ({
           {str}
         </HoverHighlightTd>
       ))}
-      {/* <HoverHighlightTd $hovered={isHovered}>albuminnimi</HoverHighlightTd>
-      <HoverHighlightTd $hovered={isHovered}>3.14</HoverHighlightTd> */}
     </NoBorderTr>
   );
 };
@@ -91,7 +89,7 @@ export const TrackRow = ({
 // base component for setting opaque layer on hover
 const HoverHighlightTd = styled.td<{ $hovered?: boolean }>`
   background-color: ${(props) =>
-    props.$hovered ? "rgba(255, 255, 255, 0.1)" : "unset"};
+    props.$hovered ? "var(--highlight-element-color)" : "unset"};
 `;
 
 const TrackNumberTd = styled(HoverHighlightTd)`

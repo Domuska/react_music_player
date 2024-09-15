@@ -19,6 +19,7 @@ import { ACCESS_TOKEN_COOKIE_NAME } from "./api/auth/callback";
 import { getCookieByName } from "../utils/getCookieByName";
 import { sleep } from "../utils/sleep";
 import { CurrentPlaybackInfo } from "../components/CurrentPlaybackInfo";
+import { TopBar } from "../components/TopBar/TopBar";
 
 const ONE_SECOND = 1000;
 
@@ -182,7 +183,9 @@ export default function App() {
       {/* The Spotify playback component */}
       <SpotifyWebPlayback token={token} />
 
-      <span className={styles.searchNavBar}>searchi</span>
+      <span className={styles.searchNavBar}>
+        <TopBar />
+      </span>
       <div className={styles.leftNav}>
         <Library />
       </div>

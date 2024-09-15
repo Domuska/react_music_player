@@ -36,3 +36,15 @@ https://fonts.google.com/icons
 # progress bar inspiration
 
 https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
+
+# todo
+
+- move to mobile-first / responsive system
+- bottom bar could (should?) be a float instead of part of the grid
+- at least search (likely track list too) is re-rendering on every data fetch. Dis is bad.
+- move API calls to be executed on server-side, update cookie settings
+  - need a bit more research on this, on one hand it's not good to route the requests
+    through own server. Good to just fetch from the browser.
+  - https://www.npmjs.com/package/iron-session/v/8.0.0-beta.5
+  - iron-session could be used to store the session of the user, and the access_token would not be exposed to client
+- add top part for the tracks list view (image, name etc)
