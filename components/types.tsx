@@ -20,6 +20,7 @@ export type Track = {
   id: string;
   is_playable: boolean;
   artists: SimplifiedArtist[];
+  duration_ms: number;
 };
 
 export type SimplifiedArtist = {

@@ -1,11 +1,9 @@
 import styled from "styled-components";
 import { SliderInput } from "./SliderInput";
-
-const getWholeMinutesAndSeconds = (time: number) => {
-  const currentProgressMinutes = Math.floor(time / 60);
-  const leftSeconds = Math.floor(time % 60);
-  return { minutes: currentProgressMinutes, seconds: leftSeconds };
-};
+import {
+  formatMinutesAndSecondsToDisplayString,
+  getWholeMinutesAndSeconds,
+} from "../utils/timeUtils";
 
 const PlaybackContainer = styled.div`
   display: flex;
@@ -15,20 +13,6 @@ const PlaybackContainer = styled.div`
   color: #959aa3;
   width: 100%;
 `;
-
-const formatMinutesAndSecondsToDisplayString = ({
-  minutes,
-  seconds,
-}: {
-  minutes: number;
-  seconds: number;
-}) => {
-  const formattedCurrentMinutes = `${minutes}`.padStart(1, "0");
-  const formattedCurrentSeconds = `${seconds}`.padStart(2, "0");
-  const formattedCurrentProgress =
-    formattedCurrentMinutes + ":" + formattedCurrentSeconds;
-  return formattedCurrentProgress;
-};
 
 export const ProgressBar = ({
   totalPlaybackDurationMs,

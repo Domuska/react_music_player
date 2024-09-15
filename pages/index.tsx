@@ -189,7 +189,8 @@ export default function App() {
       <div className={styles.mainContent}>
         {currentAlbumData && spotifyApiRef.current && (
           <TracksList
-            album={currentAlbumData}
+            displayMode="album"
+            tracks={currentAlbumData.tracks.items}
             playTrack={changeSong}
             currentlyPlayingTrackId={currentSpotifyItem?.id}
             isPlaybackPaused={!isSpotifyPlaying}

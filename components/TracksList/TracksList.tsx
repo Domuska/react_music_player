@@ -1,100 +1,51 @@
 import styled from "styled-components";
-import { Album, Track } from "../types";
-import { useState } from "react";
-import { PlayPauseButton } from "./PlayPauseButton";
+import { Track } from "../types";
 import { ClockButton } from "../IconButtons/IconButtons";
-import { AnimatedPlayback } from "../../weird-components/AnimatedPlayback";
+import { TrackRow } from "./TrackRow";
+import {
+  formatMinutesAndSecondsToDisplayString,
+  getWholeMinutesAndSeconds,
+} from "../../utils/timeUtils";
 
-const TextOrPlayingAnimation = ({
-  displayAnimation,
-  text,
-}: {
-  displayAnimation: boolean;
-  text: number;
-}) => {
-  return (
-    <AnimationContainer>
-      {displayAnimation ? <AnimatedPlayback /> : <>{text}</>}
-    </AnimationContainer>
-  );
-};
-
-const TrackRow = ({
-  track,
-  playTrack,
-  index,
-  trackIsPlaying,
-  pausePlayback,
-  isPlaybackPaused,
-}: {
-  track: Track;
-  playTrack: (param: string) => void;
-  pausePlayback: VoidFunction;
-  index: number;
-  trackIsPlaying: boolean;
-  isPlaybackPaused: boolean;
-}) => {
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-
-  const onHover = () => {
-    setIsHovered(true);
-  };
-
-  const onMouseLeave = () => {
-    setIsHovered(false);
-  };
-
-  const isRowPlaybackOngoing = trackIsPlaying && !isPlaybackPaused;
-
-  const onPlayPauseClick = () => {
-    if (trackIsPlaying) {
-      pausePlayback();
-    } else {
-      playTrack(track.id);
-    }
-  };
-
-  return (
-    <NoBorderTr
-      onMouseEnter={onHover}
-      onMouseLeave={onMouseLeave}
-      $isRowActive={trackIsPlaying}
-    >
-      <TrackNumberTd $hovered={isHovered}>
-        {isHovered ? (
-          <PlayPauseButton
-            onClick={onPlayPauseClick}
-            playing={isRowPlaybackOngoing}
-          />
-        ) : (
-          <TextOrPlayingAnimation
-            displayAnimation={isRowPlaybackOngoing}
-            text={index}
-          />
-        )}
-      </TrackNumberTd>
-      <TrackNameTd $hovered={isHovered} $isRowActive={trackIsPlaying}>
-        <span>{track.name}</span>
-      </TrackNameTd>
-      <HoverHighlightTd $hovered={isHovered}>albuminnimi</HoverHighlightTd>
-      <HoverHighlightTd $hovered={isHovered}>3.14</HoverHighlightTd>
-    </NoBorderTr>
-  );
-};
+export type DisplayMode = "album";
 
 export const TracksList = ({
   playTrack,
   currentlyPlayingTrackId,
   pausePlayback,
   isPlaybackPaused,
-  album,
+  tracks,
+  displayMode,
 }: {
-  album?: Album;
+  displayMode: DisplayMode;
+  tracks: Track[];
   playTrack: React.ComponentProps<typeof TrackRow>["playTrack"];
   currentlyPlayingTrackId?: string;
   pausePlayback: React.ComponentProps<typeof TrackRow>["pausePlayback"];
   isPlaybackPaused: boolean;
 }) => {
+  const additionalColumns: string[] = [];
+  if (displayMode === "album") {
+    additionalColumns.push("plays");
+  }
+
+  // todo this component's heading count can change on different views, playlist view
+  // has 4 columns. For that we need to make one of the columns stretch
+  // https://christianalfoni.github.io/css/2013/06/23/css:-stretching-correctly-with-100%25.html
+  // or just hard-code the two different cases with different number of columns
+  // and column widths. Likely easier to hard-code, since there's only 2 well-known modes we will use.
+
+  const getAdditionalColumns = (displayMode: DisplayMode, track: Track) => {
+    if (displayMode === "album") {
+      const durationSeconds = Math.floor(track.duration_ms / 1000);
+      const minutesAndSeconds = getWholeMinutesAndSeconds(durationSeconds);
+      const durationStr =
+        formatMinutesAndSecondsToDisplayString(minutesAndSeconds);
+      // we should return play count too, but it's not available on the API
+      return ["", durationStr];
+    }
+  };
+
   return (
     <Container className="card">
       <TracksTable>
@@ -102,7 +53,7 @@ export const TracksList = ({
           <tr>
             <TrackNumberTh scope="col">#</TrackNumberTh>
             <HeaderTh scope="col">Title</HeaderTh>
-            <HeaderTh scope="col">Album</HeaderTh>
+            <HeaderTh scope="col"></HeaderTh>
             <ClockHeaderTh scope="col">
               <ClockButton />
             </ClockHeaderTh>
@@ -114,20 +65,20 @@ export const TracksList = ({
         </THead>
 
         <tbody>
-          {album &&
-            album.tracks.items.map((track) => {
-              return (
-                <TrackRow
-                  key={track.id}
-                  index={track.track_number}
-                  playTrack={playTrack}
-                  isPlaybackPaused={isPlaybackPaused}
-                  pausePlayback={pausePlayback}
-                  track={track}
-                  trackIsPlaying={track.id == currentlyPlayingTrackId}
-                />
-              );
-            })}
+          {tracks.map((track) => {
+            return (
+              <TrackRow
+                key={track.id}
+                index={track.track_number}
+                playTrack={playTrack}
+                isPlaybackPaused={isPlaybackPaused}
+                pausePlayback={pausePlayback}
+                track={track}
+                trackIsPlaying={track.id == currentlyPlayingTrackId}
+                additionalColumns={getAdditionalColumns(displayMode, track)}
+              />
+            );
+          })}
         </tbody>
       </TracksTable>
     </Container>
@@ -177,47 +128,11 @@ const TracksTable = styled.table`
   }
 `;
 
-// base component for setting opaque layer on hover
-const HoverHighlightTd = styled.td<{ $hovered?: boolean }>`
-  background-color: ${(props) =>
-    props.$hovered ? "rgba(255, 255, 255, 0.1)" : "unset"};
-`;
-
 // TODO https://styled-components.com/docs/advanced#style-objects
 // could that be used to deal with the hover highlighting?
-
-const TrackNumberTd = styled(HoverHighlightTd)`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: center;
-  /* so the on-hover play button doesn't make the row jump */
-  min-height: 40px;
-`;
-
-const TrackNameTd = styled(HoverHighlightTd)<{ $isRowActive?: boolean }>`
-  // todo can the variables be accessed without writing a string here?
-  color: ${(props) =>
-    props.$isRowActive ? "var(--mainActionColor)" : "var(--text-on-main-bg)"};
-`;
 
 const DividerTh = styled.th`
   height: 1px;
   padding: 0px;
   background-color: #7e7d7d;
-`;
-
-const NoBorderTr = styled.tr<{ $isRowActive?: boolean }>`
-  border: none;
-  color: ${(props) =>
-    props.$isRowActive ? "var(--mainActionColor)" : "unset"};
-`;
-
-const AnimationContainer = styled.span`
-  width: 80%;
-  height: 30px;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: center;
 `;
