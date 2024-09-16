@@ -163,6 +163,13 @@ export default function App() {
     }
   };
 
+  const onSearch = async (query: string) => {
+    console.log("onSearch in index", query);
+    if (query) {
+      const result = await spotifyApiRef.current?.search(query, ["album"]);
+    }
+  };
+
   const songs: LegacyTrack[] = [
     {
       uri: "/alex-productions-action.mp3",
@@ -184,7 +191,7 @@ export default function App() {
       <SpotifyWebPlayback token={token} />
 
       <span className={styles.searchNavBar}>
-        <TopBar />
+        <TopBar onSearch={onSearch} />
       </span>
       <div className={styles.leftNav}>
         <Library />

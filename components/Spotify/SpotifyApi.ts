@@ -9,7 +9,17 @@ export type SpotifyAPi = {
   seek: (timeMs: number) => Promise<void>;
   setVolume: (newValue: number) => Promise<void>;
   fetchAlbum: (albumId: string) => Promise<Album>;
+  search: (query: string, types: AllowedSearchTypes[]) => Promise<void>;
 };
+
+export type AllowedSearchTypes =
+  | "album"
+  | "artist"
+  | "playlist"
+  | "track"
+  | "show"
+  | "episode"
+  | "audiobook";
 
 export const api: (token: string) => SpotifyAPi = (token: string) => {
   const headers = {
@@ -88,6 +98,20 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
         headers,
       });
       return (await result.json()) as Album;
+    },
+
+    search: async (searchQuery: string, types: AllowedSearchTypes[]) => {
+      const itemTypes = encodeURI(types.join(","));
+      const queryParams = new URLSearchParams({
+        type: itemTypes,
+        q: encodeURI(searchQuery),
+      });
+      const url = "https://api.spotify.com/v1/search?" + queryParams.toString();
+      const result = await fetch(url, {
+        method: "GET",
+        headers,
+      });
+      console.log(result);
     },
   };
 };

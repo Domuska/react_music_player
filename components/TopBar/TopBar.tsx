@@ -1,10 +1,15 @@
 import styled from "styled-components";
 import { Search } from "./Search";
+import React from "react";
 
-export const TopBar = () => {
+type Props = {
+  onSearch: React.ComponentProps<typeof Search>["onSearch"];
+};
+
+export const TopBar = ({ onSearch }: Props) => {
   return (
     <Container>
-      <Search />
+      <Search onSearch={onSearch} />
     </Container>
   );
 };
