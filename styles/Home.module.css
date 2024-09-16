@@ -8,7 +8,7 @@
   padding: 0;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
-  grid-template-rows: 1fr 11fr 1fr;
+  grid-template-rows: 1fr 12fr 1fr;
   overflow: hidden;
   grid-template-areas:
     "header header header"
@@ -20,7 +20,7 @@
 .bottomGrid {
   background-color: var(--main-bg-black);
   grid-area: bottom;
-  padding: 0 25px;
+  padding: 10px 25px 5px 25px;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: 1fr;
@@ -33,12 +33,12 @@
 
 .leftNav {
   grid-area: leftnav;
-  padding: 5px;
+  margin: 5px;
 }
 
 .mainContent {
   grid-area: maincontent;
-  padding: 5px;
+  margin: 5px;
   overflow-y: scroll;
   /* todo this gradient should likely be back at TracksList */
   background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
@@ -47,6 +47,7 @@
 
 .rightNav {
   grid-area: rightnav;
+  margin: 5px;
 }
 
 /* tästä alle on alkuperäiset shitit */

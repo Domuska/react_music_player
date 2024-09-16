@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { PauseIcon, PlayIcon } from "./Icons";
 
 const StyledButton = styled.button`
   border: none;
@@ -65,15 +66,7 @@ export const SkipPreviousButton = ({ onClick }: { onClick?: VoidFunction }) => {
 export const PlayButton = ({ onClick }: { onClick?: VoidFunction }) => {
   return (
     <StyledButton onClick={onClick}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        height="24px"
-        viewBox="0 -960 960 960"
-        width="24px"
-        fill="var(--text-on-main-bg)"
-      >
-        <path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z" />
-      </svg>
+      <PlayIcon />
     </StyledButton>
   );
 };
@@ -81,15 +74,7 @@ export const PlayButton = ({ onClick }: { onClick?: VoidFunction }) => {
 export const PauseButton = ({ onClick }: { onClick?: VoidFunction }) => {
   return (
     <StyledButton onClick={onClick}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        height="24px"
-        viewBox="0 -960 960 960"
-        width="24px"
-        fill="var(--text-on-main-bg)"
-      >
-        <path d="M520-200v-560h240v560H520Zm-320 0v-560h240v560H200Zm400-80h80v-400h-80v400Zm-320 0h80v-400h-80v400Zm0-400v400-400Zm320 0v400-400Z" />
-      </svg>
+      <PauseIcon />
     </StyledButton>
   );
 };

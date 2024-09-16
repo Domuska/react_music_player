@@ -3,19 +3,22 @@ import styles from "./playbackControls.module.css";
 import { ProgressBar } from "./ProgressBar";
 import { SkipNextButton, SkipPreviousButton } from "./IconButtons/IconButtons";
 import { PromiseVoidFunction } from "./types";
+import { PauseIcon, PlayIcon } from "./IconButtons/Icons";
 
 const StyledButton = styled.button<{ $bgColor?: string }>`
   background-color: ${(props) => (props.$bgColor ? props.$bgColor : "white")};
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
   border: none;
-`;
 
-const StyledPlayPauseButton = styled(StyledButton)`
+  & svg {
+    fill: black;
+  }
+
   &:hover {
     transform: scale(1.05);
   }
@@ -29,13 +32,9 @@ const PlayPauseButton = ({
   onClick: () => void;
 }) => {
   return (
-    <StyledPlayPauseButton onClick={onClick}>
-      {isPaused ? (
-        <img src="/play_arrow_24dp.svg" />
-      ) : (
-        <img src="/pause_24dp.svg" />
-      )}
-    </StyledPlayPauseButton>
+    <StyledButton onClick={onClick}>
+      {isPaused ? <PlayIcon /> : <PauseIcon />}
+    </StyledButton>
   );
 };
 
