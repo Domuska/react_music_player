@@ -3,13 +3,7 @@
 import styles from "../styles/Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
-import {
-  SimplifiedArtist,
-  SpotifyDevice,
-  SpotifyTrackItem,
-  LegacyTrack,
-  Album,
-} from "../components/types";
+import { SimplifiedArtist, LegacyTrack } from "../components/types";
 import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
 import { VolumeControls } from "../components/VolumeBar/VolumeControls";
@@ -20,8 +14,15 @@ import { getCookieByName } from "../utils/getCookieByName";
 import { sleep } from "../utils/sleep";
 import { CurrentPlaybackInfo } from "../components/CurrentPlaybackInfo";
 import { TopBar } from "../components/TopBar/TopBar";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
+import { SearchResults } from "../components/SearchResults/SearchResults";
 
 const ONE_SECOND = 1000;
+const HALF_SECONDS = 500;
 
 const Login = () => {
   return (
@@ -35,31 +36,43 @@ const Login = () => {
   );
 };
 
-export default function App() {
+const queryClient = new QueryClient();
+
+type VisibleMainContent = "searchResults" | "album";
+
+export default function () {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  );
+}
+const App = () => {
   const [volumeState, setVolumeState] = useState<{
     isMuted: boolean;
     volumeBeforeMute: number;
   }>({ isMuted: false, volumeBeforeMute: 0 });
 
-  const [isSpotifyPlaying, setIsSpotifyPlaying] = useState<boolean>(false);
-
-  const [currentAlbumData, setCurrentAlbumData] = useState<Album | undefined>();
-
-  const [currentSpotifyItem, setCurrentSpotifyItem] = useState<
-    SpotifyTrackItem | undefined
-  >();
-  const [currentSpotifyDevice, setCurrentSpotifyDevice] = useState<
-    SpotifyDevice | undefined
-  >();
-  const [currentPlaybackDurationMs, setCurrentPlaybackDurationMs] = useState<
-    number | undefined
-  >();
+  const [currentAlbumId, setCurrentAlbumId] = useState<string>("");
+  const {
+    isPending: albumRequestPending,
+    error: albumRequestError,
+    data: albumData,
+  } = useQuery({
+    queryKey: ["albumData", currentAlbumId],
+    queryFn: async () => {
+      const result = await spotifyApiRef.current?.fetchAlbum(currentAlbumId);
+      return result;
+    },
+    enabled: !!currentAlbumId,
+  });
 
   const [token, setToken] = useState<string>("");
 
   const spotifyApiRef = useRef<SpotifyAPi | undefined>();
-
-  // todo jos ei soiteta musiikkia ni voitas fetchailla paljon harvemmin dataa
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [visibleMainContent, setVisibleMainContent] =
+    useState<VisibleMainContent | null>(null);
 
   useEffect(() => {
     const access_token = getCookieByName(ACCESS_TOKEN_COOKIE_NAME);
@@ -67,57 +80,47 @@ export default function App() {
 
     if (access_token) {
       spotifyApiRef.current = api(token);
-      refreshSpotifyData(spotifyApiRef.current);
-
-      const refreshDataInterval = setInterval(
-        () => refreshSpotifyData(spotifyApiRef.current),
-        ONE_SECOND
-      );
-
-      return () => {
-        clearInterval(refreshDataInterval);
-      };
     }
   }, [token]);
 
-  const refreshSpotifyData = async (apiObject?: SpotifyAPi) => {
-    if (!apiObject) {
-      return;
-    }
-
-    try {
-      const response = await apiObject.getPlaybackStatus();
-
+  // todo if we playback is not ongoing, no need to fetch data as often
+  const {
+    isPending: currentInfoPending,
+    error: currentInfoError,
+    data: currentSpotifyData,
+    refetch: refetchCurrentSpotifyData,
+  } = useQuery({
+    queryKey: ["currentData"],
+    queryFn: async () => {
+      const response = await spotifyApiRef.current?.getPlaybackStatus();
       if (response && response.currently_playing_type == "track") {
-        setIsSpotifyPlaying(response.is_playing);
-        setCurrentSpotifyItem(response.item);
-        setCurrentPlaybackDurationMs(response.progress_ms);
-        setCurrentSpotifyDevice(response.device);
+        return response;
       } else {
         console.log(
           "response currently playing type is " +
             response?.currently_playing_type +
             ". Not supported yet."
         );
+        Promise.reject("Invalid response");
       }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+    },
+    refetchInterval: HALF_SECONDS,
+    enabled: !!spotifyApiRef.current,
+  });
 
   if (!token) {
     return <Login />;
   }
 
   const spotifyOnPlayPauseClick = async () => {
-    if (isSpotifyPlaying) {
+    if (currentSpotifyData?.is_playing) {
       await spotifyApiRef.current?.pausePlayback();
     } else {
       await spotifyApiRef.current?.playPlayback();
     }
     // the API is fairly slow, if we call it immediately the playback status is not updated
     await sleep(500);
-    refreshSpotifyData(spotifyApiRef.current);
+    refetchCurrentSpotifyData();
   };
 
   const changeSong = (trackId: string) => {
@@ -126,18 +129,17 @@ export default function App() {
 
   const onArtistClick = (artist: SimplifiedArtist) => {
     console.log("onArtistClick", artist);
-    // todo something
   };
 
   const openAlbumData = async (albumId: string) => {
-    const result = await spotifyApiRef.current?.fetchAlbum(albumId);
-    setCurrentAlbumData(result);
+    setCurrentAlbumId(albumId);
+    setVisibleMainContent("album");
   };
 
   const onSeek = async (timeMs: number) => {
     await spotifyApiRef.current?.seek(timeMs);
     await sleep(700);
-    refreshSpotifyData(spotifyApiRef.current);
+    refetchCurrentSpotifyData();
   };
 
   const onVolumeChange = async (newVolume: number) => {
@@ -145,6 +147,7 @@ export default function App() {
       setVolumeState({ isMuted: false, volumeBeforeMute: newVolume });
     }
     await spotifyApiRef.current?.setVolume(newVolume);
+    refetchCurrentSpotifyData();
   };
 
   const onMuteClick = () => {
@@ -158,15 +161,17 @@ export default function App() {
 
       setVolumeState({
         isMuted: true,
-        volumeBeforeMute: currentSpotifyDevice?.volume_percent ?? 25,
+        volumeBeforeMute: currentSpotifyData?.device.volume_percent ?? 25,
       });
     }
   };
 
   const onSearch = async (query: string) => {
-    console.log("onSearch in index", query);
+    setSearchTerm(query);
     if (query) {
-      const result = await spotifyApiRef.current?.search(query, ["album"]);
+      setVisibleMainContent("searchResults");
+    } else {
+      setVisibleMainContent(null);
     }
   };
 
@@ -197,24 +202,34 @@ export default function App() {
         <Library />
       </div>
       <div className={styles.mainContent}>
-        {currentAlbumData && spotifyApiRef.current && (
-          <TracksList
-            displayMode="album"
-            tracks={currentAlbumData.tracks.items}
-            playTrack={changeSong}
-            currentlyPlayingTrackId={currentSpotifyItem?.id}
-            isPlaybackPaused={!isSpotifyPlaying}
-            pausePlayback={spotifyOnPlayPauseClick}
-          />
-        )}
+        {visibleMainContent == "album" &&
+          albumData &&
+          spotifyApiRef.current && (
+            <TracksList
+              displayMode="album"
+              tracks={albumData.tracks.items}
+              playTrack={changeSong}
+              currentlyPlayingTrackId={currentSpotifyData?.item.id}
+              isPlaybackPaused={!currentSpotifyData?.is_playing}
+              pausePlayback={spotifyOnPlayPauseClick}
+            />
+          )}
+        {visibleMainContent == "searchResults" &&
+          searchTerm &&
+          spotifyApiRef.current && (
+            <SearchResults
+              query={searchTerm}
+              spotifyApiRef={spotifyApiRef.current}
+            />
+          )}
       </div>
       <span className={styles.rightNav}>oikea nav</span>
 
       <span className={styles.bottomGrid}>
         <CurrentPlaybackInfo
-          album={currentSpotifyItem?.album}
-          trackTitle={currentSpotifyItem?.name}
-          artists={currentSpotifyItem?.artists}
+          album={currentSpotifyData?.item.album}
+          trackTitle={currentSpotifyData?.item.name}
+          artists={currentSpotifyData?.item.artists}
           onArtistClick={onArtistClick}
           onTrackClick={openAlbumData}
         />
@@ -223,15 +238,15 @@ export default function App() {
           pausePlayOnclick={spotifyOnPlayPauseClick}
           skipToNextOnClick={spotifyApiRef.current?.skipToNext}
           skipToPreviousOnClick={spotifyApiRef.current?.skipToPrevious}
-          totalPlaybackDuration={currentSpotifyItem?.duration_ms}
-          currentPlaybackTime={currentPlaybackDurationMs}
-          isPlaybackPaused={!isSpotifyPlaying}
+          totalPlaybackDuration={currentSpotifyData?.item.duration_ms}
+          currentPlaybackTime={currentSpotifyData?.progress_ms}
+          isPlaybackPaused={!currentSpotifyData?.is_playing}
           onSeek={onSeek}
         />
 
         <VolumeControls
           onVolumeChange={onVolumeChange}
-          volumePercentage={currentSpotifyDevice?.volume_percent ?? 0}
+          volumePercentage={currentSpotifyData?.device.volume_percent ?? 0}
           onMuteClick={onMuteClick}
           isMuted={volumeState.isMuted}
         />
@@ -262,4 +277,4 @@ export default function App() {
     `}</style>
     </div>
   );
-}
+};

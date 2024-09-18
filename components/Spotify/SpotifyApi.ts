@@ -9,7 +9,7 @@ export type SpotifyAPi = {
   seek: (timeMs: number) => Promise<void>;
   setVolume: (newValue: number) => Promise<void>;
   fetchAlbum: (albumId: string) => Promise<Album>;
-  search: (query: string, types: AllowedSearchTypes[]) => Promise<void>;
+  search: (query: string, types: AllowedSearchTypes[]) => Promise<any>;
 };
 
 export type AllowedSearchTypes =
@@ -111,7 +111,7 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
         method: "GET",
         headers,
       });
-      console.log(result);
+      return await result.json();
     },
   };
 };

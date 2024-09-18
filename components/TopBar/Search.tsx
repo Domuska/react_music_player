@@ -21,6 +21,11 @@ export const Search = ({ onSearch }: Props) => {
     debounceSearch();
   };
 
+  const clearQuery = () => {
+    setSearchQuery("");
+    onSearch("");
+  };
+
   return (
     <Container $hasFocus={hasFocus}>
       <SearchInputContainer>
@@ -46,7 +51,7 @@ export const Search = ({ onSearch }: Props) => {
           <DatasetButton />
         </>
       ) : (
-        <XButton onClick={() => setSearchQuery("")} />
+        <XButton onClick={clearQuery} />
       )}
     </Container>
   );

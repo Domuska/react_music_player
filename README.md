@@ -48,3 +48,7 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
   - https://www.npmjs.com/package/iron-session/v/8.0.0-beta.5
   - iron-session could be used to store the session of the user, and the access_token would not be exposed to client
 - add top part for the tracks list view (image, name etc)
+- when requests are sent to change volume, track or seek, we should immediately refetch data. This will reduce the problem of laggy UI we have now.
+- look into useQuery, possibly use it for data fetching if it seems useful
+  - see https://tanstack.com/query/latest/docs/framework/react/quick-start
+  - installed but not in use.
