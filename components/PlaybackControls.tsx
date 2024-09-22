@@ -1,42 +1,8 @@
-import styled from "styled-components";
 import styles from "./playbackControls.module.css";
 import { ProgressBar } from "./ProgressBar";
 import { SkipNextButton, SkipPreviousButton } from "./IconButtons/IconButtons";
 import { PromiseVoidFunction } from "./types";
-import { PauseIcon, PlayIcon } from "./IconButtons/Icons";
-
-const StyledButton = styled.button<{ $bgColor?: string }>`
-  background-color: ${(props) => (props.$bgColor ? props.$bgColor : "white")};
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-
-  & svg {
-    fill: black;
-  }
-
-  &:hover {
-    transform: scale(1.05);
-  }
-`;
-
-const PlayPauseButton = ({
-  isPaused,
-  onClick,
-}: {
-  isPaused: boolean;
-  onClick: () => void;
-}) => {
-  return (
-    <StyledButton onClick={onClick}>
-      {isPaused ? <PlayIcon /> : <PauseIcon />}
-    </StyledButton>
-  );
-};
+import { PlayPauseButton } from "./Buttons/PlayPauseButton";
 
 export const PlaybackControls = ({
   pausePlayOnclick,

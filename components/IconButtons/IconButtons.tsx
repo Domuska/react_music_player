@@ -1,6 +1,11 @@
 import styled from "styled-components";
 import { PauseIcon, PlayIcon } from "./Icons";
 
+export const BorderlessButton = styled.button`
+  border: none;
+  background: none;
+`;
+
 const StyledButton = styled.button`
   border: none;
   background: none;

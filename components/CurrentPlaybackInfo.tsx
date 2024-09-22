@@ -16,7 +16,7 @@ export const CurrentPlaybackInfo = ({
   artists?: SimplifiedArtist[];
   album?: SimplifiedAlbum;
   onTrackClick: (albumId: string) => void;
-  onArtistClick: (artist: SimplifiedArtist) => void;
+  onArtistClick: (artistId: string) => void;
 }) => {
   const imgUrl = lastFromArray(album?.images)?.url;
 
@@ -35,7 +35,7 @@ export const CurrentPlaybackInfo = ({
 
             return (
               <ArtistLinkButton
-                onClick={() => onArtistClick(artist)}
+                onClick={() => onArtistClick(artist.id)}
                 key={artist.id}
               >
                 {lastItem ? artist.name : `${artist.name},`}

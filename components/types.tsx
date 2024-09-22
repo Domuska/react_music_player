@@ -1,6 +1,6 @@
 export type PromiseVoidFunction = () => Promise<void>;
 
-// todo this is not a spotify track
+// todo this is not a spotify track, this is our own thing
 export type LegacyTrack = {
   name: string;
   uri: string;
@@ -21,12 +21,26 @@ export type Track = {
   is_playable: boolean;
   artists: SimplifiedArtist[];
   duration_ms: number;
+  uri: string;
 };
 
 export type SimplifiedArtist = {
   href: string;
   id: string;
   name: string;
+  uri: string;
+};
+
+export type Artist = {
+  followers: {
+    total: number;
+  };
+  genres: string[];
+  id: string;
+  images: Image[];
+  name: string;
+  popularity: number;
+  type: "artist";
   uri: string;
 };
 
@@ -49,16 +63,55 @@ export type SimplifiedAlbum = Pick<
   "artists" | "href" | "id" | "images" | "name" | "total_tracks" | "uri"
 >;
 
-// export type SimplifiedAlbum = {
-//   total_tracks: number;
-//   href: string;
-//   images: Image[];
-//   name: string;
-//   release_date: string;
-//   uri: string;
-//   artists: SimplifiedArtist[];
-//   id: string;
-// };
+type SearchPaginationFields = {
+  limit: number;
+  next: string;
+  previous: string;
+  total: number;
+  offset: number;
+};
+
+type SimplifiedPlaylist = {
+  collaboarative: boolean;
+  description: string | null;
+  href: string;
+  id: string;
+  images: Image[];
+  name: string;
+  owner: {
+    id: string;
+    href: string;
+    uri: string;
+    display_name: string;
+    followers: {
+      total: number;
+    };
+  };
+  public: boolean;
+  snapshot_id: string;
+  tracks: {
+    href: string;
+    total: number;
+  };
+  type: "playlist";
+  uri: string;
+};
+
+export type SearchResponse = {
+  tracks?: {
+    items: SpotifyTrackItem[];
+  } & SearchPaginationFields;
+  artists?: {
+    items: Artist[];
+  } & SearchPaginationFields;
+  albums?: {
+    items: SimplifiedAlbum[];
+  } & SearchPaginationFields;
+  playlists?: {
+    items: SimplifiedPlaylist[];
+  } & SearchPaginationFields;
+  // todo there's shows, episodes, audiobooks too
+};
 
 // music
 export type SpotifyTrackItem = {

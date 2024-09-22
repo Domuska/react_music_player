@@ -28,7 +28,7 @@ export const TrackRow = ({
   additionalColumns = [],
 }: {
   track: Track;
-  playTrack: (param: string) => void;
+  playTrack: (trackUri: string) => void;
   pausePlayback: VoidFunction;
   index: number;
   trackIsPlaying: boolean;
@@ -51,7 +51,7 @@ export const TrackRow = ({
     if (trackIsPlaying) {
       pausePlayback();
     } else {
-      playTrack(track.id);
+      playTrack(track.uri);
     }
   };
 

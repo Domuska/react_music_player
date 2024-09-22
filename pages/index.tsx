@@ -3,7 +3,6 @@
 import styles from "../styles/Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
-import { SimplifiedArtist, LegacyTrack } from "../components/types";
 import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
 import { VolumeControls } from "../components/VolumeBar/VolumeControls";
@@ -104,7 +103,7 @@ const App = () => {
         Promise.reject("Invalid response");
       }
     },
-    refetchInterval: HALF_SECONDS,
+    refetchInterval: ONE_SECOND,
     enabled: !!spotifyApiRef.current,
   });
 
@@ -123,12 +122,15 @@ const App = () => {
     refetchCurrentSpotifyData();
   };
 
-  const changeSong = (trackId: string) => {
-    console.log("todo play spotify api", trackId);
+  const playSong = (contextUri: string, trackUri: string) => {
+    return spotifyApiRef.current?.playPlayback({
+      context_uri: contextUri,
+      track_uri: trackUri,
+    });
   };
 
-  const onArtistClick = (artist: SimplifiedArtist) => {
-    console.log("onArtistClick", artist);
+  const onArtistClick = (artistId: string) => {
+    console.log("onArtistClick", artistId);
   };
 
   const openAlbumData = async (albumId: string) => {
@@ -175,21 +177,6 @@ const App = () => {
     }
   };
 
-  const songs: LegacyTrack[] = [
-    {
-      uri: "/alex-productions-action.mp3",
-      imgUri: "/action.jfif",
-      name: "Action",
-      id: "1",
-    },
-    {
-      uri: "/alex-productions-tension.mp3",
-      imgUri: "/action.jfif",
-      name: "tension",
-      id: "2",
-    },
-  ];
-
   return (
     <div className={styles.gridContainer}>
       {/* The Spotify playback component */}
@@ -208,18 +195,21 @@ const App = () => {
             <TracksList
               displayMode="album"
               tracks={albumData.tracks.items}
-              playTrack={changeSong}
+              contextUri={albumData.uri}
+              playTrack={playSong}
               currentlyPlayingTrackId={currentSpotifyData?.item.id}
               isPlaybackPaused={!currentSpotifyData?.is_playing}
               pausePlayback={spotifyOnPlayPauseClick}
             />
           )}
+
         {visibleMainContent == "searchResults" &&
           searchTerm &&
           spotifyApiRef.current && (
             <SearchResults
               query={searchTerm}
               spotifyApiRef={spotifyApiRef.current}
+              openArtistPage={onArtistClick}
             />
           )}
       </div>

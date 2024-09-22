@@ -26,6 +26,15 @@ export const Search = ({ onSearch }: Props) => {
     onSearch("");
   };
 
+  const onFocus = () => {
+    setHasFocus(true);
+
+    // call onSearch so focus goes back go search screen
+    if (searchQuery) {
+      onSearch(searchQuery);
+    }
+  };
+
   return (
     <Container $hasFocus={hasFocus}>
       <SearchInputContainer>
@@ -37,7 +46,7 @@ export const Search = ({ onSearch }: Props) => {
           id="searchbar"
           type="search"
           autoComplete="off"
-          onFocus={() => setHasFocus(true)}
+          onFocus={onFocus}
           onBlur={() => setHasFocus(false)}
           value={searchQuery}
           onChange={onChange}

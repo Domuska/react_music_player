@@ -2,10 +2,12 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { AllowedSearchTypes, SpotifyAPi } from "../Spotify/SpotifyApi";
 import { Suspense } from "react";
 import styled from "styled-components";
+import { ArtistResults } from "./ArtistResults";
 
 type Props = {
   query: string;
   spotifyApiRef: SpotifyAPi;
+  openArtistPage: (artistId: string) => void;
 };
 
 const Loading = styled.p`
@@ -13,10 +15,14 @@ const Loading = styled.p`
   background-color: aquamarine;
 `;
 
-export const SearchResults = ({ query, spotifyApiRef }: Props) => {
-  const types: AllowedSearchTypes[] = ["album"];
+export const SearchResults = ({
+  query,
+  spotifyApiRef,
+  openArtistPage,
+}: Props) => {
+  const types: AllowedSearchTypes[] = ["album", "artist"];
 
-  const { data, isFetching } = useSuspenseQuery({
+  const { data } = useSuspenseQuery({
     queryKey: ["search", query, types],
     queryFn: async () => {
       const result = await spotifyApiRef.search(query, types);
@@ -25,12 +31,28 @@ export const SearchResults = ({ query, spotifyApiRef }: Props) => {
     },
   });
 
+  const playArtist = (artistUri: string) => {
+    spotifyApiRef.playPlayback({ context_uri: artistUri });
+  };
+
   return (
     <>
-      {isFetching && <Loading>No eri loadings sit</Loading>}
-      <Suspense fallback={<Loading>Loadings</Loading>}>
-        <p>{JSON.stringify(data)}</p>
+      <Suspense fallback={<Loading>Dis aint working</Loading>}>
+        <Container>
+          {data.artists && (
+            <ArtistResults
+              artists={data.artists.items}
+              onArtistClick={openArtistPage}
+              onArtistPlayClick={playArtist}
+              currentlyPlaying={false}
+            />
+          )}
+        </Container>
       </Suspense>
     </>
   );
 };
+
+const Container = styled.div`
+  padding-top: 25px;
+`;
