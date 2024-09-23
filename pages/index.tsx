@@ -19,6 +19,8 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { SearchResults } from "../components/SearchResults/SearchResults";
+import { ThemeProvider } from "styled-components";
+import { theme } from "../styles/defaultTheme";
 
 const ONE_SECOND = 1000;
 const HALF_SECONDS = 500;
@@ -42,7 +44,9 @@ type VisibleMainContent = "searchResults" | "album";
 export default function () {
   return (
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -11,7 +11,7 @@ const SliderWithBackground = styled.input<{ $sliderValue: number }>`
   height: 6px;
 
   background: ${(props) =>
-    `linear-gradient(to right, white ${props.$sliderValue}%, var(--main-bg-color) ${props.$sliderValue}%)`};
+    `linear-gradient(to right, ${props.theme.colors.textOnMainBg} ${props.$sliderValue}%, ${props.theme.colors.mainBgColor} ${props.$sliderValue}%)`};
 
   &::-webkit-slider-thumb {
     /* removing default appearance */
@@ -43,7 +43,7 @@ const SliderWithBackground = styled.input<{ $sliderValue: number }>`
 
   &:hover {
     background: ${(props) =>
-      `linear-gradient(to right, var(--mainActionColor) ${props.$sliderValue}%, var(--main-bg-color) ${props.$sliderValue}%)`};
+      `linear-gradient(to right, ${props.theme.colors.mainActionColor} ${props.$sliderValue}%, ${props.theme.colors.mainBgColor} ${props.$sliderValue}%)`};
   }
 `;
 

@@ -31,9 +31,15 @@ img {
   height: auto;
 }
 
+p,
+span,
+img {
+  user-select: none;
+}
+
 :root {
   --main-bg-color: #262121;
-  --main-bg-black: black;
+  --main-bg-black: #000000;
   --text-on-main-bg: #e6e5e5;
   --diminished-text-color: #b8b8b8;
   --mainActionColor: #1db954;

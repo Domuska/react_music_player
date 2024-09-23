@@ -125,14 +125,6 @@ const TracksTable = styled.table`
   border-collapse: collapse;
   border-spacing: 0;
   table-layout: fixed;
-
-  /* get rounded borders for the table */
-  td:first-child {
-    border-radius: 5px 0 0 5px;
-  }
-  td:last-child {
-    border-radius: 0 5px 5px 0;
-  }
 `;
 
 // TODO https://styled-components.com/docs/advanced#style-objects
