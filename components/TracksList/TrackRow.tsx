@@ -75,13 +75,6 @@ const TrackNumberTd = styled.td`
   align-content: center;
   /* so the on-hover play button doesn't make the row jump */
   min-height: 40px;
-
-  :hover button {
-    display: block;
-  }
-  :hover span {
-    display: none;
-  }
 `;
 
 const TrackNameTd = styled.td<{ $isRowActive?: boolean }>`
