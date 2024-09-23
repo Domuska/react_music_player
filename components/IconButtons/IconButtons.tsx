@@ -79,7 +79,7 @@ export const PlayButton = ({ onClick }: { onClick?: VoidFunction }) => {
 
 export const PauseButton = ({ onClick }: { onClick?: VoidFunction }) => {
   return (
-    <StyledButton onClick={onClick} id="pause-button">
+    <StyledButton onClick={onClick}>
       <PauseIcon />
     </StyledButton>
   );
