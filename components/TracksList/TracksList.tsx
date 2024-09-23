@@ -72,11 +72,11 @@ export const TracksList = ({
         </THead>
 
         <tbody>
-          {tracks.map((track) => {
+          {tracks.map((track, index) => {
             return (
               <TrackRow
                 key={track.id}
-                index={track.track_number}
+                index={index + 1}
                 playTrack={onPlayTrack}
                 isPlaybackPaused={isPlaybackPaused}
                 pausePlayback={pausePlayback}

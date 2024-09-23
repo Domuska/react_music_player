@@ -1,19 +1,13 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { AllowedSearchTypes, SpotifyAPi } from "../Spotify/SpotifyApi";
-import { Suspense } from "react";
 import styled from "styled-components";
-import { ArtistResults } from "./ArtistResults";
+import { ArtistsSearchResult } from "./ArtistResult";
 
 type Props = {
   query: string;
   spotifyApiRef: SpotifyAPi;
   openArtistPage: (artistId: string) => void;
 };
-
-const Loading = styled.p`
-  width: 500px;
-  background-color: aquamarine;
-`;
 
 export const SearchResults = ({
   query,
@@ -26,7 +20,6 @@ export const SearchResults = ({
     queryKey: ["search", query, types],
     queryFn: async () => {
       const result = await spotifyApiRef.search(query, types);
-      console.log(result);
       return result;
     },
   });
@@ -36,20 +29,16 @@ export const SearchResults = ({
   };
 
   return (
-    <>
-      <Suspense fallback={<Loading>Dis aint working</Loading>}>
-        <Container>
-          {data.artists && (
-            <ArtistResults
-              artists={data.artists.items}
-              onArtistClick={openArtistPage}
-              onArtistPlayClick={playArtist}
-              currentlyPlaying={false}
-            />
-          )}
-        </Container>
-      </Suspense>
-    </>
+    <Container>
+      {data.artists && (
+        <ArtistsSearchResult
+          artists={data.artists.items}
+          onArtistClick={openArtistPage}
+          onArtistPlayClick={playArtist}
+          currentlyPlaying={false}
+        />
+      )}
+    </Container>
   );
 };
 

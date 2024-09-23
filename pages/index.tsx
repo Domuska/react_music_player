@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "../styles/Home.module.css";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
 import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
@@ -21,6 +21,7 @@ import {
 import { SearchResults } from "../components/SearchResults/SearchResults";
 import { ThemeProvider } from "styled-components";
 import { theme } from "../styles/defaultTheme";
+import { Artist } from "../components/ArtistView/Artist";
 
 const ONE_SECOND = 1000;
 const HALF_SECONDS = 500;
@@ -37,9 +38,13 @@ const Login = () => {
   );
 };
 
+const LoadingState = () => {
+  return <div>Imagine a spinner spinning</div>;
+};
+
 const queryClient = new QueryClient();
 
-type VisibleMainContent = "searchResults" | "album";
+type VisibleMainContent = "searchResults" | "album" | "artist";
 
 export default function () {
   return (
@@ -74,6 +79,7 @@ const App = () => {
 
   const spotifyApiRef = useRef<SpotifyAPi | undefined>();
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [artistId, setArtistId] = useState<string>("");
   const [visibleMainContent, setVisibleMainContent] =
     useState<VisibleMainContent | null>(null);
 
@@ -133,10 +139,6 @@ const App = () => {
     });
   };
 
-  const onArtistClick = (artistId: string) => {
-    console.log("onArtistClick", artistId);
-  };
-
   const openAlbumData = async (albumId: string) => {
     setCurrentAlbumId(albumId);
     setVisibleMainContent("album");
@@ -172,13 +174,18 @@ const App = () => {
     }
   };
 
-  const onSearch = async (query: string) => {
+  const onSearch = (query: string) => {
     setSearchTerm(query);
     if (query) {
       setVisibleMainContent("searchResults");
     } else {
       setVisibleMainContent(null);
     }
+  };
+
+  const onOpenArtist = (artistId: string) => {
+    setArtistId(artistId);
+    setVisibleMainContent("artist");
   };
 
   return (
@@ -210,11 +217,24 @@ const App = () => {
         {visibleMainContent == "searchResults" &&
           searchTerm &&
           spotifyApiRef.current && (
-            <SearchResults
-              query={searchTerm}
-              spotifyApiRef={spotifyApiRef.current}
-              openArtistPage={onArtistClick}
-            />
+            <Suspense fallback={<LoadingState />}>
+              <SearchResults
+                query={searchTerm}
+                spotifyApiRef={spotifyApiRef.current}
+                openArtistPage={onOpenArtist}
+              />
+            </Suspense>
+          )}
+
+        {visibleMainContent === "artist" &&
+          artistId &&
+          spotifyApiRef.current && (
+            <Suspense fallback={<LoadingState />}>
+              <Artist
+                artistId={artistId}
+                spotifyApiRef={spotifyApiRef.current}
+              />
+            </Suspense>
           )}
       </div>
       <span className={styles.rightNav}>oikea nav</span>
@@ -224,7 +244,7 @@ const App = () => {
           album={currentSpotifyData?.item.album}
           trackTitle={currentSpotifyData?.item.name}
           artists={currentSpotifyData?.item.artists}
-          onArtistClick={onArtistClick}
+          onArtistClick={onOpenArtist}
           onTrackClick={openAlbumData}
         />
 

@@ -4,7 +4,7 @@ import { BorderlessButton } from "../IconButtons/IconButtons";
 import { MultiplePeopleMicrophone } from "../IconButtons/Icons";
 import { PlayPauseButton } from "../Buttons/PlayPauseButton";
 
-export const ArtistResults = ({
+export const ArtistsSearchResult = ({
   artists,
   onArtistClick,
   onArtistPlayClick,
