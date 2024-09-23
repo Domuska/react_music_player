@@ -37,6 +37,11 @@ https://fonts.google.com/icons
 
 https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 
+# Spotify's play functionality
+
+- if a context is passed in along with a track, then the context will continue after the requested song has been played
+- if only a song is passed in, the playback queue is emptied and the song is the only track that will play
+
 # todo
 
 - move to mobile-first / responsive system
@@ -48,3 +53,5 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
   - https://www.npmjs.com/package/iron-session/v/8.0.0-beta.5
   - iron-session could be used to store the session of the user, and the access_token would not be exposed to client
 - add top part for the tracks list view (image, name etc)
+- when requests are sent to change volume, track or seek, we should immediately refetch data. This will reduce the problem of laggy UI we have now.
+- could we control seek, volume change, song change and monitor those values through the Spotify JS bundle? would that make changes visible quicker?

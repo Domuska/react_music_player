@@ -11,6 +11,7 @@ module.exports = {
   extends: [
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
   ],
   settings: {
     react: {

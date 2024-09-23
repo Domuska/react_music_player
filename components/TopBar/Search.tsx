@@ -2,10 +2,38 @@ import styled from "styled-components";
 import { SearchIcon } from "../IconButtons/Icons";
 import { useState } from "react";
 import { DatasetButton, XButton } from "../IconButtons/IconButtons";
+import { useDebounce } from "../../utils/useDebounce";
 
-export const Search = () => {
+type Props = {
+  onSearch: (searchQuery: string) => void;
+};
+
+export const Search = ({ onSearch }: Props) => {
   const [hasFocus, setHasFocus] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const debounceSearch = useDebounce(() => {
+    onSearch(searchQuery);
+  }, 500);
+
+  const onChange = (e: React.FormEvent<HTMLInputElement>) => {
+    setSearchQuery(e.currentTarget.value);
+    debounceSearch();
+  };
+
+  const clearQuery = () => {
+    setSearchQuery("");
+    onSearch("");
+  };
+
+  const onFocus = () => {
+    setHasFocus(true);
+
+    // call onSearch so focus goes back go search screen
+    if (searchQuery) {
+      onSearch(searchQuery);
+    }
+  };
 
   return (
     <Container $hasFocus={hasFocus}>
@@ -18,10 +46,10 @@ export const Search = () => {
           id="searchbar"
           type="search"
           autoComplete="off"
-          onFocus={() => setHasFocus(true)}
+          onFocus={onFocus}
           onBlur={() => setHasFocus(false)}
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={onChange}
           placeholder="What do you want to listen to?"
         />
       </SearchInputContainer>
@@ -32,7 +60,7 @@ export const Search = () => {
           <DatasetButton />
         </>
       ) : (
-        <XButton onClick={() => setSearchQuery("")} />
+        <XButton onClick={clearQuery} />
       )}
     </Container>
   );

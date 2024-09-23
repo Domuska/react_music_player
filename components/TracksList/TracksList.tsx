@@ -16,13 +16,16 @@ export const TracksList = ({
   isPlaybackPaused,
   tracks,
   displayMode,
+  contextUri,
 }: {
   displayMode: DisplayMode;
   tracks: Track[];
-  playTrack: React.ComponentProps<typeof TrackRow>["playTrack"];
+  playTrack: (contextUri: string, trackUri: string) => any;
   currentlyPlayingTrackId?: string;
   pausePlayback: React.ComponentProps<typeof TrackRow>["pausePlayback"];
   isPlaybackPaused: boolean;
+  // album, playlist, artist
+  contextUri: string;
 }) => {
   const additionalColumns: string[] = [];
   if (displayMode === "album") {
@@ -44,6 +47,10 @@ export const TracksList = ({
       // we should return play count too, but it's not available on the API
       return ["", durationStr];
     }
+  };
+
+  const onPlayTrack = (trackUri: string) => {
+    playTrack(contextUri, trackUri);
   };
 
   return (
@@ -70,7 +77,7 @@ export const TracksList = ({
               <TrackRow
                 key={track.id}
                 index={track.track_number}
-                playTrack={playTrack}
+                playTrack={onPlayTrack}
                 isPlaybackPaused={isPlaybackPaused}
                 pausePlayback={pausePlayback}
                 track={track}
