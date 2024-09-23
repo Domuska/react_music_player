@@ -3,7 +3,6 @@
 import styles from "../styles/Home.module.css";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
-import { TracksList } from "../components/TracksList/TracksList";
 import { Library } from "../components/Library";
 import { VolumeControls } from "../components/VolumeBar/VolumeControls";
 import SpotifyWebPlayback from "../components/Spotify/SpotifyWebPlayback";
@@ -22,6 +21,7 @@ import { SearchResults } from "../components/SearchResults/SearchResults";
 import { ThemeProvider } from "styled-components";
 import { theme } from "../styles/defaultTheme";
 import { Artist } from "../components/ArtistView/Artist";
+import { AlbumView } from "../components/AlbumView/AlbumView";
 
 const ONE_SECOND = 1000;
 const HALF_SECONDS = 500;
@@ -62,18 +62,6 @@ const App = () => {
   }>({ isMuted: false, volumeBeforeMute: 0 });
 
   const [currentAlbumId, setCurrentAlbumId] = useState<string>("");
-  const {
-    isPending: albumRequestPending,
-    error: albumRequestError,
-    data: albumData,
-  } = useQuery({
-    queryKey: ["albumData", currentAlbumId],
-    queryFn: async () => {
-      const result = await spotifyApiRef.current?.fetchAlbum(currentAlbumId);
-      return result;
-    },
-    enabled: !!currentAlbumId,
-  });
 
   const [token, setToken] = useState<string>("");
 
@@ -130,13 +118,6 @@ const App = () => {
     // the API is fairly slow, if we call it immediately the playback status is not updated
     await sleep(500);
     refetchCurrentSpotifyData();
-  };
-
-  const playSong = (contextUri: string, trackUri: string) => {
-    return spotifyApiRef.current?.playPlayback({
-      context_uri: contextUri,
-      track_uri: trackUri,
-    });
   };
 
   const openAlbumData = async (albumId: string) => {
@@ -201,17 +182,19 @@ const App = () => {
       </div>
       <div className={styles.mainContent}>
         {visibleMainContent == "album" &&
-          albumData &&
+          currentSpotifyData &&
+          currentAlbumId &&
           spotifyApiRef.current && (
-            <TracksList
-              displayMode="album"
-              tracks={albumData.tracks.items}
-              contextUri={albumData.uri}
-              playTrack={playSong}
-              currentlyPlayingTrackId={currentSpotifyData?.item.id}
-              isPlaybackPaused={!currentSpotifyData?.is_playing}
-              pausePlayback={spotifyOnPlayPauseClick}
-            />
+            <Suspense fallback={<LoadingState />}>
+              <AlbumView
+                albumId={currentAlbumId}
+                spotifyApiRef={spotifyApiRef.current}
+                currentlyPlayingContextUri={currentSpotifyData?.context.uri}
+                currentlyPlayingTrackId={currentSpotifyData?.item.id}
+                isPlaybackPaused={!currentSpotifyData?.is_playing}
+                onPlayPause={spotifyOnPlayPauseClick}
+              />
+            </Suspense>
           )}
 
         {visibleMainContent == "searchResults" &&
@@ -228,11 +211,16 @@ const App = () => {
 
         {visibleMainContent === "artist" &&
           artistId &&
+          currentSpotifyData &&
           spotifyApiRef.current && (
             <Suspense fallback={<LoadingState />}>
               <Artist
                 artistId={artistId}
                 spotifyApiRef={spotifyApiRef.current}
+                isPlaybackPaused={!currentSpotifyData?.is_playing}
+                currentlyPlayingTrackId={currentSpotifyData?.item.id}
+                currentlyPlayingContextUri={currentSpotifyData?.context.uri}
+                onPlayPause={spotifyOnPlayPauseClick}
               />
             </Suspense>
           )}

@@ -6,9 +6,23 @@ import { TracksList } from "../TracksList/TracksList";
 type Props = {
   artistId: string;
   spotifyApiRef: SpotifyAPi;
+  currentlyPlayingContextUri?: string;
+  //todo these 2 fields should go away, TracksList needs refactoring
+  currentlyPlayingTrackId?: React.ComponentProps<
+    typeof TracksList
+  >["currentlyPlayingTrackId"];
+  isPlaybackPaused: React.ComponentProps<typeof TracksList>["isPlaybackPaused"];
+  onPlayPause: React.ComponentProps<typeof TracksList>["onPlayPause"];
 };
 
-export const Artist = ({ artistId, spotifyApiRef }: Props) => {
+export const Artist = ({
+  artistId,
+  spotifyApiRef,
+  currentlyPlayingContextUri,
+  currentlyPlayingTrackId,
+  isPlaybackPaused,
+  onPlayPause,
+}: Props) => {
   const fetchArtist = {
     queryKey: ["artist", artistId],
     queryFn: async () => {
@@ -34,17 +48,26 @@ export const Artist = ({ artistId, spotifyApiRef }: Props) => {
 
   const imgSrc = artist.images[0].url ?? "";
 
+  const playTrack = () => {
+    return spotifyApiRef.playPlayback({
+      context_uri: artist.uri,
+    });
+  };
+
   return (
     <Container>
       <img src={imgSrc} />
       <ArtistName>{artist.name}</ArtistName>
       <TracksList
-        contextUri={artist.uri}
         displayMode="album"
-        isPlaybackPaused={false}
-        pausePlayback={() => {}}
-        playTrack={() => {}}
+        isPlaybackPaused={isPlaybackPaused}
+        currentlyPlayingTrackId={currentlyPlayingTrackId}
+        onPlayPause={onPlayPause}
+        playTrack={playTrack}
         tracks={topTracks}
+        isTracksListInPlaybackContext={
+          currentlyPlayingContextUri === artist.uri
+        }
       />
     </Container>
   );
