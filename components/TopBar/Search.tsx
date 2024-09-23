@@ -107,7 +107,8 @@ const Container = styled.div<{ $hasFocus?: boolean }>`
   }
 
   svg {
-    fill: ${(props) => (props.$hasFocus ? "var(--text-on-main-bg)" : "auto")};
+    fill: ${(props) =>
+      props.$hasFocus ? props.theme.colors.textOnMainBg : "auto"};
     width: 30px;
     height: 30px;
   }

@@ -12,6 +12,7 @@ const StyledButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 
   svg:hover {
     fill: white;
@@ -78,7 +79,7 @@ export const PlayButton = ({ onClick }: { onClick?: VoidFunction }) => {
 
 export const PauseButton = ({ onClick }: { onClick?: VoidFunction }) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} id="pause-button">
       <PauseIcon />
     </StyledButton>
   );

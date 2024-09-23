@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AnimatedPlayback } from "../../weird-components/AnimatedPlayback";
 import { Track } from "../types";
 import { PlayPauseButton } from "./PlayPauseButton";
@@ -12,7 +11,7 @@ const TextOrPlayingAnimation = ({
   text: number;
 }) => {
   return (
-    <AnimationContainer>
+    <AnimationContainer className="animation-tracknumber-container">
       {displayAnimation ? <AnimatedPlayback /> : <>{text}</>}
     </AnimationContainer>
   );
@@ -35,16 +34,6 @@ export const TrackRow = ({
   isPlaybackPaused: boolean;
   additionalColumns?: string[];
 }) => {
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-
-  const onHover = () => {
-    setIsHovered(true);
-  };
-
-  const onMouseLeave = () => {
-    setIsHovered(false);
-  };
-
   const isRowPlaybackOngoing = trackIsPlaying && !isPlaybackPaused;
 
   const onPlayPauseClick = () => {
@@ -56,61 +45,79 @@ export const TrackRow = ({
   };
 
   return (
-    <NoBorderTr
-      onMouseEnter={onHover}
-      onMouseLeave={onMouseLeave}
-      $isRowActive={trackIsPlaying}
-    >
-      <TrackNumberTd $hovered={isHovered}>
-        {isHovered ? (
-          <PlayPauseButton
-            onClick={onPlayPauseClick}
-            playing={isRowPlaybackOngoing}
-          />
-        ) : (
-          <TextOrPlayingAnimation
-            displayAnimation={isRowPlaybackOngoing}
-            text={index}
-          />
-        )}
+    <NoBorderTr $isRowActive={trackIsPlaying}>
+      <TrackNumberTd>
+        <TextOrPlayingAnimation
+          displayAnimation={isRowPlaybackOngoing}
+          text={index}
+        />
+        <PlayPauseButton
+          onClick={onPlayPauseClick}
+          playing={isRowPlaybackOngoing}
+        />
       </TrackNumberTd>
-      <TrackNameTd $hovered={isHovered} $isRowActive={trackIsPlaying}>
+      <TrackNameTd $isRowActive={trackIsPlaying}>
         <span>{track.name}</span>
       </TrackNameTd>
       {additionalColumns.map((str, index) => (
-        <HoverHighlightTd $hovered={isHovered} key={index}>
-          {str}
-        </HoverHighlightTd>
+        <td key={index}>
+          <span>{str}</span>
+        </td>
       ))}
     </NoBorderTr>
   );
 };
 
-// base component for setting opaque layer on hover
-const HoverHighlightTd = styled.td<{ $hovered?: boolean }>`
-  background-color: ${(props) =>
-    props.$hovered ? "var(--highlight-element-color)" : "unset"};
-`;
-
-const TrackNumberTd = styled(HoverHighlightTd)`
+const TrackNumberTd = styled.td`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
   /* so the on-hover play button doesn't make the row jump */
   min-height: 40px;
+
+  :hover button {
+    display: block;
+  }
+  :hover span {
+    display: none;
+  }
 `;
 
-const TrackNameTd = styled(HoverHighlightTd)<{ $isRowActive?: boolean }>`
-  // todo can the variables be accessed without writing a string here?
+const TrackNameTd = styled.td<{ $isRowActive?: boolean }>`
   color: ${(props) =>
-    props.$isRowActive ? "var(--mainActionColor)" : "var(--text-on-main-bg)"};
+    props.$isRowActive
+      ? props.theme.colors.mainActionColor
+      : props.theme.colors.textOnMainBg};
 `;
 
 const NoBorderTr = styled.tr<{ $isRowActive?: boolean }>`
   border: none;
   color: ${(props) =>
-    props.$isRowActive ? "var(--mainActionColor)" : "unset"};
+    props.$isRowActive ? props.theme.colors.mainActionColor : "unset"};
+
+  /* highlight for the row */
+  &:hover td {
+    background-color: var(--highlight-element-color);
+  }
+
+  /* when hovering we display a button, otherwise let whatever is in tracknumber show*/
+  &:hover td button {
+    display: block;
+  }
+
+  &:not(:hover) td button,
+  &:hover td .animation-tracknumber-container {
+    display: none;
+  }
+
+  /* rounded borders */
+  td:first-child {
+    border-radius: 5px 0 0 5px;
+  }
+  td:last-child {
+    border-radius: 0 5px 5px 0;
+  }
 `;
 
 const AnimationContainer = styled.span`
