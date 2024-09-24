@@ -48,11 +48,16 @@ export const Artist = ({
 
   const imgSrc = artist.images[0].url ?? "";
 
-  const playTrack = () => {
+  const playTrack = (trackUri: string) => {
+    // we should pass in artist.uri as context, but the API doesn't support it :/
     return spotifyApiRef.playPlayback({
       context_uri: artist.uri,
+      offset: trackUri,
     });
   };
+
+  // todo add button to play the whole artist context
+  // todo remove the individual play buttons, make the row open the album
 
   return (
     <Container>

@@ -32,7 +32,7 @@ export const AlbumView = ({
   const playTrack = (trackUri: string) => {
     return spotifyApiRef.playPlayback({
       context_uri: albumData.uri,
-      track_uri: trackUri,
+      offset: trackUri,
     });
   };
 

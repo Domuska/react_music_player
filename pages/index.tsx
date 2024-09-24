@@ -55,6 +55,12 @@ export default function () {
     </QueryClientProvider>
   );
 }
+
+// todo we could move the token handling, currentSpotifyData
+// fetching to a higher level component, and have a context
+// provider for that data. It seems to be needed in random
+// places so far, especially the playback status.
+
 const App = () => {
   const [volumeState, setVolumeState] = useState<{
     isMuted: boolean;
@@ -64,6 +70,7 @@ const App = () => {
   const [currentAlbumId, setCurrentAlbumId] = useState<string>("");
 
   const [token, setToken] = useState<string>("");
+  const [setSpotifyPlayerId, spotifyPlayerId] = useState<string>("");
 
   const spotifyApiRef = useRef<SpotifyAPi | undefined>();
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -108,6 +115,10 @@ const App = () => {
   if (!token) {
     return <Login />;
   }
+
+  const onSpotifyPlayerReady = (playerId: string) => {
+    spotifyPlayerId(playerId);
+  };
 
   const spotifyOnPlayPauseClick = async () => {
     if (currentSpotifyData?.is_playing) {
@@ -172,7 +183,7 @@ const App = () => {
   return (
     <div className={styles.gridContainer}>
       {/* The Spotify playback component */}
-      <SpotifyWebPlayback token={token} />
+      <SpotifyWebPlayback token={token} onPlayerReady={onSpotifyPlayerReady} />
 
       <span className={styles.searchNavBar}>
         <TopBar onSearch={onSearch} />
@@ -189,7 +200,7 @@ const App = () => {
               <AlbumView
                 albumId={currentAlbumId}
                 spotifyApiRef={spotifyApiRef.current}
-                currentlyPlayingContextUri={currentSpotifyData?.context.uri}
+                currentlyPlayingContextUri={currentSpotifyData?.context?.uri}
                 currentlyPlayingTrackId={currentSpotifyData?.item.id}
                 isPlaybackPaused={!currentSpotifyData?.is_playing}
                 onPlayPause={spotifyOnPlayPauseClick}
@@ -219,7 +230,7 @@ const App = () => {
                 spotifyApiRef={spotifyApiRef.current}
                 isPlaybackPaused={!currentSpotifyData?.is_playing}
                 currentlyPlayingTrackId={currentSpotifyData?.item.id}
-                currentlyPlayingContextUri={currentSpotifyData?.context.uri}
+                currentlyPlayingContextUri={currentSpotifyData?.context?.uri}
                 onPlayPause={spotifyOnPlayPauseClick}
               />
             </Suspense>
