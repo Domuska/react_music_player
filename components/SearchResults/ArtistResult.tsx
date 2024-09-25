@@ -3,6 +3,7 @@ import { Artist } from "../types";
 import { BorderlessButton } from "../IconButtons/IconButtons";
 import { MultiplePeopleMicrophone } from "../IconButtons/Icons";
 import { PlayPauseButton } from "../Buttons/PlayPauseButton";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export const ArtistsSearchResult = ({
   artists,
@@ -15,16 +16,53 @@ export const ArtistsSearchResult = ({
   onArtistPlayClick: (uri: string) => void;
   currentlyPlaying: boolean;
 }) => {
-  const resultLimit = 5;
-  const displayedResults = artists.slice(0, resultLimit);
+  const gridContainer = useRef<HTMLDivElement>(null);
+  const [resizeWidth, setResizeWidth] = useState(0);
+  const artistElementWidth = 140;
+
+  useEffect(() => {
+    if (gridContainer.current) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          setResizeWidth(entry.contentRect.width);
+        }
+      });
+      resizeObserver.observe(gridContainer.current);
+
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, []);
+
+  const visibleArtists = useMemo(() => {
+    const result = artists.reduce<{ leftWidth: number; artists: Artist[] }>(
+      (previousValue, current) => {
+        if (previousValue.leftWidth > artistElementWidth) {
+          previousValue.artists.push(current);
+          previousValue.leftWidth -= artistElementWidth;
+        }
+        return previousValue;
+      },
+      {
+        leftWidth: resizeWidth,
+        artists: [],
+      }
+    );
+    return result.artists;
+  }, [artists, resizeWidth]);
 
   return (
     <>
       <Title>
         <span>Artists</span>
       </Title>
-      <Grid>
-        {displayedResults.map((artist) => {
+      <Grid
+        ref={gridContainer}
+        $visibleElements={visibleArtists.length}
+        $imageWidthPx={artistElementWidth}
+      >
+        {visibleArtists.map((artist) => {
           const imageUrl =
             artist.images.length > 0
               ? artist.images[artist.images.length - 1].url
@@ -33,12 +71,7 @@ export const ArtistsSearchResult = ({
             <ArtistContainer key={artist.id}>
               <ArtistButton onClick={() => onArtistClick(artist.id)}>
                 {imageUrl ? (
-                  <Image
-                    src={imageUrl}
-                    width="140"
-                    height="140"
-                    alt={artist.name + "image"}
-                  />
+                  <Image src={imageUrl} alt={artist.name + "image"} />
                 ) : (
                   <MultiplePeopleMicrophone />
                 )}
@@ -74,9 +107,10 @@ const Title = styled(BorderlessButton)`
   }
 `;
 
-const Grid = styled.div`
+const Grid = styled.div<{ $visibleElements: number; $imageWidthPx: number }>`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: ${(props) =>
+    `repeat(${props.$visibleElements}, ${props.$imageWidthPx}px)`};
   gap: 10px;
 `;
 
