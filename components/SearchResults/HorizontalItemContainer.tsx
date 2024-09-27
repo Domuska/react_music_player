@@ -1,66 +1,75 @@
 import styled from "styled-components";
-import { Artist } from "../types";
+import { Image } from "../types";
 import { BorderlessButton } from "../IconButtons/IconButtons";
 import { MultiplePeopleMicrophone } from "../IconButtons/Icons";
-import { PlayPauseButton } from "../Buttons/PlayPauseButton";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { useCalculateElementsThatFit } from "../../utils/useCalculateItemsThatFit";
 
-export const ArtistsSearchResult = ({
-  artists,
-  onArtistClick,
-  onArtistPlayClick,
-  currentlyPlaying,
+type PropItem = {
+  images: Image[];
+  id: string;
+  name: string;
+  uri: string;
+  PlayButton?: () => JSX.Element;
+  onClick: VoidFunction;
+};
+
+export const HorizontalItemContainer = ({
+  items,
+  variant = "round",
+  title,
 }: {
-  artists: Artist[];
-  onArtistClick: (artistId: string) => void;
-  onArtistPlayClick: (uri: string) => void;
-  currentlyPlaying: boolean;
+  items: PropItem[];
+  variant?: "square" | "round";
+  title: {
+    text: string;
+    onClick?: VoidFunction;
+  };
 }) => {
   const gridContainer = useRef<HTMLDivElement>(null);
-  const artistElementWidth = 140;
+  const itemWidth = 140;
 
-  const visibleArtists = useCalculateElementsThatFit({
+  const visibleItems = useCalculateElementsThatFit({
     elementRef: gridContainer.current,
-    items: artists,
-    itemWidth: artistElementWidth,
+    items: items,
+    itemWidth: itemWidth,
   });
 
   return (
     <>
       <Title>
-        <span>Artists</span>
+        <span>{title.text}</span>
       </Title>
       <Grid
         ref={gridContainer}
-        $visibleElements={visibleArtists.length}
-        $imageWidthPx={artistElementWidth}
+        $visibleElements={visibleItems.length}
+        $imageWidthPx={itemWidth}
       >
-        {visibleArtists.map((artist) => {
+        {visibleItems.map(({ PlayButton, ...rest }) => {
           const imageUrl =
-            artist.images.length > 0
-              ? artist.images[artist.images.length - 1].url
+            rest.images.length > 0
+              ? rest.images[rest.images.length - 1].url
               : null;
           return (
-            <ArtistContainer key={artist.id}>
-              <ArtistButton onClick={() => onArtistClick(artist.id)}>
+            <ItemContainer key={rest.id}>
+              <ItemButton onClick={rest.onClick}>
                 {imageUrl ? (
-                  <Image src={imageUrl} alt={artist.name + "image"} />
+                  <Img
+                    src={imageUrl}
+                    alt={rest.name + "image"}
+                    $variant={variant}
+                  />
                 ) : (
                   <MultiplePeopleMicrophone />
                 )}
 
-                <span>{artist.name}</span>
-              </ArtistButton>
+                <span>{rest.name}</span>
+              </ItemButton>
 
               <PlayButtonContainer className="play-button-container">
-                <PlayPauseButton
-                  isPaused={!currentlyPlaying}
-                  onClick={() => onArtistPlayClick(artist.uri)}
-                  colorVariant="mainAction"
-                />
+                {PlayButton && <PlayButton />}
               </PlayButtonContainer>
-            </ArtistContainer>
+            </ItemContainer>
           );
         })}
       </Grid>
@@ -88,14 +97,14 @@ const Grid = styled.div<{ $visibleElements: number; $imageWidthPx: number }>`
   gap: 10px;
 `;
 
-const Image = styled.img`
-  border-radius: 100%;
+const Img = styled.img<{ $variant: "square" | "round" }>`
+  border-radius: ${(props) => (props.$variant == "round" ? "100%" : "10%")};
   object-fit: cover;
   aspect-ratio: 1;
   width: 100%;
 `;
 
-const ArtistContainer = styled.div`
+const ItemContainer = styled.div`
   position: relative;
   border-radius: 5px;
 
@@ -148,7 +157,7 @@ const ArtistContainer = styled.div`
   }
 `;
 
-const ArtistButton = styled(BorderlessButton)`
+const ItemButton = styled(BorderlessButton)`
   height: 100%;
   width: 100%;
   display: flex;

@@ -8,7 +8,7 @@ export type LegacyTrack = {
   id: string;
 };
 
-type Image = {
+export type Image = {
   url: string;
   height: number;
   width: number;

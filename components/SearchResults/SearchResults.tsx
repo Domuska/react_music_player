@@ -1,7 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { AllowedSearchTypes, SpotifyAPi } from "../Spotify/SpotifyApi";
 import styled from "styled-components";
-import { ArtistsSearchResult } from "./ArtistResult";
+import { HorizontalItemContainer } from "./HorizontalItemContainer";
+import { PlayPauseButton } from "../Buttons/PlayPauseButton";
 
 type Props = {
   query: string;
@@ -31,11 +32,21 @@ export const SearchResults = ({
   return (
     <Container>
       {data.artists && (
-        <ArtistsSearchResult
-          artists={data.artists.items}
-          onArtistClick={openArtistPage}
-          onArtistPlayClick={playArtist}
-          currentlyPlaying={false}
+        <HorizontalItemContainer
+          items={data.artists.items.map((artist) => {
+            return {
+              ...artist,
+              onClick: () => openArtistPage(artist.id),
+              PlayButton: () => (
+                <PlayPauseButton
+                  isPaused={true}
+                  onClick={() => playArtist(artist.uri)}
+                  colorVariant="mainAction"
+                />
+              ),
+            };
+          })}
+          title={{ text: "Albums" }}
         />
       )}
     </Container>

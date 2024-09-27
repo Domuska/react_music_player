@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { SpotifyAPi } from "../Spotify/SpotifyApi";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { TracksList } from "../TracksList/TracksList";
+import { HorizontalItemContainer } from "../SearchResults/HorizontalItemContainer";
+import { PlayPauseButton } from "../Buttons/PlayPauseButton";
 
 type Props = {
   artistId: string;
@@ -54,7 +56,6 @@ export const Artist = ({
   const { data: artist } = artistResult;
   const { data: topTracks } = topTracksResult;
   const { data: albums } = albumsResult;
-  console.log(albums);
 
   const imgSrc = artist.images[0].url ?? "";
 
@@ -66,6 +67,15 @@ export const Artist = ({
     });
   };
 
+  const onPlayAlbum = (albumUri: string) => {
+    // todo
+  };
+
+  const onOpenAlbum = (albumId: string) => {
+    // todo
+  };
+
+  // todo for the top songs:
   // todo add button to play the whole artist context
   // todo remove the individual play buttons, make the row open the album
 
@@ -83,6 +93,24 @@ export const Artist = ({
         isTracksListInPlaybackContext={
           currentlyPlayingContextUri === artist.uri
         }
+      />
+
+      <HorizontalItemContainer
+        items={albums.map((album) => {
+          return {
+            ...album,
+            onClick: () => onOpenAlbum(album.id),
+            PlayButton: () => (
+              <PlayPauseButton
+                isPaused={true}
+                onClick={() => onPlayAlbum(album.uri)}
+                colorVariant="mainAction"
+              />
+            ),
+          };
+        })}
+        variant="square"
+        title={{ text: "Discography" }}
       />
     </Container>
   );
