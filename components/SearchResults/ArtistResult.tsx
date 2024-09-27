@@ -3,7 +3,8 @@ import { Artist } from "../types";
 import { BorderlessButton } from "../IconButtons/IconButtons";
 import { MultiplePeopleMicrophone } from "../IconButtons/Icons";
 import { PlayPauseButton } from "../Buttons/PlayPauseButton";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRef } from "react";
+import { useCalculateElementsThatFit } from "../../utils/useCalculateItemsThatFit";
 
 export const ArtistsSearchResult = ({
   artists,
@@ -17,40 +18,13 @@ export const ArtistsSearchResult = ({
   currentlyPlaying: boolean;
 }) => {
   const gridContainer = useRef<HTMLDivElement>(null);
-  const [resizeWidth, setResizeWidth] = useState(0);
   const artistElementWidth = 140;
 
-  useEffect(() => {
-    if (gridContainer.current) {
-      const resizeObserver = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-          setResizeWidth(entry.contentRect.width);
-        }
-      });
-      resizeObserver.observe(gridContainer.current);
-
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }
-  }, []);
-
-  const visibleArtists = useMemo(() => {
-    const result = artists.reduce<{ leftWidth: number; artists: Artist[] }>(
-      (previousValue, current) => {
-        if (previousValue.leftWidth > artistElementWidth) {
-          previousValue.artists.push(current);
-          previousValue.leftWidth -= artistElementWidth;
-        }
-        return previousValue;
-      },
-      {
-        leftWidth: resizeWidth,
-        artists: [],
-      }
-    );
-    return result.artists;
-  }, [artists, resizeWidth]);
+  const visibleArtists = useCalculateElementsThatFit({
+    elementRef: gridContainer.current,
+    items: artists,
+    itemWidth: artistElementWidth,
+  });
 
   return (
     <>

@@ -39,12 +39,22 @@ export const Artist = ({
     },
   };
 
-  const [artistResult, topTracksResult] = useSuspenseQueries({
-    queries: [fetchArtist, fetchTopTracks],
+  const fetchAlbums = {
+    queryKey: ["artist-albums", artistId],
+    queryFn: async () => {
+      const result = await spotifyApiRef.fetchArtistAlbums(artistId);
+      return result;
+    },
+  };
+
+  const [artistResult, topTracksResult, albumsResult] = useSuspenseQueries({
+    queries: [fetchArtist, fetchTopTracks, fetchAlbums],
   });
 
   const { data: artist } = artistResult;
   const { data: topTracks } = topTracksResult;
+  const { data: albums } = albumsResult;
+  console.log(albums);
 
   const imgSrc = artist.images[0].url ?? "";
 
