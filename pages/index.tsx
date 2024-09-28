@@ -239,7 +239,6 @@ const App = () => {
             </Suspense>
           )}
       </div>
-      <span className={styles.rightNav}>oikea nav</span>
 
       <span className={styles.bottomGrid}>
         <CurrentPlaybackInfo

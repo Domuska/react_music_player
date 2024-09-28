@@ -7,12 +7,12 @@
   max-height: 100vh;
   padding: 0;
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-columns: 1fr 4fr;
   grid-template-rows: 1fr 12fr 1fr;
   overflow: hidden;
   grid-template-areas:
     "header header header"
-    "leftnav maincontent rightnav"
+    "leftnav maincontent maincontent"
     "bottom bottom bottom";
   background-color: var(--main-bg-black);
 }
