@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "../styles/Home.module.css";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { PlaybackControls } from "../components/PlaybackControls";
 import { Library } from "../components/Library";
 import { VolumeControls } from "../components/VolumeBar/VolumeControls";
@@ -112,14 +112,18 @@ const App = () => {
     enabled: !!spotifyApiRef.current,
   });
 
+  // this shouldn't change ever
+  const onSpotifyPlayerReady = useCallback(
+    (playerId: string) => {
+      setSpotifyPlayerId(playerId);
+      spotifyApiRef.current = api(token, playerId);
+    },
+    [token]
+  );
+
   if (!token) {
     return <Login />;
   }
-
-  const onSpotifyPlayerReady = (playerId: string) => {
-    setSpotifyPlayerId(playerId);
-    spotifyApiRef.current = api(token, playerId);
-  };
 
   const spotifyOnPlayPauseClick = async () => {
     if (currentSpotifyData?.is_playing) {
@@ -162,6 +166,10 @@ const App = () => {
     }
   };
 
+  const onStateUpdate = (newState: any) => {
+    console.log(newState);
+  };
+
   const onSearch = (query: string) => {
     setSearchTerm(query);
     if (query) {
@@ -184,7 +192,11 @@ const App = () => {
   return (
     <div className={styles.gridContainer}>
       {/* The Spotify playback component */}
-      <SpotifyWebPlayback token={token} onPlayerReady={onSpotifyPlayerReady} />
+      <SpotifyWebPlayback
+        token={token}
+        onPlayerReady={onSpotifyPlayerReady}
+        onStateUpdate={onStateUpdate}
+      />
 
       <span className={styles.searchNavBar}>
         <TopBar onSearch={onSearch} />

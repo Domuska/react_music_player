@@ -1,13 +1,36 @@
 import React, { useState, useEffect } from "react";
 
+const ONE_SECOND = 1000;
+
+// disabled for now, have to consider if this is any better than using the API
+const localPlayerStatusFetchingEnabled = false;
+
 export const SpotifyWebPlayback = ({
   token,
   onPlayerReady,
+  onStateUpdate,
 }: {
   token: string;
   onPlayerReady: (deviceId: string) => void;
+  onStateUpdate: (newState: any) => void;
 }) => {
-  const [player, setPlayer] = useState(undefined);
+  // todo type this
+  const [player, setPlayer] = useState<any>(undefined);
+
+  useEffect(() => {
+    if (localPlayerStatusFetchingEnabled) {
+      const interval = setInterval(async () => {
+        if (player) {
+          const ns = await player.getCurrentState();
+          onStateUpdate(ns);
+        }
+      }, ONE_SECOND);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [player, onStateUpdate]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -54,7 +77,7 @@ export const SpotifyWebPlayback = ({
         player.disconnect();
       };
     };
-  }, [token]);
+  }, [onPlayerReady, token]);
 
   return (
     <>

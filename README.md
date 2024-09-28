@@ -45,8 +45,6 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 # roadmap
 
 - search results / artist view to display show more -button
-- remove right sidebar, bring it back when there's content to show there
-- move polling to poll the SDK instead of API
 - use Vercel to host the app
 - add a domain
 - login button
@@ -56,6 +54,8 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
   - hide left bar on mobile
   - rework bottom bar on mobile
 - routing support
+- move polling to poll the SDK instead of API
+  - is this really necessary? Does it help with something?
 
 # todo
 
