@@ -131,11 +131,6 @@ const App = () => {
     refetchCurrentSpotifyData();
   };
 
-  const openAlbumData = async (albumId: string) => {
-    setCurrentAlbumId(albumId);
-    setVisibleMainContent("album");
-  };
-
   const onSeek = async (timeMs: number) => {
     await spotifyApiRef.current?.seek(timeMs);
     await sleep(700);
@@ -178,6 +173,11 @@ const App = () => {
   const onOpenArtist = (artistId: string) => {
     setArtistId(artistId);
     setVisibleMainContent("artist");
+  };
+
+  const onOpenAlbum = async (albumId: string) => {
+    setCurrentAlbumId(albumId);
+    setVisibleMainContent("album");
   };
 
   return (
@@ -232,6 +232,8 @@ const App = () => {
                 currentlyPlayingTrackId={currentSpotifyData?.item.id}
                 currentlyPlayingContextUri={currentSpotifyData?.context?.uri}
                 onPlayPause={spotifyOnPlayPauseClick}
+                onOpenAlbum={onOpenAlbum}
+                onOpenArtist={onOpenArtist}
               />
             </Suspense>
           )}
@@ -244,7 +246,7 @@ const App = () => {
           trackTitle={currentSpotifyData?.item.name}
           artists={currentSpotifyData?.item.artists}
           onArtistClick={onOpenArtist}
-          onTrackClick={openAlbumData}
+          onTrackClick={onOpenAlbum}
         />
 
         <PlaybackControls

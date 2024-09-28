@@ -31,6 +31,7 @@ export type SpotifyAPi = {
   fetchArtist: (artistId: string) => Promise<Artist>;
   fetchArtistTopTracks: (artistId: string) => Promise<Track[]>;
   fetchArtistAlbums: (artistId: string) => Promise<Album[]>;
+  fetchArtistRelatedArtists: (artistId: string) => Promise<Artist[]>;
 };
 
 type StartPlaybackBody = {
@@ -203,6 +204,12 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
       const url = `https://api.spotify.com/v1/artists/${id}/albums`;
       const result = await fetch(url, { method: "GET", headers });
       return (await result.json()).items;
+    },
+
+    fetchArtistRelatedArtists: async (id: string) => {
+      const url = `https://api.spotify.com/v1/artists/${id}/related-artists`;
+      const result = await fetch(url, { method: "GET", headers });
+      return (await result.json()).artists;
     },
   };
 };

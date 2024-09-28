@@ -1,11 +1,14 @@
 import styled from "styled-components";
 import { PauseIcon, PlayIcon } from "../IconButtons/Icons";
 
-const StyledButton = styled.button<{ $bgColor?: string }>`
+const StyledButton = styled.button<{
+  $bgColor?: string;
+  $size: "48px" | "32px";
+}>`
   background-color: ${(props) => (props.$bgColor ? props.$bgColor : "white")};
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: ${(props) => props.$size};
+  height: ${(props) => props.$size};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,10 +30,12 @@ export const PlayPauseButton = ({
   isPaused,
   onClick,
   colorVariant,
+  size = "32px",
 }: {
   isPaused: boolean;
   onClick: () => void;
   colorVariant?: ColorVariant;
+  size?: "48px" | "32px";
 }) => {
   return (
     <StyledButton
@@ -38,6 +43,7 @@ export const PlayPauseButton = ({
       $bgColor={
         colorVariant == "mainAction" ? "var(--mainActionColor)" : undefined
       }
+      $size={size}
     >
       {isPaused ? <PlayIcon /> : <PauseIcon />}
     </StyledButton>

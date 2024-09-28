@@ -4,6 +4,7 @@ import { PauseIcon, PlayIcon } from "./Icons";
 export const BorderlessButton = styled.button`
   border: none;
   background: none;
+  padding: 0;
 `;
 
 const StyledButton = styled.button`

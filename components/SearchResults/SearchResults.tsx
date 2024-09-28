@@ -54,5 +54,5 @@ export const SearchResults = ({
 };
 
 const Container = styled.div`
-  padding-top: 25px;
+  padding: 25px 10px;
 `;

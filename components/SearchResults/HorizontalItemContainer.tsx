@@ -4,6 +4,7 @@ import { BorderlessButton } from "../IconButtons/IconButtons";
 import { MultiplePeopleMicrophone } from "../IconButtons/Icons";
 import React, { useRef } from "react";
 import { useCalculateElementsThatFit } from "../../utils/useCalculateItemsThatFit";
+import { ClickableTitle } from "./ClickableTitle";
 
 type PropItem = {
   images: Image[];
@@ -27,7 +28,7 @@ export const HorizontalItemContainer = ({
   };
 }) => {
   const gridContainer = useRef<HTMLDivElement>(null);
-  const itemWidth = 140;
+  const itemWidth = 200;
 
   const visibleItems = useCalculateElementsThatFit({
     elementRef: gridContainer.current,
@@ -36,20 +37,15 @@ export const HorizontalItemContainer = ({
   });
 
   return (
-    <>
-      <Title>
-        <span>{title.text}</span>
-      </Title>
+    <Container>
+      <ClickableTitle text={title.text} onClick={title.onClick} />
       <Grid
         ref={gridContainer}
         $visibleElements={visibleItems.length}
         $imageWidthPx={itemWidth}
       >
         {visibleItems.map(({ PlayButton, ...rest }) => {
-          const imageUrl =
-            rest.images.length > 0
-              ? rest.images[rest.images.length - 1].url
-              : null;
+          const imageUrl = rest.images.length > 0 ? rest.images[0].url : null;
           return (
             <ItemContainer key={rest.id}>
               <ItemButton onClick={rest.onClick}>
@@ -73,22 +69,9 @@ export const HorizontalItemContainer = ({
           );
         })}
       </Grid>
-    </>
+    </Container>
   );
 };
-
-const Title = styled(BorderlessButton)`
-  &:hover {
-    cursor: pointer;
-    text-decoration: underline var(--text-on-main-bg);
-  }
-
-  & span {
-    font-weight: bold;
-    font-size: x-large;
-    color: var(--text-on-main-bg);
-  }
-`;
 
 const Grid = styled.div<{ $visibleElements: number; $imageWidthPx: number }>`
   display: grid;
@@ -182,4 +165,10 @@ const PlayButtonContainer = styled.div`
   position: absolute;
   bottom: 33%;
   right: 10%;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `;
