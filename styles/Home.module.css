@@ -43,7 +43,6 @@
   /* todo this gradient should likely be back at TracksList */
   background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
   border-radius: 10px;
-  padding: 10px;
 }
 
 .rightNav {

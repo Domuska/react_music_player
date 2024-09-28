@@ -12,20 +12,20 @@ export type DisplayMode = "album";
 export const TracksList = ({
   playTrack,
   currentlyPlayingTrackId,
-  pausePlayback,
+  onPlayPause,
   isPlaybackPaused,
   tracks,
   displayMode,
-  contextUri,
+  isTracksListInPlaybackContext,
 }: {
   displayMode: DisplayMode;
   tracks: Track[];
-  playTrack: (contextUri: string, trackUri: string) => any;
+  playTrack: (trackUri: string) => any;
   currentlyPlayingTrackId?: string;
-  pausePlayback: React.ComponentProps<typeof TrackRow>["pausePlayback"];
+  onPlayPause: React.ComponentProps<typeof TrackRow>["onPlayPause"];
   isPlaybackPaused: boolean;
   // album, playlist, artist
-  contextUri: string;
+  isTracksListInPlaybackContext: boolean;
 }) => {
   const additionalColumns: string[] = [];
   if (displayMode === "album") {
@@ -50,7 +50,7 @@ export const TracksList = ({
   };
 
   const onPlayTrack = (trackUri: string) => {
-    playTrack(contextUri, trackUri);
+    playTrack(trackUri);
   };
 
   return (
@@ -72,16 +72,19 @@ export const TracksList = ({
         </THead>
 
         <tbody>
-          {tracks.map((track) => {
+          {tracks.map((track, index) => {
             return (
               <TrackRow
                 key={track.id}
-                index={track.track_number}
+                index={index + 1}
                 playTrack={onPlayTrack}
                 isPlaybackPaused={isPlaybackPaused}
-                pausePlayback={pausePlayback}
+                onPlayPause={onPlayPause}
                 track={track}
-                trackIsPlaying={track.id == currentlyPlayingTrackId}
+                trackIsPlaying={
+                  track.id == currentlyPlayingTrackId &&
+                  isTracksListInPlaybackContext
+                }
                 additionalColumns={getAdditionalColumns(displayMode, track)}
               />
             );

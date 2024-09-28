@@ -22,13 +22,13 @@ export const TrackRow = ({
   playTrack,
   index,
   trackIsPlaying,
-  pausePlayback,
+  onPlayPause,
   isPlaybackPaused,
   additionalColumns = [],
 }: {
   track: Track;
   playTrack: (trackUri: string) => void;
-  pausePlayback: VoidFunction;
+  onPlayPause: VoidFunction;
   index: number;
   trackIsPlaying: boolean;
   isPlaybackPaused: boolean;
@@ -38,7 +38,7 @@ export const TrackRow = ({
 
   const onPlayPauseClick = () => {
     if (trackIsPlaying) {
-      pausePlayback();
+      onPlayPause();
     } else {
       playTrack(track.uri);
     }

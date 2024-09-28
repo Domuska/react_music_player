@@ -20,7 +20,7 @@
     "@eslint/js": "^8.57.0",
     "@tanstack/eslint-plugin-query": "^5.56.1",
     "@types/node": "22.1.0",
-    "@types/react": "18.3.3",
+    "@types/react": "18.2.0",
     "@typescript-eslint/eslint-plugin": "^8.3.0",
     "@typescript-eslint/parser": "^8.3.0",
     "dotenv": "^16.4.5",

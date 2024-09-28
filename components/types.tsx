@@ -8,7 +8,7 @@ export type LegacyTrack = {
   id: string;
 };
 
-type Image = {
+export type Image = {
   url: string;
   height: number;
   width: number;
@@ -151,6 +151,11 @@ type GenericPlaybackStatusResponse = {
   device: SpotifyDevice;
   progress_ms: number;
   is_playing: boolean;
+  context?: {
+    uri: string;
+    type: "artist" | "playlist" | "album" | "show";
+    href: string;
+  };
 };
 
 type TrackPlaybackStatusResponse = GenericPlaybackStatusResponse & {

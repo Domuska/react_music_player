@@ -1,19 +1,22 @@
 import {
   Album,
+  Artist,
   PlaybackStatusResponse,
   PromiseVoidFunction,
   SearchResponse,
+  Track,
 } from "../types";
 
 export type SpotifyAPi = {
   getPlaybackStatus: () => Promise<PlaybackStatusResponse | undefined>;
+  transferPlayback: (deviceId: string) => Promise<void>;
   skipToNext: PromiseVoidFunction;
   skipToPrevious: PromiseVoidFunction;
   playPlayback: (
     params?:
       | {
-          context_uri: string;
-          track_uri?: string;
+          context_uri?: string;
+          offset?: string | number;
         }
       | undefined
   ) => Promise<void>;
@@ -25,6 +28,10 @@ export type SpotifyAPi = {
     query: string,
     types: AllowedSearchTypes[]
   ) => Promise<SearchResponse>;
+  fetchArtist: (artistId: string) => Promise<Artist>;
+  fetchArtistTopTracks: (artistId: string) => Promise<Track[]>;
+  fetchArtistAlbums: (artistId: string) => Promise<Album[]>;
+  fetchArtistRelatedArtists: (artistId: string) => Promise<Artist[]>;
 };
 
 type StartPlaybackBody = {
@@ -71,6 +78,14 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
       return (await result.json()) as PlaybackStatusResponse;
     },
 
+    transferPlayback: async (deviceId: string) => {
+      const url = "https://api.spotify.com/v1/me/player";
+      const body = {
+        device_ids: [deviceId],
+      };
+      fetch(url, { headers, method: "PUT", body: JSON.stringify(body) });
+    },
+
     skipToNext: async () => {
       const url = "https://api.spotify.com/v1/me/player/next";
       fetch(url, {
@@ -88,7 +103,7 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
       params:
         | {
             context_uri?: string;
-            track_uri?: string;
+            offset?: string;
           }
         | undefined
     ) => {
@@ -96,16 +111,16 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
 
       let body: StartPlaybackBody | null = null;
       if (params) {
-        const { context_uri, track_uri } = params;
+        const { context_uri, offset } = params;
 
         if (context_uri) {
           body = {
             context_uri: context_uri,
-            offset: track_uri ? { uri: track_uri } : undefined,
+            offset: offset ? { uri: offset } : undefined,
           };
-        } else if (track_uri) {
+        } else if (offset) {
           body = {
-            uris: [track_uri],
+            uris: [offset],
           };
         }
       }
@@ -171,6 +186,30 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
         headers,
       });
       return await result.json();
+    },
+
+    fetchArtist: async (id: string) => {
+      const url = `https://api.spotify.com/v1/artists/${id}`;
+      const result = await fetch(url, { method: "GET", headers });
+      return await result.json();
+    },
+
+    fetchArtistTopTracks: async (id: string) => {
+      const url = `https://api.spotify.com/v1/artists/${id}/top-tracks`;
+      const result = await fetch(url, { method: "GET", headers });
+      return (await result.json()).tracks;
+    },
+
+    fetchArtistAlbums: async (id: string) => {
+      const url = `https://api.spotify.com/v1/artists/${id}/albums`;
+      const result = await fetch(url, { method: "GET", headers });
+      return (await result.json()).items;
+    },
+
+    fetchArtistRelatedArtists: async (id: string) => {
+      const url = `https://api.spotify.com/v1/artists/${id}/related-artists`;
+      const result = await fetch(url, { method: "GET", headers });
+      return (await result.json()).artists;
     },
   };
 };

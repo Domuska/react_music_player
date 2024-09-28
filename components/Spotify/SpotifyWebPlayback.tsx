@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-export const SpotifyWebPlayback = ({ token }) => {
+export const SpotifyWebPlayback = ({
+  token,
+  onPlayerReady,
+}: {
+  token: string;
+  onPlayerReady: (deviceId: string) => void;
+}) => {
   const [player, setPlayer] = useState(undefined);
 
   useEffect(() => {
@@ -23,6 +29,7 @@ export const SpotifyWebPlayback = ({ token }) => {
 
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
+        onPlayerReady(device_id);
       });
 
       player.addListener("not_ready", ({ device_id }) => {

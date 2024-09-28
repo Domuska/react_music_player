@@ -1,19 +1,14 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { AllowedSearchTypes, SpotifyAPi } from "../Spotify/SpotifyApi";
-import { Suspense } from "react";
 import styled from "styled-components";
-import { ArtistResults } from "./ArtistResults";
+import { HorizontalItemContainer } from "./HorizontalItemContainer";
+import { PlayPauseButton } from "../Buttons/PlayPauseButton";
 
 type Props = {
   query: string;
   spotifyApiRef: SpotifyAPi;
   openArtistPage: (artistId: string) => void;
 };
-
-const Loading = styled.p`
-  width: 500px;
-  background-color: aquamarine;
-`;
 
 export const SearchResults = ({
   query,
@@ -26,7 +21,6 @@ export const SearchResults = ({
     queryKey: ["search", query, types],
     queryFn: async () => {
       const result = await spotifyApiRef.search(query, types);
-      console.log(result);
       return result;
     },
   });
@@ -36,23 +30,29 @@ export const SearchResults = ({
   };
 
   return (
-    <>
-      <Suspense fallback={<Loading>Dis aint working</Loading>}>
-        <Container>
-          {data.artists && (
-            <ArtistResults
-              artists={data.artists.items}
-              onArtistClick={openArtistPage}
-              onArtistPlayClick={playArtist}
-              currentlyPlaying={false}
-            />
-          )}
-        </Container>
-      </Suspense>
-    </>
+    <Container>
+      {data.artists && (
+        <HorizontalItemContainer
+          items={data.artists.items.map((artist) => {
+            return {
+              ...artist,
+              onClick: () => openArtistPage(artist.id),
+              PlayButton: () => (
+                <PlayPauseButton
+                  isPaused={true}
+                  onClick={() => playArtist(artist.uri)}
+                  colorVariant="mainAction"
+                />
+              ),
+            };
+          })}
+          title={{ text: "Albums" }}
+        />
+      )}
+    </Container>
   );
 };
 
 const Container = styled.div`
-  padding-top: 25px;
+  padding: 25px 10px;
 `;
