@@ -42,6 +42,21 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 - if a context is passed in along with a track, then the context will continue after the requested song has been played
 - if only a song is passed in, the playback queue is emptied and the song is the only track that will play
 
+# roadmap
+
+- search results / artist view to display show more -button
+- remove right sidebar, bring it back when there's content to show there
+- move polling to poll the SDK instead of API
+- use Vercel to host the app
+- add a domain
+- login button
+- scroll bar in main content
+- show playlists in left bar
+- mobile enhancements
+  - hide left bar on mobile
+  - rework bottom bar on mobile
+- routing support
+
 # todo
 
 - move to mobile-first / responsive system
@@ -55,3 +70,4 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 - add top part for the tracks list view (image, name etc)
 - when requests are sent to change volume, track or seek, we should immediately refetch data. This will reduce the problem of laggy UI we have now.
 - could we control seek, volume change, song change and monitor those values through the Spotify JS bundle? would that make changes visible quicker?
+- i18n support

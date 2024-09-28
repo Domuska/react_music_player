@@ -70,7 +70,7 @@ const App = () => {
   const [currentAlbumId, setCurrentAlbumId] = useState<string>("");
 
   const [token, setToken] = useState<string>("");
-  const [setSpotifyPlayerId, spotifyPlayerId] = useState<string>("");
+  const [spotifyPlayerId, setSpotifyPlayerId] = useState<string>("");
 
   const spotifyApiRef = useRef<SpotifyAPi | undefined>();
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -81,10 +81,6 @@ const App = () => {
   useEffect(() => {
     const access_token = getCookieByName(ACCESS_TOKEN_COOKIE_NAME);
     setToken(access_token ?? "");
-
-    if (access_token) {
-      spotifyApiRef.current = api(token);
-    }
   }, [token]);
 
   // todo if we playback is not ongoing, no need to fetch data as often
@@ -97,6 +93,10 @@ const App = () => {
     queryKey: ["currentData"],
     queryFn: async () => {
       const response = await spotifyApiRef.current?.getPlaybackStatus();
+      if (!response) {
+        return null;
+      }
+
       if (response && response.currently_playing_type == "track") {
         return response;
       } else {
@@ -117,7 +117,8 @@ const App = () => {
   }
 
   const onSpotifyPlayerReady = (playerId: string) => {
-    spotifyPlayerId(playerId);
+    setSpotifyPlayerId(playerId);
+    spotifyApiRef.current = api(token, playerId);
   };
 
   const spotifyOnPlayPauseClick = async () => {

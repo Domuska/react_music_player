@@ -57,7 +57,9 @@ export type AllowedSearchTypes =
   | "episode"
   | "audiobook";
 
-export const api: (token: string) => SpotifyAPi = (token: string) => {
+type CreateApi = (token: string, deviceId: string) => SpotifyAPi;
+
+export const api: CreateApi = (token: string, deviceId: string) => {
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -107,7 +109,11 @@ export const api: (token: string) => SpotifyAPi = (token: string) => {
           }
         | undefined
     ) => {
-      const url = "https://api.spotify.com/v1/me/player/play";
+      const queryParams = new URLSearchParams({
+        device_id: deviceId,
+      });
+      const url =
+        "https://api.spotify.com/v1/me/player/play?" + queryParams.toString();
 
       let body: StartPlaybackBody | null = null;
       if (params) {

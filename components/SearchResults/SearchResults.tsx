@@ -42,6 +42,7 @@ export const SearchResults = ({
                   isPaused={true}
                   onClick={() => playArtist(artist.uri)}
                   colorVariant="mainAction"
+                  size="48px"
                 />
               ),
             };

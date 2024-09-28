@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Image } from "../types";
 import { BorderlessButton } from "../IconButtons/IconButtons";
 import { MultiplePeopleMicrophone } from "../IconButtons/Icons";
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { useCalculateElementsThatFit } from "../../utils/useCalculateItemsThatFit";
 import { ClickableTitle } from "./ClickableTitle";
 
@@ -27,11 +27,11 @@ export const HorizontalItemContainer = ({
     onClick?: VoidFunction;
   };
 }) => {
-  const gridContainer = useRef<HTMLDivElement>(null);
+  const [gridRef, setGridRef] = useState<HTMLDivElement | null>(null);
   const itemWidth = 200;
 
   const visibleItems = useCalculateElementsThatFit({
-    elementRef: gridContainer.current,
+    elementRef: gridRef,
     items: items,
     itemWidth: itemWidth,
   });
@@ -40,7 +40,7 @@ export const HorizontalItemContainer = ({
     <Container>
       <ClickableTitle text={title.text} onClick={title.onClick} />
       <Grid
-        ref={gridContainer}
+        ref={(newRef) => setGridRef(newRef)}
         $visibleElements={visibleItems.length}
         $imageWidthPx={itemWidth}
       >
