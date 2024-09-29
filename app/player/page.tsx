@@ -1,27 +1,27 @@
 "use client";
 
-import styles from "../styles/Home.module.css";
+import styles from "../../styles/Home.module.css";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { PlaybackControls } from "../components/PlaybackControls";
-import { Library } from "../components/Library";
-import { VolumeControls } from "../components/VolumeBar/VolumeControls";
-import SpotifyWebPlayback from "../components/Spotify/SpotifyWebPlayback";
-import { api, SpotifyAPi } from "../components/Spotify/SpotifyApi";
-import { ACCESS_TOKEN_COOKIE_NAME } from "./api/auth/callback";
-import { getCookieByName } from "../utils/getCookieByName";
-import { sleep } from "../utils/sleep";
-import { CurrentPlaybackInfo } from "../components/CurrentPlaybackInfo";
-import { TopBar } from "../components/TopBar/TopBar";
+import { PlaybackControls } from "../../components/PlaybackControls";
+import { Library } from "../../components/Library";
+import { VolumeControls } from "../../components/VolumeBar/VolumeControls";
+import SpotifyWebPlayback from "../../components/Spotify/SpotifyWebPlayback";
+import { api, SpotifyAPi } from "../../components/Spotify/SpotifyApi";
+import { ACCESS_TOKEN_COOKIE_NAME } from "../../pages/api/auth/callback";
+import { getCookieByName } from "../../utils/getCookieByName";
+import { sleep } from "../../utils/sleep";
+import { CurrentPlaybackInfo } from "../../components/CurrentPlaybackInfo";
+import { TopBar } from "../../components/TopBar/TopBar";
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { SearchResults } from "../components/SearchResults/SearchResults";
+import { SearchResults } from "../../components/SearchResults/SearchResults";
 import { ThemeProvider } from "styled-components";
-import { theme } from "../styles/defaultTheme";
-import { Artist } from "../components/ArtistView/Artist";
-import { AlbumView } from "../components/AlbumView/AlbumView";
+import { theme } from "../../styles/defaultTheme";
+import { Artist } from "../../components/ArtistView/Artist";
+import { AlbumView } from "../../components/AlbumView/AlbumView";
 
 const ONE_SECOND = 1000;
 const HALF_SECONDS = 500;
