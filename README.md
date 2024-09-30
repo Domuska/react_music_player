@@ -53,9 +53,11 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 - mobile enhancements
   - hide left bar on mobile
   - rework bottom bar on mobile
-- routing support
+- use <Link> elements rather than pushing user with router
+  - should be easy to try out with <CurrentPlaybackInfo>
 - move polling to poll the SDK instead of API
   - is this really necessary? Does it help with something?
+  - if we do this, we can't show playback going on on other devices, player only shows local
 
 # todo
 

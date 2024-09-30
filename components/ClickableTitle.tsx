@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { BorderlessButton } from "../IconButtons/IconButtons";
+import { BorderlessButton } from "./IconButtons/IconButtons";
 
 export const ClickableTitle = ({
   text,

@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { Image } from "../types";
-import { BorderlessButton } from "../IconButtons/IconButtons";
-import { MultiplePeopleMicrophone } from "../IconButtons/Icons";
+import { Image } from "./types";
+import { BorderlessButton } from "./IconButtons/IconButtons";
+import { MultiplePeopleMicrophone } from "./IconButtons/Icons";
 import React, { useState } from "react";
-import { useCalculateElementsThatFit } from "../../utils/useCalculateItemsThatFit";
+import { useCalculateElementsThatFit } from "../utils/useCalculateItemsThatFit";
 import { ClickableTitle } from "./ClickableTitle";
 
 type PropItem = {
