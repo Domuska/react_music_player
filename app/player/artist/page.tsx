@@ -1,62 +1,69 @@
+"use client";
+
 import styled from "styled-components";
-import { SpotifyAPi } from "../Spotify/SpotifyApi";
+import { SpotifyAPi } from "../../../components/Spotify/SpotifyApi";
 import { useSuspenseQueries } from "@tanstack/react-query";
-import { TracksList } from "../TracksList/TracksList";
-import { HorizontalItemContainer } from "../SearchResults/HorizontalItemContainer";
-import { PlayPauseButton } from "../Buttons/PlayPauseButton";
-import { ClickableTitle } from "../SearchResults/ClickableTitle";
-import { StickyHeadingRow } from "./StickyHeadingRow";
+import { TracksList } from "../../../components/TracksList/TracksList";
+import { HorizontalItemContainer } from "../../../components/HorizontalItemContainer";
+import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
+import { ClickableTitle } from "../../../components/ClickableTitle";
 
-type Props = {
-  artistId: string;
-  spotifyApiRef: SpotifyAPi;
-  currentlyPlayingContextUri?: string;
-  currentlyPlayingTrackId?: React.ComponentProps<
-    typeof TracksList
-  >["currentlyPlayingTrackId"];
-  isPlaybackPaused: React.ComponentProps<typeof TracksList>["isPlaybackPaused"];
-  onPlayPause: React.ComponentProps<typeof TracksList>["onPlayPause"];
-  onOpenAlbum: (albumId: string) => void;
-  onOpenArtist: (artistId: string) => void;
-};
+import { useRouter, useSearchParams } from "next/navigation";
+import { useContext } from "react";
+import { CurrentPlaybackContext, SpotifyApiContext } from "../context";
+import invariant from "tiny-invariant";
+import { StickyHeadingRow } from "../../../components/StickyHeadingRow";
 
-export const Artist = ({
-  artistId,
-  spotifyApiRef,
-  currentlyPlayingContextUri,
-  currentlyPlayingTrackId,
-  isPlaybackPaused,
-  onPlayPause,
-  onOpenAlbum,
-  onOpenArtist,
-}: Props) => {
+export default () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const artistId = searchParams?.get("artistId");
+  const { spotifyApiRef } = useContext<{
+    spotifyApiRef: SpotifyAPi;
+  }>(SpotifyApiContext);
+  const currentPlaybackStatus = useContext(CurrentPlaybackContext);
+
+  invariant(artistId, "artist id is required");
+
   const fetchArtist = {
-    queryKey: ["artist", artistId],
+    queryKey: ["artist", artistId, spotifyApiRef],
     queryFn: async () => {
+      if (!spotifyApiRef) {
+        return null;
+      }
       const result = await spotifyApiRef.fetchArtist(artistId);
       return result;
     },
   };
 
   const fetchTopTracks = {
-    queryKey: ["artist-top-tracks", artistId],
+    queryKey: ["artist-top-tracks", artistId, spotifyApiRef],
     queryFn: async () => {
+      if (!spotifyApiRef) {
+        return [];
+      }
       const result = await spotifyApiRef.fetchArtistTopTracks(artistId);
       return result;
     },
   };
 
   const fetchAlbums = {
-    queryKey: ["artist-albums", artistId],
+    queryKey: ["artist-albums", artistId, spotifyApiRef],
     queryFn: async () => {
+      if (!spotifyApiRef) {
+        return [];
+      }
       const result = await spotifyApiRef.fetchArtistAlbums(artistId);
       return result;
     },
   };
 
   const fetchRelatedArtists = {
-    queryKey: ["artist-related-artists", artistId],
+    queryKey: ["artist-related-artists", artistId, spotifyApiRef],
     queryFn: async () => {
+      if (!spotifyApiRef) {
+        return [];
+      }
       const result = await spotifyApiRef.fetchArtistRelatedArtists(artistId);
       return result;
     },
@@ -72,8 +79,17 @@ export const Artist = ({
   const { data: albums } = albumsResult;
   const { data: relatedArtists } = relatedArtistsResult;
 
+  // might still be null if parent layout has not set up spotify API yet
+  if (!artist) {
+    return null;
+  }
+
+  const context = currentPlaybackStatus?.context;
+  const currentlyPlayingItem = currentPlaybackStatus?.item;
+  const isPlaying = currentPlaybackStatus?.is_playing;
+
   // take the largest image
-  const imgSrc = artist.images[0]?.url ?? "";
+  const imgSrc = artist?.images[0]?.url ?? "";
 
   const playTrack = (trackUri: string) => {
     // we should pass in artist.uri as context, but the API doesn't support it :/
@@ -88,6 +104,28 @@ export const Artist = ({
 
   const onPlayArtist = (artistUri: string) => {
     spotifyApiRef.playPlayback({ context_uri: artistUri });
+  };
+
+  const onPlayPause = () => {
+    if (isPlaying) {
+      spotifyApiRef.pausePlayback();
+    } else {
+      spotifyApiRef.playPlayback();
+    }
+  };
+
+  const onOpenAlbum = (id: string) => {
+    const queryParams = new URLSearchParams({
+      albumId: id,
+    });
+    router.push("/player/album?" + queryParams.toString());
+  };
+
+  const onOpenArtist = (id: string) => {
+    const queryParams = new URLSearchParams({
+      artistId: id,
+    });
+    router.push("/player/artist?" + queryParams.toString());
   };
 
   // todo for the top songs:
@@ -112,14 +150,12 @@ export const Artist = ({
           <ClickableTitle text="Popular" />
           <TracksList
             displayMode="album"
-            isPlaybackPaused={isPlaybackPaused}
-            currentlyPlayingTrackId={currentlyPlayingTrackId}
+            isPlaybackPaused={!isPlaying}
+            currentlyPlayingTrackId={currentlyPlayingItem?.id}
             onPlayPause={onPlayPause}
             playTrack={playTrack}
             tracks={topTracks}
-            isTracksListInPlaybackContext={
-              currentlyPlayingContextUri === artist.uri
-            }
+            isTracksListInPlaybackContext={context?.uri === artist.uri}
           />
         </div>
 

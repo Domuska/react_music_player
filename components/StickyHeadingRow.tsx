@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { PlayPauseButton } from "../Buttons/PlayPauseButton";
+import { PlayPauseButton } from "./Buttons/PlayPauseButton";
 
 export const StickyHeadingRow = ({
   onPlay,

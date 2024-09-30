@@ -130,6 +130,7 @@ export type SpotifyTrackItem = {
 // podcast
 export type SpotifyEpisodeItem = {
   type: "episode";
+  id: string;
 };
 
 export type SpotifyActions = {

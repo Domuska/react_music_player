@@ -42,7 +42,7 @@ export default async function handler(
     response_type: "code",
     client_id: spotify_client_id,
     scope: scope,
-    redirect_uri: "http://localhost:3000/api/auth/callback",
+    redirect_uri: "http://localhost:3000/api/player/auth/callback",
     state: state,
   });
 

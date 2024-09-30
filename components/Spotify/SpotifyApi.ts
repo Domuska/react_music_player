@@ -190,6 +190,7 @@ export const api: CreateApi = (token: string, deviceId: string) => {
       const result = await fetch(url, {
         method: "GET",
         headers,
+        cache: "no-cache",
       });
       return await result.json();
     },

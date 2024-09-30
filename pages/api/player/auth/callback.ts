@@ -17,7 +17,7 @@ export default async function handler(
     url: "https://accounts.spotify.com/api/token",
     form: {
       code: code,
-      redirect_uri: "http://localhost:3000/api/auth/callback",
+      redirect_uri: "http://localhost:3000/api/player/auth/callback",
       grant_type: "authorization_code",
     },
     headers: {
