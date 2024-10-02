@@ -4,15 +4,19 @@ import { PlayPauseButton } from "./Buttons/PlayPauseButton";
 export const StickyHeadingRow = ({
   onPlay,
   artistName,
+  isPaused,
+  className,
 }: {
   onPlay: VoidFunction;
   artistName: string;
+  isPaused: boolean;
+  className?: string;
 }) => {
   return (
-    <StickyContainer>
+    <StickyContainer className={className}>
       {/* keep the button outside of the fade animation container, it is sticky so it stays visible always */}
       <PlayPauseButton
-        isPaused={true}
+        isPaused={isPaused}
         onClick={onPlay}
         colorVariant="mainAction"
         size="48px"
@@ -47,7 +51,7 @@ const StickyContainer = styled.div`
 
   & button {
     z-index: 101;
-    margin-left: 10px;
+    margin-left: 30px;
   }
 
   & p {
@@ -57,6 +61,7 @@ const StickyContainer = styled.div`
 
 const FadeInContent = styled.div`
   background-color: ${(props) => props.theme.colors.mainBgBlack};
+  /* this is not supported yet on Safari and Firefox. Might be good to do something else then? */
   animation-timeline: scroll();
   animation-name: fadein;
   height: 70px;

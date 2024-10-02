@@ -1,57 +1,72 @@
-.playButton {
-  background-color: whitesmoke;
-}
-
-.gridContainer {
-  min-height: 100vh;
-  max-height: 100vh;
+.container {
   padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 4fr;
-  grid-template-rows: 1fr 12fr 1fr;
   overflow: hidden;
-  grid-template-areas:
-    "header header header"
-    "leftnav maincontent maincontent"
-    "bottom bottom bottom";
   background-color: var(--main-bg-black);
 }
 
-.bottomGrid {
+.bottomBar {
   background-color: var(--main-bg-black);
-  grid-area: bottom;
   padding: 10px 25px 5px 25px;
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  grid-template-rows: 1fr;
   align-items: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
 }
 
 .searchNavBar {
+  display: none;
   grid-area: header;
 }
 
-.leftNav {
+.libraryNav {
+  display: none;
   grid-area: leftnav;
   margin: 5px;
 }
 
 .mainContent {
   grid-area: maincontent;
-  margin: 5px;
   overflow-y: scroll;
+  overflow-x: scroll;
   /* todo this gradient should likely be back at TracksList */
   background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
-  border-radius: 10px;
+  min-height: 100vh;
+  padding-bottom: 15vh;
 }
 
-.rightNav {
-  grid-area: rightnav;
-  margin: 5px;
+@media screen and (min-width: 1200px) {
+  .container {
+    min-height: 100vh;
+    max-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: 1fr 12fr 1fr;
+    grid-template-areas:
+      "header header header"
+      "leftnav maincontent maincontent"
+      "bottombar bottombar bottombar";
+  }
+
+  .bottomBar {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .libraryNav,
+  .searchNavBar {
+    display: block;
+  }
+
+  .mainContent {
+    margin: 5px;
+    border-radius: 10px;
+  }
 }
 
 /* tästä alle on alkuperäiset shitit */
-.container {
+.container2 {
   min-height: 100vh;
   padding: 0 0.5rem;
   display: flex;

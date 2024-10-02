@@ -133,16 +133,23 @@ export default () => {
 
   return (
     <>
-      <ContentContainer>
-        <NameAndImageContainer>
-          {imgSrc ? <Img src={imgSrc} /> : null}
-          <ArtistName>{artist.name}</ArtistName>
-        </NameAndImageContainer>
-      </ContentContainer>
+      <HeadingContainer>
+        {imgSrc ? <Img src={imgSrc} /> : null}
 
-      <StickyHeadingRow
+        <ArtistName>{artist.name}</ArtistName>
+
+        <HeadingPlayButton
+          onClick={() => onPlayArtist(artist.uri)}
+          isPaused={!isPlaying}
+          size="48px"
+          colorVariant="mainAction"
+        />
+      </HeadingContainer>
+
+      <HiddenStickyRowOnSmallScreen
         artistName={artist.name}
         onPlay={() => onPlayArtist(artist.uri)}
+        isPaused={!isPlaying}
       />
 
       <ContentContainer>
@@ -213,7 +220,8 @@ const ArtistName = styled.h1`
   font-size: xxx-large;
 `;
 
-const NameAndImageContainer = styled.div`
+const HeadingContainer = styled.div`
+  padding: 20px;
   display: flex;
   gap: 30px;
   align-items: center;
@@ -236,4 +244,16 @@ const Img = styled.img`
   width: 160px;
   height: 160px;
   border-radius: 100%;
+`;
+
+const HiddenStickyRowOnSmallScreen = styled(StickyHeadingRow)`
+  @media screen and (max-width: 1200px) {
+    display: none;
+  }
+`;
+
+const HeadingPlayButton = styled(PlayPauseButton)`
+  @media screen and (min-width: 1200px) {
+    display: none;
+  }
 `;

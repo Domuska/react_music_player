@@ -2,15 +2,12 @@
 
 import styles from "./layout.module.css";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { PlaybackControls } from "../../components/PlaybackControls";
 import { Library } from "../../components/Library";
-import { VolumeControls } from "../../components/VolumeBar/VolumeControls";
 import SpotifyWebPlayback from "../../components/Spotify/SpotifyWebPlayback";
-import { api } from "../../components/Spotify/SpotifyApi";
+import { api, SpotifyAPi } from "../../components/Spotify/SpotifyApi";
 import { ACCESS_TOKEN_COOKIE_NAME } from "../../pages/api/player/auth/callback";
 import { getCookieByName } from "../../utils/getCookieByName";
 import { sleep } from "../../utils/sleep";
-import { CurrentPlaybackInfo } from "../../components/CurrentPlaybackInfo";
 import { TopBar } from "../../components/TopBar/TopBar";
 import {
   QueryClient,
@@ -25,6 +22,7 @@ import {
   SpotifyApiContextWrapper,
 } from "./context";
 import { useRouter } from "next/navigation";
+import { BottomBar } from "../../components/BottomBar/BottomBar";
 
 const ONE_SECOND = 1000;
 const HALF_SECONDS = 500;
@@ -68,7 +66,10 @@ const App = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const [token, setToken] = useState<string>("");
 
-  const { spotifyApiRef, setSpotifyApiRef } = useContext(SpotifyApiContext);
+  const { spotifyApiRef, setSpotifyApiRef } = useContext<{
+    spotifyApiRef: SpotifyAPi;
+    setSpotifyApiRef: any;
+  }>(SpotifyApiContext);
 
   useEffect(() => {
     const access_token = getCookieByName(ACCESS_TOKEN_COOKIE_NAME);
@@ -100,7 +101,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
         return null;
       }
     },
-    refetchInterval: ONE_SECOND,
+    // refetchInterval: ONE_SECOND,
     enabled: !!spotifyApiRef,
   });
 
@@ -182,57 +183,40 @@ const App = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className={styles.gridContainer}>
+    <div>
       {/* The Spotify playback component */}
       <SpotifyWebPlayback
         token={token}
         onPlayerReady={onSpotifyPlayerReady}
         onStateUpdate={onStateUpdate}
       />
+      <div className={styles.container}>
+        <span className={styles.searchNavBar}>
+          <TopBar onSearch={onSearch} />
+        </span>
 
-      <span className={styles.searchNavBar}>
-        <TopBar onSearch={onSearch} />
-      </span>
+        <div className={styles.libraryNav}>
+          <Library />
+        </div>
 
-      <div className={styles.leftNav}>
-        <Library />
-      </div>
+        <div className={styles.mainContent}>
+          <CurrentPlaybackContext.Provider value={currentSpotifyData}>
+            {children}
+          </CurrentPlaybackContext.Provider>
+        </div>
 
-      <div className={styles.mainContent}>
-        <CurrentPlaybackContext.Provider value={currentSpotifyData}>
-          {children}
-        </CurrentPlaybackContext.Provider>
-      </div>
-
-      <span className={styles.bottomGrid}>
-        <CurrentPlaybackInfo
-          album={currentSpotifyData?.item.album}
-          trackTitle={currentSpotifyData?.item.name}
-          artists={currentSpotifyData?.item.artists}
-          onArtistClick={onOpenArtist}
-          onTrackClick={onOpenAlbum}
-        />
-
-        {/* TODO: the component should handle null values and be disabled rather than this */}
-        {spotifyApiRef && (
-          <PlaybackControls
-            pausePlayOnclick={spotifyOnPlayPauseClick}
-            skipToNextOnClick={spotifyApiRef.skipToNext}
-            skipToPreviousOnClick={spotifyApiRef.skipToPrevious}
-            totalPlaybackDuration={currentSpotifyData?.item.duration_ms}
-            currentPlaybackTime={currentSpotifyData?.progress_ms}
-            isPlaybackPaused={!currentSpotifyData?.is_playing}
-            onSeek={onSeek}
-          />
-        )}
-
-        <VolumeControls
-          onVolumeChange={onVolumeChange}
-          volumePercentage={currentSpotifyData?.device.volume_percent ?? 0}
-          onMuteClick={onMuteClick}
+        <BottomBar
+          currentSpotifyData={currentSpotifyData}
           isMuted={volumeState.isMuted}
+          onMuteClick={onMuteClick}
+          onOpenAlbum={onOpenAlbum}
+          onOpenArtist={onOpenArtist}
+          onSeek={onSeek}
+          onVolumeChange={onVolumeChange}
+          spotifyApiRef={spotifyApiRef}
+          spotifyOnPlayPauseClick={spotifyOnPlayPauseClick}
         />
-      </span>
+      </div>
 
       {/* For styling the automatic padding & margin on the whole web page */}
       <style>{`

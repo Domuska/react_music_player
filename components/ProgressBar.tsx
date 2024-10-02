@@ -18,10 +18,12 @@ export const ProgressBar = ({
   totalPlaybackDurationMs,
   currentPlaybackTimeMs,
   onSeek,
+  displayTimeLabels = true,
 }: {
   totalPlaybackDurationMs: number | undefined;
   currentPlaybackTimeMs: number | undefined;
-  onSeek: (timeMs: number) => Promise<void>;
+  onSeek: (timeMs: number) => void;
+  displayTimeLabels?: boolean;
 }) => {
   const totalPlaybackSeconds = totalPlaybackDurationMs
     ? totalPlaybackDurationMs / 1000
@@ -49,14 +51,14 @@ export const ProgressBar = ({
 
   return (
     <PlaybackContainer>
-      <span>{formattedCurrentProgress}</span>
+      {displayTimeLabels && <span>{formattedCurrentProgress}</span>}
 
       <SliderInput
         currentPercentageValue={currentPercentageValue}
         onSeek={onProgressUpdate}
       />
 
-      <span>{formattedTotalTime}</span>
+      {displayTimeLabels && <span>{formattedTotalTime}</span>}
     </PlaybackContainer>
   );
 };
