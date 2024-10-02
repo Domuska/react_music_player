@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "../../styles/Home.module.css";
+import styles from "./layout.module.css";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { PlaybackControls } from "../../components/PlaybackControls";
 import { Library } from "../../components/Library";
