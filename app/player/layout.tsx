@@ -101,7 +101,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
         return null;
       }
     },
-    // refetchInterval: ONE_SECOND,
+    refetchInterval: ONE_SECOND,
     enabled: !!spotifyApiRef,
   });
 

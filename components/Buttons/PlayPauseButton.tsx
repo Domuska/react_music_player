@@ -9,6 +9,8 @@ const StyledButton = styled.button<{
   border-radius: 50%;
   min-width: ${(props) => props.$size};
   min-height: ${(props) => props.$size};
+  max-width: ${(props) => props.$size};
+  max-height: ${(props) => props.$size};
   display: flex;
   justify-content: center;
   align-items: center;
