@@ -5,6 +5,8 @@ import { VolumeControls } from "../VolumeBar/VolumeControls";
 import { SkipNextButton, SkipPreviousButton } from "../IconButtons/IconButtons";
 import { PlayPauseButton } from "../Buttons/PlayPauseButton";
 import { ProgressBar } from "../ProgressBar";
+import { MobileActionsBar } from "./MobileActionsBar";
+import React from "react";
 
 type Props = {
   currentSpotifyData?: any;
@@ -16,6 +18,7 @@ type Props = {
   onMuteClick: VoidFunction;
   spotifyApiRef: SpotifyAPi;
   isMuted: boolean;
+  onOpenSearch: React.ComponentProps<typeof MobileActionsBar>["onOpenSearch"];
 };
 
 export const BottomBar = ({
@@ -28,6 +31,7 @@ export const BottomBar = ({
   onVolumeChange,
   onMuteClick,
   isMuted,
+  onOpenSearch,
 }: Props) => {
   return (
     <>
@@ -93,6 +97,7 @@ export const BottomBar = ({
           onSeek={() => {}}
           displayTimeLabels={false}
         />
+        <MobileActionsBar onOpenSearch={onOpenSearch} />
       </SmallScreenContainer>
     </>
   );
@@ -126,9 +131,7 @@ const BigScreenContainer = styled.span`
 const SmallScreenContainer = styled.span`
   position: fixed;
   bottom: 0;
-  width: 98%;
-  left: 1%;
-  margin-bottom: 10px;
+  width: 100%;
   border-radius: 10px;
 
   background-color: rgb(64, 72, 88);

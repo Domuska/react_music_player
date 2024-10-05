@@ -9,6 +9,7 @@ import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
 import { AllowedSearchTypes } from "../../../components/Spotify/SpotifyApi";
 import { useContext } from "react";
 import { SpotifyApiContext } from "../context";
+import { Search } from "../../../components/TopBar/Search";
 
 export default function () {
   const types: AllowedSearchTypes[] = ["album", "artist"];
@@ -21,7 +22,7 @@ export default function () {
   const { data } = useSuspenseQuery({
     queryKey: ["search", query, types, spotifyApiRef],
     queryFn: async () => {
-      if (spotifyApiRef) {
+      if (spotifyApiRef && query) {
         const result = await spotifyApiRef.search(query, types);
         return result;
       }
@@ -29,9 +30,16 @@ export default function () {
     },
   });
 
-  if (!spotifyApiRef || !query) {
+  if (!spotifyApiRef) {
     return null;
   }
+
+  const setSearch = (query: string) => {
+    const queryParams = new URLSearchParams({
+      searchQuery: query,
+    });
+    router.push("/player/search?" + queryParams.toString());
+  };
 
   const openArtistPage = (artistId: string) => {
     const queryParams = new URLSearchParams({
@@ -45,8 +53,17 @@ export default function () {
   };
 
   return (
-    <Container>
-      {data.artists && (
+    <SearchContainer>
+      <MobileSearchContainer>
+        <Search
+          onSearch={setSearch}
+          colorTheme="light"
+          displayBorder={false}
+          displayDatasetButton={false}
+        />
+      </MobileSearchContainer>
+
+      {data?.artists && (
         <HorizontalItemContainer
           items={data.artists.items.map((artist) => {
             return {
@@ -65,10 +82,19 @@ export default function () {
           title={{ text: "Albums" }}
         />
       )}
-    </Container>
+    </SearchContainer>
   );
 }
 
-const Container = styled.div`
+const SearchContainer = styled.div`
   padding: 25px 10px;
+`;
+
+const MobileSearchContainer = styled.div`
+  display: flex;
+  justify-content: center;
+
+  @media screen and (min-width: 1200px) {
+    display: none;
+  }
 `;

@@ -215,6 +215,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
           onVolumeChange={onVolumeChange}
           spotifyApiRef={spotifyApiRef}
           spotifyOnPlayPauseClick={spotifyOnPlayPauseClick}
+          onOpenSearch={() => onSearch("")}
         />
       </div>
 

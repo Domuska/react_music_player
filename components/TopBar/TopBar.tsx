@@ -9,7 +9,12 @@ type Props = {
 export const TopBar = ({ onSearch }: Props) => {
   return (
     <Container>
-      <Search onSearch={onSearch} />
+      <Search
+        onSearch={onSearch}
+        colorTheme="dark"
+        displayBorder
+        displayDatasetButton
+      />
     </Container>
   );
 };
