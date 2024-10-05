@@ -133,16 +133,23 @@ export default () => {
 
   return (
     <>
-      <ContentContainer>
-        <NameAndImageContainer>
-          {imgSrc ? <Img src={imgSrc} /> : null}
-          <ArtistName>{artist.name}</ArtistName>
-        </NameAndImageContainer>
-      </ContentContainer>
+      <HeadingContainer>
+        {imgSrc ? <Img src={imgSrc} /> : null}
 
-      <StickyHeadingRow
+        <ArtistName>{artist.name}</ArtistName>
+
+        <HeadingPlayButton
+          onClick={() => onPlayArtist(artist.uri)}
+          isPaused={!isPlaying}
+          size="48px"
+          colorVariant="mainAction"
+        />
+      </HeadingContainer>
+
+      <HiddenStickyRowOnSmallScreen
         artistName={artist.name}
         onPlay={() => onPlayArtist(artist.uri)}
+        isPaused={!isPlaying}
       />
 
       <ContentContainer>
@@ -210,16 +217,30 @@ const ContentContainer = styled.div`
 
 const ArtistName = styled.h1`
   color: ${(props) => props.theme.colors.textOnMainBg};
-  font-size: xxx-large;
+  font: x-large;
+  /* small screen size needs padding as text is on its' own row */
+  margin: 0 20px;
+
+  @media screen and (min-width: 600px) {
+    font-size: xxx-large;
+    padding: 0;
+  }
 `;
 
-const NameAndImageContainer = styled.div`
+const HeadingContainer = styled.div`
   display: flex;
-  gap: 30px;
-  align-items: center;
+  flex-direction: column;
+  gap: 15px;
 
   animation-timeline: scroll();
   animation-name: fadeout;
+
+  @media screen and (min-width: 600px) {
+    flex-direction: row;
+    gap: 30px;
+    padding: 20px;
+    align-items: center;
+  }
 
   @keyframes fadeout {
     0% {
@@ -233,7 +254,24 @@ const NameAndImageContainer = styled.div`
 `;
 
 const Img = styled.img`
-  width: 160px;
-  height: 160px;
-  border-radius: 100%;
+  width: 100%;
+
+  @media screen and (min-width: 600px) {
+    width: 160px;
+    height: 160px;
+    border-radius: 100%;
+  }
+`;
+
+const HiddenStickyRowOnSmallScreen = styled(StickyHeadingRow)`
+  @media screen and (max-width: 1200px) {
+    display: none;
+  }
+`;
+
+const HeadingPlayButton = styled(PlayPauseButton)`
+  margin: 0 20px;
+  @media screen and (min-width: 1200px) {
+    display: none;
+  }
 `;

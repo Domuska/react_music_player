@@ -73,3 +73,12 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 - when requests are sent to change volume, track or seek, we should immediately refetch data. This will reduce the problem of laggy UI we have now.
 - could we control seek, volume change, song change and monitor those values through the Spotify JS bundle? would that make changes visible quicker?
 - i18n support
+
+# screen size
+
+- < 900px wide
+  - bottom bar opens up if you click on it
+  - "more" button in albums / artists disappears and becomes a carousel?
+- < 1200px wide
+  - main content is the only thing visible
+  - library, search is pushed to bottom action bar

@@ -6,9 +6,17 @@ import { useDebounce } from "../../utils/useDebounce";
 
 type Props = {
   onSearch: (searchQuery: string) => void;
+  colorTheme: "light" | "dark";
+  displayBorder: boolean;
+  displayDatasetButton: boolean;
 };
 
-export const Search = ({ onSearch }: Props) => {
+export const Search = ({
+  onSearch,
+  colorTheme,
+  displayBorder,
+  displayDatasetButton,
+}: Props) => {
   const [hasFocus, setHasFocus] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -36,8 +44,12 @@ export const Search = ({ onSearch }: Props) => {
   };
 
   return (
-    <Container $hasFocus={hasFocus}>
-      <SearchInputContainer>
+    <Container
+      $hasFocus={hasFocus}
+      $colorTheme={colorTheme}
+      $displayBorder={displayBorder}
+    >
+      <SearchInputContainer $colorTheme={colorTheme}>
         <Label htmlFor="searchbar">
           <SearchIcon />
         </Label>
@@ -51,13 +63,18 @@ export const Search = ({ onSearch }: Props) => {
           value={searchQuery}
           onChange={onChange}
           placeholder="What do you want to listen to?"
+          $colorTheme={colorTheme}
         />
       </SearchInputContainer>
 
       {searchQuery == "" ? (
         <>
-          <DividerLine />
-          <DatasetButton />
+          {displayDatasetButton && (
+            <>
+              <DividerLine $colorTheme={colorTheme} />
+              <DatasetButton />
+            </>
+          )}
         </>
       ) : (
         <XButton onClick={clearQuery} />
@@ -74,14 +91,18 @@ const Label = styled.label`
   height: 100%;
 `;
 
-const SearchInput = styled.input<{ $hasFocus?: boolean }>`
+const SearchInput = styled.input<{
+  $hasFocus?: boolean;
+  $colorTheme: "light" | "dark";
+}>`
   height: 100%;
   width: 100%;
   border: none;
   outline: none;
   background: none;
   font-size: large;
-  color: var(--text-on-main-bg);
+  color: ${(props) =>
+    props.$colorTheme === "dark" ? props.theme.colors.textOnMainBg : "black"};
 
   /* hide the clear button from input, we have our own at home */
   &::-webkit-search-decoration,
@@ -90,12 +111,18 @@ const SearchInput = styled.input<{ $hasFocus?: boolean }>`
   }
 `;
 
-const Container = styled.div<{ $hasFocus?: boolean }>`
+const Container = styled.div<{
+  $hasFocus?: boolean;
+  $colorTheme: "light" | "dark";
+  $displayBorder: boolean;
+}>`
   padding: 10px;
   border-width: 2px;
-  border-style: solid;
-  border-color: ${(props) => (props.$hasFocus ? "white" : "none")};
-  background-color: var(--main-bg-color);
+  border-style: ${(props) => (props.$displayBorder ? "solid" : "none")};
+  border-color: ${(props) => (props.$hasFocus ? "white" : "auto")};
+
+  background-color: ${(props) =>
+    props.$colorTheme === "dark" ? props.theme.colors.mainBgColor : "white"};
   width: 500px;
   height: 100%;
   border-radius: 30px;
@@ -108,17 +135,26 @@ const Container = styled.div<{ $hasFocus?: boolean }>`
 
   svg {
     fill: ${(props) =>
-      props.$hasFocus ? props.theme.colors.textOnMainBg : "auto"};
+      props.$hasFocus
+        ? props.$colorTheme === "dark"
+          ? props.theme.colors.textOnMainBg
+          : "black"
+        : props.$colorTheme === "dark"
+          ? props.theme.colors.diminishedTextColor
+          : "black"};
     width: 30px;
     height: 30px;
   }
 
   &:hover {
-    background-color: var(--highlight-element-color);
+    background-color: ${(props) =>
+      props.$colorTheme === "dark"
+        ? props.theme.colors.highlightElementColor
+        : "white"};
   }
 `;
 
-const SearchInputContainer = styled.div`
+const SearchInputContainer = styled.div<{ $colorTheme: "light" | "dark" }>`
   display: flex;
   align-items: center;
   flex-grow: 10;
@@ -131,11 +167,11 @@ const SearchInputContainer = styled.div`
   }
 
   &:hover svg {
-    fill: white;
+    fill: ${(props) => (props.$colorTheme === "dark" ? "white" : "black")};
   }
 `;
 
-const DividerLine = styled.div`
+const DividerLine = styled.div<{ $colorTheme: "light" | "dark" }>`
   background-color: var(--diminished-text-color);
   width: 1px;
   height: 80%;

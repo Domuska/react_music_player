@@ -25,9 +25,15 @@ const StyledButton = styled.button`
   }
 `;
 
-export const ClockButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const ClockButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         height="18px"
@@ -40,9 +46,15 @@ export const ClockButton = ({ onClick }: { onClick?: VoidFunction }) => {
   );
 };
 
-export const SkipNextButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const SkipNextButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         height="24px"
@@ -55,9 +67,15 @@ export const SkipNextButton = ({ onClick }: { onClick?: VoidFunction }) => {
   );
 };
 
-export const SkipPreviousButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const SkipPreviousButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         height="24px"
@@ -70,25 +88,43 @@ export const SkipPreviousButton = ({ onClick }: { onClick?: VoidFunction }) => {
   );
 };
 
-export const PlayButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const PlayButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <PlayIcon />
     </StyledButton>
   );
 };
 
-export const PauseButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const PauseButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <PauseIcon />
     </StyledButton>
   );
 };
 
-export const VolumeDownButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const VolumeDownButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         height="24px"
@@ -102,9 +138,15 @@ export const VolumeDownButton = ({ onClick }: { onClick?: VoidFunction }) => {
   );
 };
 
-export const MutedButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const MutedButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         height="24px"
@@ -118,9 +160,15 @@ export const MutedButton = ({ onClick }: { onClick?: VoidFunction }) => {
   );
 };
 
-export const XButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const XButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         height="24px"
@@ -134,9 +182,15 @@ export const XButton = ({ onClick }: { onClick?: VoidFunction }) => {
   );
 };
 
-export const DatasetButton = ({ onClick }: { onClick?: VoidFunction }) => {
+export const DatasetButton = ({
+  onClick,
+  className,
+}: {
+  onClick?: VoidFunction;
+  className?: string;
+}) => {
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} className={className}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         height="24px"
