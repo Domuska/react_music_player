@@ -44,13 +44,14 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 
 # roadmap
 
-- scroll bar in main content
 - search results / artist view to display show more -button
 - use Vercel to host the app
 - add a domain
-
 - show playlists in left bar
 
+- scroll bar in main content
+  - possibly could implement custom scrollbar?
+    - https://stackoverflow.com/questions/58563185/header-extends-over-scrollbar-when-width-100
 - use <Link> elements rather than pushing user with router
   - should be easy to try out with <CurrentPlaybackInfo>
 - move polling to poll the SDK instead of API
