@@ -22,7 +22,14 @@ export const CurrentPlaybackInfo = ({
 
   return (
     <Container>
-      <img src={imgUrl} width={64} height={64} />
+      {imgUrl && (
+        <img
+          src={imgUrl}
+          width={64}
+          height={64}
+          alt={`artwork for album ${album?.name}`}
+        />
+      )}
       <LinksContainer>
         <ArtistNameButton
           onClick={album ? () => onTrackClick(album?.id) : () => {}}
