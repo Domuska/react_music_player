@@ -1,4 +1,25 @@
 import "../styles/global.css";
+import { Metadata } from "next";
+
+import { Roboto } from "next/font/google";
+
+export const metadata: Metadata = {
+  title: "T Music",
+  description: "Music player by TL, powered by Spotify",
+  keywords: ["Spotify", "Spotify music player", "portfolio"],
+  openGraph: {
+    title: "T Music",
+    description: "Music player by TL, powered by Spotify",
+    type: "music.radio_station",
+    images: ["images/icon-512.png"],
+  },
+};
+
+const roboto = Roboto({
+  weight: ["400"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -8,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={roboto.className}>
       <body>{children}</body>
     </html>
   );

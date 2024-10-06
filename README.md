@@ -44,15 +44,13 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 
 # roadmap
 
+- scroll bar in main content
 - search results / artist view to display show more -button
 - use Vercel to host the app
 - add a domain
-- login button
-- scroll bar in main content
+
 - show playlists in left bar
-- mobile enhancements
-  - hide left bar on mobile
-  - rework bottom bar on mobile
+
 - use <Link> elements rather than pushing user with router
   - should be easy to try out with <CurrentPlaybackInfo>
 - move polling to poll the SDK instead of API
@@ -61,7 +59,6 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 
 # todo
 
-- move to mobile-first / responsive system
 - bottom bar could (should?) be a float instead of part of the grid
 - at least search (likely track list too) is re-rendering on every data fetch. Dis is bad.
 - move API calls to be executed on server-side, update cookie settings

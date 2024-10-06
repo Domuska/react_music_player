@@ -23,21 +23,10 @@ import {
 } from "./context";
 import { useRouter } from "next/navigation";
 import { BottomBar } from "../../components/BottomBar/BottomBar";
+import { Login } from "../../components/Login";
 
 const ONE_SECOND = 1000;
 const HALF_SECONDS = 500;
-
-const Login = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <a className="btn-spotify" href="/api/player/auth/login">
-          Login with Spotify
-        </a>
-      </header>
-    </div>
-  );
-};
 
 const LoadingState = () => {
   return <div>Imagine a spinner spinning</div>;
@@ -218,30 +207,6 @@ const App = ({ children }: { children: React.ReactNode }) => {
           onOpenSearch={() => onSearch("")}
         />
       </div>
-
-      {/* For styling the automatic padding & margin on the whole web page */}
-      <style>{`
-      html,
-      body {
-        padding: 0;
-        margin: 0;
-        font-family:
-          -apple-system,
-          BlinkMacSystemFont,
-          Segoe UI,
-          Roboto,
-          Oxygen,
-          Ubuntu,
-          Cantarell,
-          Fira Sans,
-          Droid Sans,
-          Helvetica Neue,
-          sans-serif;
-      }
-      * {
-        box-sizing: border-box;
-      }
-    `}</style>
     </div>
   );
 };
