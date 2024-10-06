@@ -1,47 +1,51 @@
 import { useEffect, useMemo, useState } from "react";
 
 export function useCalculateElementsThatFit<Type>({
-  elementRef,
+  containingElement,
   items,
   itemWidth,
+  gutterWidth = 0,
 }: {
-  elementRef: HTMLDivElement | null;
+  containingElement: HTMLDivElement | null;
   items: Type[];
   itemWidth: number;
+  gutterWidth?: number;
 }) {
   const [resizableElementWidth, setResizableElementWidth] = useState(0);
 
   useEffect(() => {
-    if (elementRef) {
+    if (containingElement) {
       const resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
           setResizableElementWidth(entry.contentRect.width);
         }
       });
-      resizeObserver.observe(elementRef);
+      resizeObserver.observe(containingElement);
 
       return () => {
         resizeObserver.disconnect();
       };
     }
-  }, [elementRef]);
+  }, [containingElement]);
 
   const visibleItems = useMemo(() => {
-    const result = items.reduce<{ leftWidth: number; artists: Type[] }>(
+    const result = items.reduce<{ leftWidth: number; items: Type[] }>(
       (previousValue, current) => {
-        if (previousValue.leftWidth > itemWidth) {
-          previousValue.artists.push(current);
+        const fits = previousValue.leftWidth - itemWidth > gutterWidth;
+
+        if (fits) {
+          previousValue.items.push(current);
           previousValue.leftWidth -= itemWidth;
         }
         return previousValue;
       },
       {
         leftWidth: resizableElementWidth,
-        artists: [],
+        items: [],
       }
     );
-    return result.artists;
-  }, [items, resizableElementWidth, itemWidth]);
+    return result.items;
+  }, [items, resizableElementWidth, itemWidth, gutterWidth]);
 
   return visibleItems;
 }

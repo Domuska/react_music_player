@@ -5,6 +5,7 @@ import { MultiplePeopleMicrophone } from "./IconButtons/Icons";
 import React, { useState } from "react";
 import { useCalculateElementsThatFit } from "../utils/useCalculateItemsThatFit";
 import { ClickableTitle } from "./ClickableTitle";
+import Link from "next/link";
 
 type PropItem = {
   images: Image[];
@@ -28,12 +29,15 @@ export const HorizontalItemContainer = ({
   };
 }) => {
   const [gridRef, setGridRef] = useState<HTMLDivElement | null>(null);
-  const itemWidth = 200;
+  const gridGapPx = 10;
+  const itemWidthPx = 125;
+  const showMoreButtonWidthPx = 50;
 
   const visibleItems = useCalculateElementsThatFit({
-    elementRef: gridRef,
+    containingElement: gridRef,
     items: items,
-    itemWidth: itemWidth,
+    itemWidth: itemWidthPx + gridGapPx, // item will need the gap space too, calculate that in
+    gutterWidth: showMoreButtonWidthPx,
   });
 
   return (
@@ -41,8 +45,9 @@ export const HorizontalItemContainer = ({
       <ClickableTitle text={title.text} onClick={title.onClick} />
       <Grid
         ref={(newRef) => setGridRef(newRef)}
-        $visibleElements={visibleItems.length}
-        $imageWidthPx={itemWidth}
+        $visibleElements={visibleItems.length + 1}
+        $itemWidthPx={itemWidthPx}
+        $gap={gridGapPx}
       >
         {visibleItems.map(({ PlayButton, ...rest }) => {
           const imageUrl = rest.images.length > 0 ? rest.images[0].url : null;
@@ -68,20 +73,40 @@ export const HorizontalItemContainer = ({
             </ItemContainer>
           );
         })}
+
+        <ShowMoreLink href="/" $width={`${showMoreButtonWidthPx}px`}>
+          Show more
+        </ShowMoreLink>
       </Grid>
     </Container>
   );
 };
 
-const Grid = styled.div<{ $visibleElements: number; $imageWidthPx: number }>`
+const ShowMoreLink = styled(Link)<{ $width: string }>`
+  width: ${({ $width }) => $width};
+  color: ${({ theme }) => theme.colors.textOnMainBg};
+  align-self: center;
+  font-weight: bold;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline var(--text-on-main-bg);
+  }
+`;
+
+const Grid = styled.div<{
+  $visibleElements: number;
+  $itemWidthPx: number;
+  $gap: number;
+}>`
   display: grid;
   grid-template-columns: ${(props) =>
-    `repeat(${props.$visibleElements}, ${props.$imageWidthPx}px)`};
-  gap: 10px;
+    `repeat(${props.$visibleElements}, ${props.$itemWidthPx}px)`};
+  gap: ${({ $gap }) => `${$gap}px`};
 `;
 
 const Img = styled.img<{ $variant: "square" | "round" }>`
-  border-radius: ${(props) => (props.$variant == "round" ? "100%" : "10%")};
+  border-radius: ${(props) => (props.$variant == "round" ? "100%" : "4px")};
   object-fit: cover;
   aspect-ratio: 1;
   width: 100%;
