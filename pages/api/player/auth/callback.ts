@@ -4,7 +4,7 @@ import { serialize } from "cookie";
 const spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const spotify_client_id = process.env.SPOTIFY_CLIENT_ID;
 
-export const ACCESS_TOKEN_COOKIE_NAME = "domuska_spawtify_access_token";
+export const ACCESS_TOKEN_COOKIE_NAME = "tl_musicplayer_spotify_api_token";
 
 // Callback function that Spotify will call after user has logged in on their end
 export default async function handler(
