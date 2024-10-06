@@ -33,6 +33,8 @@
   background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%);
   min-height: 100vh;
   padding-bottom: 15vh;
+  /* hide the scroll bars for now, only place it's shown is the mainContent */
+  scrollbar-width: none;
 }
 
 @media screen and (min-width: 1200px) {
