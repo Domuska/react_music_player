@@ -105,7 +105,7 @@ export type SearchResponse = {
     items: Artist[];
   } & SearchPaginationFields;
   albums?: {
-    items: SimplifiedAlbum[];
+    items: Album[];
   } & SearchPaginationFields;
   playlists?: {
     items: SimplifiedPlaylist[];

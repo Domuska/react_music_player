@@ -10,6 +10,7 @@ import { AllowedSearchTypes } from "../../../components/Spotify/SpotifyApi";
 import { useContext } from "react";
 import { SpotifyApiContext } from "../context";
 import { Search } from "../../../components/TopBar/Search";
+import { Artist } from "../../../components/types";
 
 export default function () {
   const types: AllowedSearchTypes[] = ["album", "artist"];
@@ -52,6 +53,17 @@ export default function () {
     spotifyApiRef.playPlayback({ context_uri: artistUri });
   };
 
+  const getOpenMoreUri = (type: "album" | "artist") => {
+    if (query) {
+      const queryParams = new URLSearchParams({
+        searchQuery: query,
+        itemType: type,
+      });
+      return "/player/search/more?" + queryParams.toString();
+    }
+    return "";
+  };
+
   return (
     <SearchContainer>
       <MobileSearchContainer>
@@ -65,7 +77,7 @@ export default function () {
 
       {data?.artists && (
         <HorizontalItemContainer
-          items={data.artists.items.map((artist) => {
+          items={data.artists.items.map((artist: Artist) => {
             return {
               ...artist,
               onClick: () => openArtistPage(artist.id),
@@ -80,6 +92,7 @@ export default function () {
             };
           })}
           title={{ text: "Albums" }}
+          openMoreUri={getOpenMoreUri("artist")}
         />
       )}
     </SearchContainer>
