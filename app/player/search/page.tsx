@@ -1,7 +1,5 @@
 "use client";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
-import styled from "styled-components";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { HorizontalItemContainer } from "../../../components/HorizontalItemContainer";
@@ -9,8 +7,8 @@ import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
 import { AllowedSearchTypes } from "../../../components/Spotify/SpotifyApi";
 import { useContext } from "react";
 import { SpotifyApiContext } from "../context";
-import { Search } from "../../../components/TopBar/Search";
-import { Artist } from "../../../components/types";
+import { Artist, SearchResponse } from "../../../components/types";
+import { SearchResultContext } from "./searchContext";
 
 export default function () {
   const types: AllowedSearchTypes[] = ["album", "artist"];
@@ -20,27 +18,13 @@ export default function () {
   const query = searchParams?.get("searchQuery");
   const { spotifyApiRef } = useContext(SpotifyApiContext);
 
-  const { data } = useSuspenseQuery({
-    queryKey: ["search", query, types, spotifyApiRef],
-    queryFn: async () => {
-      if (spotifyApiRef && query) {
-        const result = await spotifyApiRef.search(query, types);
-        return result;
-      }
-      return null;
-    },
-  });
+  const { data } = useContext<{ data: SearchResponse | null }>(
+    SearchResultContext
+  );
 
   if (!spotifyApiRef) {
     return null;
   }
-
-  const setSearch = (query: string) => {
-    const queryParams = new URLSearchParams({
-      searchQuery: query,
-    });
-    router.push("/player/search?" + queryParams.toString());
-  };
 
   const openArtistPage = (artistId: string) => {
     const queryParams = new URLSearchParams({
@@ -65,16 +49,7 @@ export default function () {
   };
 
   return (
-    <SearchContainer>
-      <MobileSearchContainer>
-        <Search
-          onSearch={setSearch}
-          colorTheme="light"
-          displayBorder={false}
-          displayDatasetButton={false}
-        />
-      </MobileSearchContainer>
-
+    <>
       {data?.artists && (
         <HorizontalItemContainer
           items={data.artists.items.map((artist: Artist) => {
@@ -95,19 +70,6 @@ export default function () {
           openMoreUri={getOpenMoreUri("artist")}
         />
       )}
-    </SearchContainer>
+    </>
   );
 }
-
-const SearchContainer = styled.div`
-  padding: 25px 10px;
-`;
-
-const MobileSearchContainer = styled.div`
-  display: flex;
-  justify-content: center;
-
-  @media screen and (min-width: 1200px) {
-    display: none;
-  }
-`;
