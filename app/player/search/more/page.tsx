@@ -17,14 +17,11 @@ import { PlayableItem } from "../../../../components/PlayableItem";
 import { LoadMoreContext, SearchResultContext } from "../searchContext";
 import { PlayPauseButton } from "../../../../components/Buttons/PlayPauseButton";
 
-type AvailableTypes = "album" | "artist" | "track";
-
 export default () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams?.get("searchQuery");
   const itemType = searchParams?.get("itemType");
-  const currentOffset = searchParams?.get("offset");
   const { spotifyApiRef } = useContext<{ spotifyApiRef: SpotifyAPi }>(
     SpotifyApiContext
   );

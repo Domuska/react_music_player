@@ -4,7 +4,6 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { HorizontalItemContainer } from "../../../components/HorizontalItemContainer";
 import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
-import { AllowedSearchTypes } from "../../../components/Spotify/SpotifyApi";
 import { useContext } from "react";
 import { SpotifyApiContext } from "../context";
 import {
@@ -17,8 +16,6 @@ import { SearchResultContext } from "./searchContext";
 import styled from "styled-components";
 
 export default function () {
-  const types: AllowedSearchTypes[] = ["album", "artist"];
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams?.get("searchQuery");

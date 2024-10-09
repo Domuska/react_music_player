@@ -168,8 +168,11 @@ export default () => {
 
         <HorizontalItemContainer
           items={albums.map((album) => {
+            const { images } = album;
+            const image = images && images.length > 0 ? images[0] : undefined;
             return {
               ...album,
+              image,
               onClick: () => onOpenAlbum(album.id),
               PlayButton: () => (
                 <PlayPauseButton
@@ -187,8 +190,11 @@ export default () => {
 
         <HorizontalItemContainer
           items={relatedArtists.map((artist) => {
+            const { images } = artist;
+            const image = images && images.length > 0 ? images[0] : undefined;
             return {
               ...artist,
+              image,
               onClick: () => onOpenArtist(artist.id),
               PlayButton: () => (
                 <PlayPauseButton
