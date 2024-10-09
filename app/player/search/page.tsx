@@ -7,8 +7,14 @@ import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
 import { AllowedSearchTypes } from "../../../components/Spotify/SpotifyApi";
 import { useContext } from "react";
 import { SpotifyApiContext } from "../context";
-import { Artist, SearchResponse } from "../../../components/types";
+import {
+  Album,
+  Artist,
+  SearchResponse,
+  SpotifyTrackItem,
+} from "../../../components/types";
 import { SearchResultContext } from "./searchContext";
+import styled from "styled-components";
 
 export default function () {
   const types: AllowedSearchTypes[] = ["album", "artist"];
@@ -33,11 +39,11 @@ export default function () {
     router.push("/player/artist?" + queryParams.toString());
   };
 
-  const playArtist = (artistUri: string) => {
-    spotifyApiRef.playPlayback({ context_uri: artistUri });
+  const playContext = (contextUri: string) => {
+    spotifyApiRef.playPlayback({ context_uri: contextUri });
   };
 
-  const getOpenMoreUri = (type: "album" | "artist") => {
+  const getOpenMoreUri = (type: "album" | "artist" | "track") => {
     if (query) {
       const queryParams = new URLSearchParams({
         searchQuery: query,
@@ -49,17 +55,45 @@ export default function () {
   };
 
   return (
-    <>
+    <Container>
       {data?.artists && (
         <HorizontalItemContainer
           items={data.artists.items.map((artist: Artist) => {
+            const { images } = artist;
+            const image = images && images.length > 0 ? images[0] : undefined;
             return {
               ...artist,
+              image,
               onClick: () => openArtistPage(artist.id),
               PlayButton: () => (
                 <PlayPauseButton
                   isPaused={true}
-                  onClick={() => playArtist(artist.uri)}
+                  onClick={() => playContext(artist.uri)}
+                  colorVariant="mainAction"
+                  size="48px"
+                />
+              ),
+            };
+          })}
+          title={{ text: "Artists" }}
+          openMoreUri={getOpenMoreUri("artist")}
+          variant="round"
+        />
+      )}
+
+      {data?.albums && (
+        <HorizontalItemContainer
+          items={data.albums.items.map((album: Album) => {
+            const { images } = album;
+            const image = images && images.length > 0 ? images[0] : undefined;
+            return {
+              ...album,
+              image,
+              onClick: () => openArtistPage(album.id),
+              PlayButton: () => (
+                <PlayPauseButton
+                  isPaused={true}
+                  onClick={() => playContext(album.uri)}
                   colorVariant="mainAction"
                   size="48px"
                 />
@@ -67,9 +101,42 @@ export default function () {
             };
           })}
           title={{ text: "Albums" }}
-          openMoreUri={getOpenMoreUri("artist")}
+          openMoreUri={getOpenMoreUri("album")}
         />
       )}
-    </>
+
+      {data?.tracks && (
+        <HorizontalItemContainer
+          items={data.tracks.items.map((track: SpotifyTrackItem) => {
+            const { album } = track;
+            const image =
+              album.images && album.images.length > 0
+                ? album.images[0]
+                : undefined;
+            return {
+              ...track,
+              image,
+              onClick: () => openArtistPage(track.id),
+              PlayButton: () => (
+                <PlayPauseButton
+                  isPaused={true}
+                  onClick={() => playContext(track.uri)}
+                  colorVariant="mainAction"
+                  size="48px"
+                />
+              ),
+            };
+          })}
+          title={{ text: "Tracks" }}
+          openMoreUri={getOpenMoreUri("track")}
+        />
+      )}
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;

@@ -35,6 +35,12 @@ th {
   --diminished-text-color: #b8b8b8;
   --mainActionColor: #1db954;
   --highlight-element-color: rgba(255, 255, 255, 0.2);
+
+  --token-margin-sm: 4px;
+  --token-margin-m: 8px;
+  --token-margin-l: 12px;
+  --token-margin-xl: 16px;
+  --token-margin-xxl: 24px;
 }
 
 * {

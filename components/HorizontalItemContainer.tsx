@@ -7,7 +7,7 @@ import Link from "next/link";
 import { PlayableItem } from "./PlayableItem";
 
 type PropItem = {
-  images: Image[];
+  image?: Image;
   id: string;
   name: string;
   uri: string;
@@ -17,7 +17,7 @@ type PropItem = {
 
 export const HorizontalItemContainer = ({
   items,
-  variant = "round",
+  variant = "square",
   title,
   openMoreUri,
 }: {
@@ -51,7 +51,7 @@ export const HorizontalItemContainer = ({
         $gap={gridGapPx}
       >
         {visibleItems.map(({ PlayButton, ...rest }) => {
-          const imageUrl = rest.images.length > 0 ? rest.images[0].url : null;
+          const imageUrl = rest.image?.url ?? null;
           return (
             <PlayableItem
               key={rest.id}

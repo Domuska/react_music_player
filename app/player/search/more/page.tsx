@@ -6,11 +6,18 @@ import { useRouter, useSearchParams } from "next/navigation";
 import invariant from "tiny-invariant";
 import { SpotifyAPi } from "../../../../components/Spotify/SpotifyApi";
 import styled from "styled-components";
-import { Album, Artist, SearchResponse } from "../../../../components/types";
+import {
+  Album,
+  Artist,
+  SearchResponse,
+  SpotifyTrackItem,
+} from "../../../../components/types";
 import { BorderlessButton } from "../../../../components/IconButtons/IconButtons";
 import { PlayableItem } from "../../../../components/PlayableItem";
 import { LoadMoreContext, SearchResultContext } from "../searchContext";
 import { PlayPauseButton } from "../../../../components/Buttons/PlayPauseButton";
+
+type AvailableTypes = "album" | "artist" | "track";
 
 export default () => {
   const router = useRouter();
@@ -25,7 +32,7 @@ export default () => {
   invariant(searchQuery, "search query is required");
   invariant(itemType, "itemType is required");
 
-  if (itemType != "artist" && itemType != "album") {
+  if (itemType != "artist" && itemType != "album" && itemType != "track") {
     throw new Error(`Item type ${itemType} not supported yet`);
   }
 
@@ -39,7 +46,7 @@ export default () => {
     return null;
   }
 
-  let items: Album[] | Artist[] = [];
+  let items: Album[] | Artist[] | SpotifyTrackItem[] = [];
 
   if (itemType == "album" && data.albums) {
     items = data.albums.items;
@@ -47,6 +54,10 @@ export default () => {
 
   if (itemType == "artist" && data.artists) {
     items = data.artists.items;
+  }
+
+  if (itemType == "track" && data.tracks) {
+    items = data.tracks.items;
   }
 
   // these two functions are copied from search/page.tsx, simpler to copy
@@ -61,18 +72,37 @@ export default () => {
     spotifyApiRef.playPlayback({ context_uri: artistUri });
   };
 
+  const titleTexts = {
+    album: "Albums",
+    artist: "Artists",
+    track: "Tracks",
+  };
+
   return (
     <Container>
+      <h1>{titleTexts[itemType]}</h1>
       <ItemContainer>
-        {items.map((item: Album | Artist) => {
-          const imageUrl = item.images.length > 0 ? item.images[0].url : "";
+        {items.map((item: Album | Artist | SpotifyTrackItem) => {
+          let imageUrl: string;
+          // have to dig up the image from the album, tracks have no images
+          if (item.type == "track") {
+            const { album } = item;
+            imageUrl =
+              album.images && album.images.length > 0
+                ? album.images[0].url
+                : "";
+          } else {
+            imageUrl =
+              item.images && item.images.length > 0 ? item.images[0].url : "";
+          }
+
           return (
             <PlayableItem
               key={item.id}
               imageUrl={imageUrl}
               name={item.name}
               onClick={() => openArtistPage(item.uri)}
-              variant="round"
+              variant={item.type == "album" ? "square" : "round"}
               PlayButton={() => (
                 <PlayPauseButton
                   isPaused={true}
@@ -95,6 +125,12 @@ const Container = styled.div`
   gap: 20px;
   flex-direction: column;
   align-items: center;
+
+  & h1 {
+    font-weight: bold;
+    color: ${({ theme }) => theme.colors.textOnMainBg};
+    size: xx-large;
+  }
 `;
 
 const ItemContainer = styled.div`
@@ -110,7 +146,7 @@ const ItemContainer = styled.div`
 const MoreButton = styled(BorderlessButton)`
   font-weight: bold;
   color: ${({ theme }) => theme.colors.textOnMainBg};
-  font-size: xx-large;
+  font-size: x-large;
 
   &:hover {
     cursor: pointer;

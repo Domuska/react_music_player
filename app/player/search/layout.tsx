@@ -17,19 +17,16 @@ import { SearchResponse } from "../../../components/types";
 const SEARCH_ITEM_LIMIT = 10;
 
 export default function ({ children }) {
-  const types: AllowedSearchTypes[] = ["album", "artist"];
+  const types: AllowedSearchTypes[] = ["album", "artist", "track"];
   const [searchResult, setSearchResult] = useState<SearchResponse | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams?.get("searchQuery");
   const itemType = searchParams?.get("itemType");
-  const currentOffset = searchParams?.get("offset") ?? undefined;
   const { spotifyApiRef } = useContext<{
     spotifyApiRef: SpotifyAPi;
   }>(SpotifyApiContext);
-
-  const offsetNumber = Number.parseInt(currentOffset || "0", 10);
 
   const setSearch = (query: string) => {
     const queryParams = new URLSearchParams({
@@ -50,7 +47,6 @@ export default function ({ children }) {
         );
 
         setSearchResult(result);
-        // todo set offset query param to SEARCH_ITEM_LIMIT somehow
         return result;
       }
       return null;
@@ -62,25 +58,74 @@ export default function ({ children }) {
   }
 
   const loadMore = async () => {
-    if (query && itemType == "artist" && searchResult?.artists) {
+    if (!query) {
+      return;
+    }
+
+    if (itemType == "artist" && searchResult?.artists) {
+      const currentOffset = searchResult.artists.offset;
       const result = await spotifyApiRef.search(
         query,
         [itemType],
-        offsetNumber + SEARCH_ITEM_LIMIT,
+        currentOffset + SEARCH_ITEM_LIMIT,
         SEARCH_ITEM_LIMIT
       );
+
+      if (!result.artists) {
+        return;
+      }
 
       const concatenated = searchResult?.artists.items.concat(
         ...(result.artists?.items ?? [])
       );
-      console.log(concatenated);
 
-      const newArtists = { ...searchResult.artists };
+      const newArtists = result.artists;
       newArtists.items = concatenated;
       setSearchResult({ ...searchResult, artists: newArtists });
-      // todo increment offset
-      // todo try to make this a bit more generic, it needs to work for songs & artists too
-      // todo this can just be more statements: if (query && itemType == "album") etc too
+    }
+
+    if (itemType == "album" && searchResult?.albums) {
+      const currentOffset = searchResult.albums.offset;
+      const result = await spotifyApiRef.search(
+        query,
+        [itemType],
+        currentOffset + SEARCH_ITEM_LIMIT,
+        SEARCH_ITEM_LIMIT
+      );
+
+      if (!result.albums) {
+        return;
+      }
+
+      const concatenated = searchResult?.albums.items.concat(
+        ...(result.albums?.items ?? [])
+      );
+
+      const newAlbums = result.albums;
+      newAlbums.items = concatenated;
+      setSearchResult({ ...searchResult, albums: newAlbums });
+    }
+
+    if (itemType == "track" && searchResult?.tracks) {
+      const currentOffset = searchResult.tracks.offset;
+      const result = await spotifyApiRef.search(
+        query,
+        [itemType],
+        currentOffset + SEARCH_ITEM_LIMIT,
+        SEARCH_ITEM_LIMIT
+      );
+
+      if (!result.tracks) {
+        return;
+      }
+
+      const concatenated = searchResult?.tracks.items.concat(
+        ...(result.tracks?.items ?? [])
+      );
+
+      const newTracks = result.tracks;
+      newTracks.items = concatenated;
+      setSearchResult({ ...searchResult, tracks: newTracks });
     }
   };
 
@@ -104,7 +149,10 @@ export default function ({ children }) {
 }
 
 const SearchContainer = styled.div`
-  padding: 25px 10px;
+  padding: ${(props) => props.theme.tokens.marginXxl};
+  display: flex;
+  flex-direction: column;
+  gap: ${(props) => props.theme.tokens.marginXl};
 `;
 
 const MobileSearchContainer = styled.div`

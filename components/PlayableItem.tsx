@@ -3,14 +3,12 @@ import { BorderlessButton } from "./IconButtons/IconButtons";
 import { MultiplePeopleMicrophone } from "./IconButtons/Icons";
 
 export const PlayableItem = ({
-  
   onClick,
   name,
   PlayButton,
   imageUrl,
   variant,
 }: {
-  
   onClick: VoidFunction;
   name: string;
   PlayButton?: () => JSX.Element;
@@ -51,7 +49,7 @@ const Img = styled.img<{ $variant: "square" | "round" }>`
 
 const ItemContainer = styled.div`
   position: relative;
-  border-radius: 5px;
+  border-radius: 15px;
 
   &:hover {
     background-color: var(--highlight-element-color);
