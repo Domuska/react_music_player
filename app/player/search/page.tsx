@@ -29,15 +29,40 @@ export default function () {
     return null;
   }
 
-  const openArtistPage = (artistId: string) => {
-    const queryParams = new URLSearchParams({
-      artistId,
-    });
-    router.push("/player/artist?" + queryParams.toString());
+  const openDetailsPage = (
+    itemId: string,
+    itemType: "album" | "artist" | "track"
+  ) => {
+    switch (itemType) {
+      case "album": {
+        const queryParams = new URLSearchParams({
+          albumId: itemId,
+        });
+        router.push("/player/album?" + queryParams.toString());
+        return;
+      }
+
+      case "artist": {
+        const queryParams = new URLSearchParams({
+          artistId: itemId,
+        });
+        router.push("/player/artist?" + queryParams.toString());
+        return;
+      }
+
+      case "track": {
+        // not implemented yet
+        return;
+      }
+
+      default: {
+        throw new Error("unknown item type");
+      }
+    }
   };
 
-  const playContext = (contextUri: string) => {
-    spotifyApiRef.playPlayback({ context_uri: contextUri });
+  const playItem = (uri: string) => {
+    spotifyApiRef.playPlayback({ context_uri: uri });
   };
 
   const getOpenMoreUri = (type: "album" | "artist" | "track") => {
@@ -61,11 +86,11 @@ export default function () {
             return {
               ...artist,
               image,
-              onClick: () => openArtistPage(artist.id),
+              onClick: () => openDetailsPage(artist.id, "artist"),
               PlayButton: () => (
                 <PlayPauseButton
                   isPaused={true}
-                  onClick={() => playContext(artist.uri)}
+                  onClick={() => playItem(artist.uri)}
                   colorVariant="mainAction"
                   size="48px"
                 />
@@ -86,11 +111,11 @@ export default function () {
             return {
               ...album,
               image,
-              onClick: () => openArtistPage(album.id),
+              onClick: () => openDetailsPage(album.id, "album"),
               PlayButton: () => (
                 <PlayPauseButton
                   isPaused={true}
-                  onClick={() => playContext(album.uri)}
+                  onClick={() => playItem(album.uri)}
                   colorVariant="mainAction"
                   size="48px"
                 />
@@ -113,15 +138,7 @@ export default function () {
             return {
               ...track,
               image,
-              onClick: () => openArtistPage(track.id),
-              PlayButton: () => (
-                <PlayPauseButton
-                  isPaused={true}
-                  onClick={() => playContext(track.uri)}
-                  colorVariant="mainAction"
-                  size="48px"
-                />
-              ),
+              onClick: () => openDetailsPage(track.album.id, "album"),
             };
           })}
           title={{ text: "Tracks" }}

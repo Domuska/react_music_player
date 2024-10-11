@@ -1,6 +1,6 @@
 "use client";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -8,7 +8,7 @@ import {
   AllowedSearchTypes,
   SpotifyAPi,
 } from "../../../components/Spotify/SpotifyApi";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { SpotifyApiContext } from "../context";
 import { Search } from "../../../components/TopBar/Search";
 import { LoadMoreContext, SearchResultContext } from "./searchContext";
@@ -16,10 +16,81 @@ import { SearchResponse } from "../../../components/types";
 
 const SEARCH_ITEM_LIMIT = 10;
 
-export default function ({ children }) {
-  const types: AllowedSearchTypes[] = ["album", "artist", "track"];
-  const [searchResult, setSearchResult] = useState<SearchResponse | null>(null);
+type SearchQueryData = {
+  pages: SearchResponse[];
+};
 
+const getInitialEmptySearchResponse = (): SearchResponse => {
+  return {
+    artists: {
+      items: [],
+      limit: 0,
+      next: "",
+      offset: 0,
+      previous: "",
+      total: 0,
+    },
+    albums: {
+      items: [],
+      limit: 0,
+      next: "",
+      offset: 0,
+      previous: "",
+      total: 0,
+    },
+    tracks: {
+      items: [],
+      limit: 0,
+      next: "",
+      offset: 0,
+      previous: "",
+      total: 0,
+    },
+  };
+};
+
+const flattenSearchPages = (data: SearchQueryData | null) => {
+  if (!data) {
+    return;
+  }
+
+  const flattenedData = data.pages.reduce((previousValue, currentValue) => {
+    // make TS happy, these are set in the initial data
+    if (
+      !previousValue.artists ||
+      !previousValue.albums ||
+      !previousValue.tracks
+    ) {
+      return;
+    }
+
+    if (currentValue.artists) {
+      const currentItems = currentValue.artists.items;
+      const concatenated = previousValue.artists.items.concat(currentItems);
+      previousValue.artists.items = concatenated;
+    }
+
+    if (currentValue.albums) {
+      const currentItems = currentValue.albums.items;
+      const concatenated = previousValue.albums.items.concat(currentItems);
+      previousValue.albums.items = concatenated;
+    }
+
+    if (currentValue.tracks) {
+      const currentItems = currentValue.tracks.items;
+      const concatenated = previousValue.tracks.items.concat(currentItems);
+      previousValue.tracks.items = concatenated;
+    }
+
+    return previousValue;
+  }, getInitialEmptySearchResponse());
+
+  return flattenedData;
+};
+
+const allowedItemTypes: AllowedSearchTypes[] = ["album", "artist", "track"];
+
+export default function ({ children }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams?.get("searchQuery");
@@ -35,103 +106,80 @@ export default function ({ children }) {
     router.push("/player/search?" + queryParams.toString());
   };
 
-  useSuspenseQuery({
-    queryKey: ["search", query, types, spotifyApiRef],
-    queryFn: async () => {
-      if (spotifyApiRef && query) {
-        const result = await spotifyApiRef.search(
-          query,
-          types,
-          0,
-          SEARCH_ITEM_LIMIT
-        );
+  const setQueryParam = ({
+    newQuery,
+    newItemType,
+  }: {
+    newQuery?: string;
+    newItemType?: string;
+  }) => {
+    const sanitizedItemType = itemType ?? "album";
+    const sanitizedQuery = query ?? "";
+    const queryParams = new URLSearchParams({
+      itemType: newItemType ?? sanitizedItemType,
+      query: newQuery ?? sanitizedQuery,
+    });
 
-        setSearchResult(result);
-        return result;
+    router.push("/player/search?" + queryParams.toString());
+  };
+
+  const fetchSpotifySearchData = async ({ pageParam }) => {
+    if (spotifyApiRef && query) {
+      const result = await spotifyApiRef.search(
+        query,
+        allowedItemTypes,
+        pageParam ?? 0,
+        SEARCH_ITEM_LIMIT
+      );
+      return result;
+    }
+    return {};
+  };
+
+  const {
+    data,
+    fetchNextPage,
+    isFetching,
+    hasNextPage,
+  }: {
+    data: SearchResponse | undefined;
+    fetchNextPage: VoidFunction;
+    isFetching: boolean;
+    hasNextPage: boolean;
+  } = useSuspenseInfiniteQuery({
+    queryKey: ["search", query, allowedItemTypes, spotifyApiRef, itemType],
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => {
+      // todo just hard-coded value for now
+      // real implementation should check what is the current type
+      // we are showing on this page, and see if spotify tells there's more items
+      if (lastPage.artists && lastPage.artists.offset < 30) {
+        return lastPage?.artists.offset + SEARCH_ITEM_LIMIT;
       }
-      return null;
     },
+    queryFn: fetchSpotifySearchData,
+    select: flattenSearchPages,
   });
 
-  if (!spotifyApiRef) {
+  if (!spotifyApiRef || !data) {
     return null;
   }
 
   const loadMore = async () => {
-    if (!query) {
-      return;
-    }
-
-    if (itemType == "artist" && searchResult?.artists) {
-      const currentOffset = searchResult.artists.offset;
-      const result = await spotifyApiRef.search(
-        query,
-        [itemType],
-        currentOffset + SEARCH_ITEM_LIMIT,
-        SEARCH_ITEM_LIMIT
-      );
-
-      if (!result.artists) {
-        return;
-      }
-
-      const concatenated = searchResult?.artists.items.concat(
-        ...(result.artists?.items ?? [])
-      );
-
-      const newArtists = result.artists;
-      newArtists.items = concatenated;
-      setSearchResult({ ...searchResult, artists: newArtists });
-    }
-
-    if (itemType == "album" && searchResult?.albums) {
-      const currentOffset = searchResult.albums.offset;
-      const result = await spotifyApiRef.search(
-        query,
-        [itemType],
-        currentOffset + SEARCH_ITEM_LIMIT,
-        SEARCH_ITEM_LIMIT
-      );
-
-      if (!result.albums) {
-        return;
-      }
-
-      const concatenated = searchResult?.albums.items.concat(
-        ...(result.albums?.items ?? [])
-      );
-
-      const newAlbums = result.albums;
-      newAlbums.items = concatenated;
-      setSearchResult({ ...searchResult, albums: newAlbums });
-    }
-
-    if (itemType == "track" && searchResult?.tracks) {
-      const currentOffset = searchResult.tracks.offset;
-      const result = await spotifyApiRef.search(
-        query,
-        [itemType],
-        currentOffset + SEARCH_ITEM_LIMIT,
-        SEARCH_ITEM_LIMIT
-      );
-
-      if (!result.tracks) {
-        return;
-      }
-
-      const concatenated = searchResult?.tracks.items.concat(
-        ...(result.tracks?.items ?? [])
-      );
-
-      const newTracks = result.tracks;
-      newTracks.items = concatenated;
-      setSearchResult({ ...searchResult, tracks: newTracks });
+    if (!isFetching && hasNextPage) {
+      fetchNextPage();
     }
   };
 
   return (
-    <SearchResultContext.Provider value={{ data: searchResult }}>
-      <LoadMoreContext.Provider value={{ loadMore }}>
+    <SearchResultContext.Provider value={{ data }}>
+      <LoadMoreContext.Provider
+        value={{
+          loadMore,
+          canFetchMore: !isFetching && hasNextPage,
+          isFetching,
+        }}
+      >
         <SearchContainer>
           <MobileSearchContainer>
             <Search

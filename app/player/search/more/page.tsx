@@ -16,6 +16,7 @@ import { BorderlessButton } from "../../../../components/IconButtons/IconButtons
 import { PlayableItem } from "../../../../components/PlayableItem";
 import { LoadMoreContext, SearchResultContext } from "../searchContext";
 import { PlayPauseButton } from "../../../../components/Buttons/PlayPauseButton";
+import { Spinner } from "../../../../components/Spinner";
 
 export default () => {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default () => {
     SearchResultContext
   );
 
-  const { loadMore } = useContext(LoadMoreContext);
+  const { loadMore, canFetchMore, isFetching } = useContext(LoadMoreContext);
 
   if (!data) {
     return null;
@@ -57,16 +58,33 @@ export default () => {
     items = data.tracks.items;
   }
 
-  // these two functions are copied from search/page.tsx, simpler to copy
-  const openArtistPage = (artistId: string) => {
-    const queryParams = new URLSearchParams({
-      artistId,
-    });
-    router.push("/player/artist?" + queryParams.toString());
+  const openDetailsPage = (itemId: string) => {
+    switch (itemType) {
+      case "album":
+      case "track": {
+        const queryParams = new URLSearchParams({
+          albumId: itemId,
+        });
+        router.push("/player/album?" + queryParams.toString());
+        return;
+      }
+
+      case "artist": {
+        const queryParams = new URLSearchParams({
+          artistId: itemId,
+        });
+        router.push("/player/artist?" + queryParams.toString());
+        return;
+      }
+
+      default: {
+        throw new Error("unknown item type");
+      }
+    }
   };
 
-  const playArtist = (artistUri: string) => {
-    spotifyApiRef.playPlayback({ context_uri: artistUri });
+  const playItem = (uri: string) => {
+    spotifyApiRef.playPlayback({ context_uri: uri });
   };
 
   const titleTexts = {
@@ -98,21 +116,32 @@ export default () => {
               key={item.id}
               imageUrl={imageUrl}
               name={item.name}
-              onClick={() => openArtistPage(item.uri)}
-              variant={item.type == "album" ? "square" : "round"}
-              PlayButton={() => (
-                <PlayPauseButton
-                  isPaused={true}
-                  onClick={() => playArtist(item.uri)}
-                  colorVariant="mainAction"
-                  size="48px"
-                />
-              )}
+              onClick={() =>
+                openDetailsPage(item.type == "track" ? item.album.id : item.id)
+              }
+              variant={item.type == "artist" ? "round" : "square"}
+              PlayButton={
+                itemType != "track"
+                  ? () => (
+                      <PlayPauseButton
+                        isPaused={true}
+                        onClick={() => playItem(item.uri)}
+                        colorVariant="mainAction"
+                        size="48px"
+                      />
+                    )
+                  : undefined
+              }
             />
           );
         })}
       </ItemContainer>
-      {loadMore && <MoreButton onClick={loadMore}>Load more</MoreButton>}
+
+      {loadMore && canFetchMore && (
+        <MoreButton onClick={loadMore}>Load more</MoreButton>
+      )}
+
+      {isFetching && <Spinner />}
     </Container>
   );
 };
@@ -132,10 +161,11 @@ const Container = styled.div`
 
 const ItemContainer = styled.div`
   display: grid;
-  gap: 20px;
+  gap: 10px;
   grid-template-columns: repeat(3, 1fr);
 
   @media screen and (min-width: 900px) {
+    gap: 20px;
     grid-template-columns: repeat(5, 1fr);
   }
 `;

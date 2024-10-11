@@ -9,6 +9,11 @@ export const SearchResultContext = createContext<{
 
 type loadMoreContext = {
   loadMore?: VoidFunction;
+  canFetchMore: boolean;
+  isFetching: boolean;
 };
 
-export const LoadMoreContext = createContext<loadMoreContext>({});
+export const LoadMoreContext = createContext<loadMoreContext>({
+  canFetchMore: true,
+  isFetching: false,
+});
