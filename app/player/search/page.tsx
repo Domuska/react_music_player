@@ -1,78 +1,108 @@
 "use client";
 
-import { useSuspenseQuery } from "@tanstack/react-query";
-import styled from "styled-components";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { HorizontalItemContainer } from "../../../components/HorizontalItemContainer";
 import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
-import { AllowedSearchTypes } from "../../../components/Spotify/SpotifyApi";
 import { useContext } from "react";
 import { SpotifyApiContext } from "../context";
-import { Search } from "../../../components/TopBar/Search";
+import { Album, Artist, SpotifyTrackItem } from "../../../components/types";
+import { SearchResultContext, SearchResultContextType } from "./searchContext";
+import styled from "styled-components";
+import { Spinner } from "../../../components/Spinner";
 
 export default function () {
-  const types: AllowedSearchTypes[] = ["album", "artist"];
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams?.get("searchQuery");
   const { spotifyApiRef } = useContext(SpotifyApiContext);
 
-  const { data } = useSuspenseQuery({
-    queryKey: ["search", query, types, spotifyApiRef],
-    queryFn: async () => {
-      if (spotifyApiRef && query) {
-        const result = await spotifyApiRef.search(query, types);
-        return result;
-      }
-      return null;
-    },
-  });
+  const { data, isFetching } =
+    useContext<SearchResultContextType>(SearchResultContext);
 
-  if (!spotifyApiRef) {
-    return null;
+  if (!spotifyApiRef || isFetching) {
+    return <Spinner />;
   }
 
-  const setSearch = (query: string) => {
-    const queryParams = new URLSearchParams({
-      searchQuery: query,
-    });
-    router.push("/player/search?" + queryParams.toString());
+  const openDetailsPage = (itemId: string, itemType: "album" | "artist") => {
+    switch (itemType) {
+      case "album": {
+        const queryParams = new URLSearchParams({
+          albumId: itemId,
+        });
+        router.push("/player/album?" + queryParams.toString());
+        return;
+      }
+
+      case "artist": {
+        const queryParams = new URLSearchParams({
+          artistId: itemId,
+        });
+        router.push("/player/artist?" + queryParams.toString());
+        return;
+      }
+
+      default: {
+        throw new Error("unknown item type");
+      }
+    }
   };
 
-  const openArtistPage = (artistId: string) => {
-    const queryParams = new URLSearchParams({
-      artistId,
-    });
-    router.push("/player/artist?" + queryParams.toString());
+  const playItem = (uri: string) => {
+    spotifyApiRef.playPlayback({ context_uri: uri });
   };
 
-  const playArtist = (artistUri: string) => {
-    spotifyApiRef.playPlayback({ context_uri: artistUri });
+  const getOpenMoreUri = (type: "album" | "artist" | "track") => {
+    if (query) {
+      const queryParams = new URLSearchParams({
+        searchQuery: query,
+        itemType: type,
+      });
+      return "/player/search/more?" + queryParams.toString();
+    }
+    return "";
   };
 
   return (
-    <SearchContainer>
-      <MobileSearchContainer>
-        <Search
-          onSearch={setSearch}
-          colorTheme="light"
-          displayBorder={false}
-          displayDatasetButton={false}
-        />
-      </MobileSearchContainer>
-
+    <Container>
       {data?.artists && (
         <HorizontalItemContainer
-          items={data.artists.items.map((artist) => {
+          items={data.artists.items.map((artist: Artist) => {
+            const { images } = artist;
+            const image = images && images.length > 0 ? images[0] : undefined;
             return {
               ...artist,
-              onClick: () => openArtistPage(artist.id),
+              image,
+              onClick: () => openDetailsPage(artist.id, "artist"),
               PlayButton: () => (
                 <PlayPauseButton
                   isPaused={true}
-                  onClick={() => playArtist(artist.uri)}
+                  onClick={() => playItem(artist.uri)}
+                  colorVariant="mainAction"
+                  size="48px"
+                />
+              ),
+            };
+          })}
+          title={{ text: "Artists" }}
+          openMoreUri={getOpenMoreUri("artist")}
+          variant="round"
+        />
+      )}
+
+      {data?.albums && (
+        <HorizontalItemContainer
+          items={data.albums.items.map((album: Album) => {
+            const { images } = album;
+            const image = images && images.length > 0 ? images[0] : undefined;
+            return {
+              ...album,
+              image,
+              onClick: () => openDetailsPage(album.id, "album"),
+              PlayButton: () => (
+                <PlayPauseButton
+                  isPaused={true}
+                  onClick={() => playItem(album.uri)}
                   colorVariant="mainAction"
                   size="48px"
                 />
@@ -80,21 +110,34 @@ export default function () {
             };
           })}
           title={{ text: "Albums" }}
+          openMoreUri={getOpenMoreUri("album")}
         />
       )}
-    </SearchContainer>
+
+      {data?.tracks && (
+        <HorizontalItemContainer
+          items={data.tracks.items.map((track: SpotifyTrackItem) => {
+            const { album } = track;
+            const image =
+              album.images && album.images.length > 0
+                ? album.images[0]
+                : undefined;
+            return {
+              ...track,
+              image,
+              onClick: () => openDetailsPage(track.album.id, "album"),
+            };
+          })}
+          title={{ text: "Tracks" }}
+          openMoreUri={getOpenMoreUri("track")}
+        />
+      )}
+    </Container>
   );
 }
 
-const SearchContainer = styled.div`
-  padding: 25px 10px;
-`;
-
-const MobileSearchContainer = styled.div`
+const Container = styled.div`
   display: flex;
-  justify-content: center;
-
-  @media screen and (min-width: 1200px) {
-    display: none;
-  }
+  flex-direction: column;
+  gap: 20px;
 `;

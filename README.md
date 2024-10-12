@@ -60,6 +60,9 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 
 # todo
 
+- the search functionality in top bar and in the search page are very separate, they should be combined with better component composition. Now the search works because the query param is kept in sync.
+- search page should look better if there is no search results yet
+- the search bar & query param should be kept in sync
 - bottom bar could (should?) be a float instead of part of the grid
 - at least search (likely track list too) is re-rendering on every data fetch. Dis is bad.
 - move API calls to be executed on server-side, update cookie settings

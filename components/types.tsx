@@ -53,6 +53,7 @@ export type Album = {
   uri: string;
   artists: SimplifiedArtist[];
   id: string;
+  type: "album";
   tracks: {
     items: Track[];
   };
@@ -105,7 +106,7 @@ export type SearchResponse = {
     items: Artist[];
   } & SearchPaginationFields;
   albums?: {
-    items: SimplifiedAlbum[];
+    items: Album[];
   } & SearchPaginationFields;
   playlists?: {
     items: SimplifiedPlaylist[];
@@ -117,6 +118,7 @@ export type SearchResponse = {
 export type SpotifyTrackItem = {
   album: SimplifiedAlbum;
   artists: SimplifiedArtist[];
+  images: Image[];
   duration_ms: number;
   id: string;
   name: string;

@@ -14,6 +14,13 @@ declare module "styled-components" {
       mainActionColor: string;
       highlightElementColor: string;
     };
+    tokens: {
+      marginSm: "4px";
+      marginM: "8px";
+      marginL: "12px";
+      marginXl: "16px";
+      marginXxl: "24px";
+    };
   }
 }
 
@@ -26,5 +33,12 @@ export const theme: DefaultTheme = {
     diminishedTextColor: "#b8b8b8",
     mainActionColor: "#1db954",
     highlightElementColor: "rgba(255, 255, 255, 0.2)",
+  },
+  tokens: {
+    marginSm: "4px",
+    marginM: "8px",
+    marginL: "12px",
+    marginXl: "16px",
+    marginXxl: "24px",
   },
 };

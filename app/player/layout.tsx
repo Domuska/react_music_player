@@ -1,7 +1,13 @@
 "use client";
 
 import styles from "./layout.module.css";
-import { useCallback, useContext, useEffect, useState } from "react";
+import {
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Library } from "../../components/Library";
 import SpotifyWebPlayback from "../../components/Spotify/SpotifyWebPlayback";
 import { api, SpotifyAPi } from "../../components/Spotify/SpotifyApi";
@@ -34,7 +40,7 @@ const LoadingState = () => {
 
 const queryClient = new QueryClient();
 
-export default function ({ children }: { children: React.ReactNode }) {
+export default function ({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>

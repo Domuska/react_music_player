@@ -71,7 +71,7 @@ const A = styled.a`
     width: 48px;
     height: 48px;
     fill: black;
-    transition: transform 0.5s;
+    transition: transform 0.3s;
   }
 
   &:hover svg {

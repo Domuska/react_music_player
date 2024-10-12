@@ -66,7 +66,7 @@ export const ArrowRight = ({ className }: { className?: string }) => {
       height="24px"
       viewBox="0 -960 960 960"
       width="24px"
-      fill="#5f6368"
+      fill="var(--text-on-main-bg)"
     >
       <path d="m700-300-57-56 84-84H120v-80h607l-83-84 57-56 179 180-180 180Z" />
     </svg>

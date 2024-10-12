@@ -26,7 +26,9 @@ export type SpotifyAPi = {
   fetchAlbum: (albumId: string) => Promise<Album>;
   search: (
     query: string,
-    types: AllowedSearchTypes[]
+    types: AllowedSearchTypes[],
+    offset: number,
+    resultLimit: number
   ) => Promise<SearchResponse>;
   fetchArtist: (artistId: string) => Promise<Artist>;
   fetchArtistTopTracks: (artistId: string) => Promise<Track[]>;
@@ -178,13 +180,15 @@ export const api: CreateApi = (token: string, deviceId: string) => {
     search: async (
       searchQuery: string,
       types: AllowedSearchTypes[],
-      resultLimit?: number
+      offset: number,
+      resultLimit: number
     ) => {
       const itemTypes = encodeURI(types.join(","));
       const queryParams = new URLSearchParams({
         type: itemTypes,
         q: encodeURI(searchQuery),
-        limit: resultLimit?.toString() ?? "10",
+        limit: resultLimit.toString(),
+        offset: offset.toString(),
       });
       const url = "https://api.spotify.com/v1/search?" + queryParams.toString();
       const result = await fetch(url, {
