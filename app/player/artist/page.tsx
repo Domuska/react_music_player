@@ -168,8 +168,7 @@ export default () => {
 
         <HorizontalItemContainer
           items={albums.map((album) => {
-            const { images } = album;
-            const image = images && images.length > 0 ? images[0] : undefined;
+            const image = album.images?.[0];
             return {
               ...album,
               image,
@@ -190,8 +189,7 @@ export default () => {
 
         <HorizontalItemContainer
           items={relatedArtists.map((artist) => {
-            const { images } = artist;
-            const image = images && images.length > 0 ? images[0] : undefined;
+            const image = artist.images?.[0];
             return {
               ...artist,
               image,

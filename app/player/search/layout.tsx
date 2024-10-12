@@ -8,11 +8,16 @@ import {
   AllowedSearchTypes,
   SpotifyAPi,
 } from "../../../components/Spotify/SpotifyApi";
-import { useContext } from "react";
+import { PropsWithChildren, useContext } from "react";
 import { SpotifyApiContext } from "../context";
 import { Search } from "../../../components/TopBar/Search";
-import { LoadMoreContext, SearchResultContext } from "./searchContext";
-import { SearchResponse } from "../../../components/types";
+import { SearchResultContext } from "./searchContext";
+import {
+  Album,
+  Artist,
+  SearchResponse,
+  SpotifyTrackItem,
+} from "../../../components/types";
 
 const SEARCH_ITEM_LIMIT = 10;
 
@@ -20,7 +25,20 @@ type SearchQueryData = {
   pages: SearchResponse[];
 };
 
-const getInitialEmptySearchResponse = (): SearchResponse => {
+// stricter typing for the initial data
+type InitialData = {
+  artists: {
+    items: Artist[];
+  };
+  albums: {
+    items: Album[];
+  };
+  tracks: {
+    items: SpotifyTrackItem[];
+  };
+} & SearchResponse;
+
+const getInitialEmptySearchResponse = (): InitialData => {
   return {
     artists: {
       items: [],
@@ -54,43 +72,37 @@ const flattenSearchPages = (data: SearchQueryData | null) => {
     return;
   }
 
-  const flattenedData = data.pages.reduce((previousValue, currentValue) => {
-    // make TS happy, these are set in the initial data
-    if (
-      !previousValue.artists ||
-      !previousValue.albums ||
-      !previousValue.tracks
-    ) {
-      return;
-    }
+  const flattenedData = data.pages.reduce(
+    (previousValue: InitialData, currentValue) => {
+      if (currentValue.artists) {
+        const currentItems = currentValue.artists.items;
+        const concatenated = previousValue.artists.items.concat(currentItems);
+        previousValue.artists.items = concatenated;
+      }
 
-    if (currentValue.artists) {
-      const currentItems = currentValue.artists.items;
-      const concatenated = previousValue.artists.items.concat(currentItems);
-      previousValue.artists.items = concatenated;
-    }
+      if (currentValue.albums) {
+        const currentItems = currentValue.albums.items;
+        const concatenated = previousValue.albums.items.concat(currentItems);
+        previousValue.albums.items = concatenated;
+      }
 
-    if (currentValue.albums) {
-      const currentItems = currentValue.albums.items;
-      const concatenated = previousValue.albums.items.concat(currentItems);
-      previousValue.albums.items = concatenated;
-    }
+      if (currentValue.tracks) {
+        const currentItems = currentValue.tracks.items;
+        const concatenated = previousValue.tracks.items.concat(currentItems);
+        previousValue.tracks.items = concatenated;
+      }
 
-    if (currentValue.tracks) {
-      const currentItems = currentValue.tracks.items;
-      const concatenated = previousValue.tracks.items.concat(currentItems);
-      previousValue.tracks.items = concatenated;
-    }
-
-    return previousValue;
-  }, getInitialEmptySearchResponse());
+      return previousValue;
+    },
+    getInitialEmptySearchResponse()
+  );
 
   return flattenedData;
 };
 
 const allowedItemTypes: AllowedSearchTypes[] = ["album", "artist", "track"];
 
-export default function ({ children }) {
+export default function ({ children }: PropsWithChildren) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams?.get("searchQuery");
@@ -171,27 +183,27 @@ export default function ({ children }) {
     }
   };
 
+  // todo we should really use suspense in rendering this
   return (
-    <SearchResultContext.Provider value={{ data }}>
-      <LoadMoreContext.Provider
-        value={{
-          loadMore,
-          canFetchMore: !isFetching && hasNextPage,
-          isFetching,
-        }}
-      >
-        <SearchContainer>
-          <MobileSearchContainer>
-            <Search
-              onSearch={setSearch}
-              colorTheme="light"
-              displayBorder={false}
-              displayDatasetButton={false}
-            />
-          </MobileSearchContainer>
-          {children}
-        </SearchContainer>
-      </LoadMoreContext.Provider>
+    <SearchResultContext.Provider
+      value={{
+        data,
+        loadMore,
+        canFetchMore: !isFetching && hasNextPage,
+        isFetching,
+      }}
+    >
+      <SearchContainer>
+        <MobileSearchContainer>
+          <Search
+            onSearch={setSearch}
+            colorTheme="light"
+            displayBorder={false}
+            displayDatasetButton={false}
+          />
+        </MobileSearchContainer>
+        {children}
+      </SearchContainer>
     </SearchResultContext.Provider>
   );
 }

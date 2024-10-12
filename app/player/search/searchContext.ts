@@ -1,19 +1,15 @@
 import { createContext } from "react";
 import { SearchResponse } from "../../../components/types";
 
-export const SearchResultContext = createContext<{
+export type SearchResultContextType = {
   data: SearchResponse | null;
-}>({
-  data: null,
-});
-
-type loadMoreContext = {
   loadMore?: VoidFunction;
   canFetchMore: boolean;
   isFetching: boolean;
 };
 
-export const LoadMoreContext = createContext<loadMoreContext>({
+export const SearchResultContext = createContext<SearchResultContextType>({
+  data: null,
   canFetchMore: true,
   isFetching: false,
 });

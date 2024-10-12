@@ -6,14 +6,10 @@ import { HorizontalItemContainer } from "../../../components/HorizontalItemConta
 import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
 import { useContext } from "react";
 import { SpotifyApiContext } from "../context";
-import {
-  Album,
-  Artist,
-  SearchResponse,
-  SpotifyTrackItem,
-} from "../../../components/types";
-import { SearchResultContext } from "./searchContext";
+import { Album, Artist, SpotifyTrackItem } from "../../../components/types";
+import { SearchResultContext, SearchResultContextType } from "./searchContext";
 import styled from "styled-components";
+import { Spinner } from "../../../components/Spinner";
 
 export default function () {
   const router = useRouter();
@@ -21,18 +17,14 @@ export default function () {
   const query = searchParams?.get("searchQuery");
   const { spotifyApiRef } = useContext(SpotifyApiContext);
 
-  const { data } = useContext<{ data: SearchResponse | null }>(
-    SearchResultContext
-  );
+  const { data, isFetching } =
+    useContext<SearchResultContextType>(SearchResultContext);
 
-  if (!spotifyApiRef) {
-    return null;
+  if (!spotifyApiRef || isFetching) {
+    return <Spinner />;
   }
 
-  const openDetailsPage = (
-    itemId: string,
-    itemType: "album" | "artist" | "track"
-  ) => {
+  const openDetailsPage = (itemId: string, itemType: "album" | "artist") => {
     switch (itemType) {
       case "album": {
         const queryParams = new URLSearchParams({
@@ -47,11 +39,6 @@ export default function () {
           artistId: itemId,
         });
         router.push("/player/artist?" + queryParams.toString());
-        return;
-      }
-
-      case "track": {
-        // not implemented yet
         return;
       }
 

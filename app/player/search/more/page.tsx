@@ -6,15 +6,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import invariant from "tiny-invariant";
 import { SpotifyAPi } from "../../../../components/Spotify/SpotifyApi";
 import styled from "styled-components";
-import {
-  Album,
-  Artist,
-  SearchResponse,
-  SpotifyTrackItem,
-} from "../../../../components/types";
+import { Album, Artist, SpotifyTrackItem } from "../../../../components/types";
 import { BorderlessButton } from "../../../../components/IconButtons/IconButtons";
 import { PlayableItem } from "../../../../components/PlayableItem";
-import { LoadMoreContext, SearchResultContext } from "../searchContext";
+import { SearchResultContext, SearchResultContextType } from "../searchContext";
 import { PlayPauseButton } from "../../../../components/Buttons/PlayPauseButton";
 import { Spinner } from "../../../../components/Spinner";
 
@@ -34,11 +29,8 @@ export default () => {
     throw new Error(`Item type ${itemType} not supported yet`);
   }
 
-  const { data } = useContext<{ data: SearchResponse | null }>(
-    SearchResultContext
-  );
-
-  const { loadMore, canFetchMore, isFetching } = useContext(LoadMoreContext);
+  const { data, loadMore, canFetchMore, isFetching } =
+    useContext<SearchResultContextType>(SearchResultContext);
 
   if (!data) {
     return null;
@@ -58,33 +50,84 @@ export default () => {
     items = data.tracks.items;
   }
 
-  const openDetailsPage = (itemId: string) => {
-    switch (itemType) {
-      case "album":
-      case "track": {
-        const queryParams = new URLSearchParams({
-          albumId: itemId,
-        });
-        router.push("/player/album?" + queryParams.toString());
-        return;
-      }
+  const openAlbumPage = (albumId: string) => {
+    const queryParams = new URLSearchParams({
+      albumId,
+    });
+    router.push("/player/album?" + queryParams.toString());
+  };
 
-      case "artist": {
-        const queryParams = new URLSearchParams({
-          artistId: itemId,
-        });
-        router.push("/player/artist?" + queryParams.toString());
-        return;
-      }
-
-      default: {
-        throw new Error("unknown item type");
-      }
-    }
+  const openArtistPage = (artistId: string) => {
+    const queryParams = new URLSearchParams({
+      artistId,
+    });
+    router.push("/player/artist?" + queryParams.toString());
   };
 
   const playItem = (uri: string) => {
     spotifyApiRef.playPlayback({ context_uri: uri });
+  };
+
+  const mapItem = (item: Album | Artist | SpotifyTrackItem) => {
+    const { type } = item;
+    switch (type) {
+      case "album": {
+        return (
+          <PlayableItem
+            key={item.id}
+            imageUrl={item.images?.[0].url}
+            name={item.name}
+            onClick={() => openAlbumPage(item.id)}
+            variant={"square"}
+            PlayButton={() => (
+              <PlayPauseButton
+                isPaused={true}
+                onClick={() => playItem(item.uri)}
+                colorVariant="mainAction"
+                size="48px"
+              />
+            )}
+          />
+        );
+      }
+
+      case "artist": {
+        return (
+          <PlayableItem
+            key={item.id}
+            imageUrl={item.images?.[0].url}
+            name={item.name}
+            onClick={() => openArtistPage(item.id)}
+            variant={"round"}
+            PlayButton={() => (
+              <PlayPauseButton
+                isPaused={true}
+                onClick={() => playItem(item.uri)}
+                colorVariant="mainAction"
+                size="48px"
+              />
+            )}
+          />
+        );
+      }
+
+      case "track": {
+        return (
+          <PlayableItem
+            key={item.id}
+            imageUrl={item.album.images?.[0].url}
+            name={item.name}
+            onClick={() => openAlbumPage(item.album.id)}
+            variant={"square"}
+          />
+        );
+      }
+
+      default: {
+        console.error("unknown item type:", type);
+        return null;
+      }
+    }
   };
 
   const titleTexts = {
@@ -96,46 +139,7 @@ export default () => {
   return (
     <Container>
       <h1>{titleTexts[itemType]}</h1>
-      <ItemContainer>
-        {items.map((item: Album | Artist | SpotifyTrackItem) => {
-          let imageUrl: string;
-          // have to dig up the image from the album, tracks have no images
-          if (item.type == "track") {
-            const { album } = item;
-            imageUrl =
-              album.images && album.images.length > 0
-                ? album.images[0].url
-                : "";
-          } else {
-            imageUrl =
-              item.images && item.images.length > 0 ? item.images[0].url : "";
-          }
-
-          return (
-            <PlayableItem
-              key={item.id}
-              imageUrl={imageUrl}
-              name={item.name}
-              onClick={() =>
-                openDetailsPage(item.type == "track" ? item.album.id : item.id)
-              }
-              variant={item.type == "artist" ? "round" : "square"}
-              PlayButton={
-                itemType != "track"
-                  ? () => (
-                      <PlayPauseButton
-                        isPaused={true}
-                        onClick={() => playItem(item.uri)}
-                        colorVariant="mainAction"
-                        size="48px"
-                      />
-                    )
-                  : undefined
-              }
-            />
-          );
-        })}
-      </ItemContainer>
+      <ItemContainer>{items.map(mapItem)}</ItemContainer>
 
       {loadMore && canFetchMore && (
         <MoreButton onClick={loadMore}>Load more</MoreButton>
