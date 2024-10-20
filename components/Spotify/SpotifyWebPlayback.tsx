@@ -113,6 +113,26 @@ export const SpotifyWebPlayback = ({
       }
     );
 
+    player.addListener("autoplay_failed", () => {
+      console.log("Autoplay is not allowed by the browser autoplay rules");
+    });
+
+    player.on("initialization_error", ({ message }) => {
+      console.error("Failed to initialize", message);
+    });
+
+    player.on("authentication_error", ({ message }) => {
+      console.error("Failed to authenticate", message);
+    });
+
+    player.on("account_error", ({ message }) => {
+      console.error("Failed to validate Spotify account", message);
+    });
+
+    player.on("playback_error", ({ message }) => {
+      console.error("Failed to perform playback", message);
+    });
+
     player.setName("T Music");
 
     player.connect();
