@@ -75,9 +75,6 @@ export const api: CreateApi = (
     Authorization: `Bearer ${token}`,
   };
 
-  console.log("Create API constructor");
-  console.log(spotifyPlayerHandle);
-
   return {
     getPlaybackStatus: async () => {
       const url = "https://api.spotify.com/v1/me/player";
@@ -128,10 +125,6 @@ export const api: CreateApi = (
       const url =
         "https://api.spotify.com/v1/me/player/play?" + queryParams.toString();
 
-      console.log(
-        "calling spotify player activate. Exists?",
-        !!spotifyPlayerHandle
-      );
       spotifyPlayerHandle?.activateElement();
 
       let body: StartPlaybackBody | null = null;
