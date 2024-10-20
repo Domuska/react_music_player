@@ -153,7 +153,7 @@ export default () => {
       />
 
       <ContentContainer>
-        <div>
+        <PopularTracksContainer>
           <ClickableTitle text="Popular" />
           <TracksList
             displayMode="album"
@@ -164,7 +164,7 @@ export default () => {
             tracks={topTracks}
             isTracksListInPlaybackContext={context?.uri === artist.uri}
           />
-        </div>
+        </PopularTracksContainer>
 
         <HorizontalItemContainer
           items={albums.map((album) => {
@@ -278,4 +278,10 @@ const HeadingPlayButton = styled(PlayPauseButton)`
   @media screen and (min-width: 1200px) {
     display: none;
   }
+`;
+
+const PopularTracksContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${(props) => props.theme.tokens.marginL};
 `;
