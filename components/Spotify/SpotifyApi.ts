@@ -65,7 +65,11 @@ type CreateApi = (
   spotifyPlayerHandle: any
 ) => SpotifyAPi;
 
-export const api: CreateApi = (token: string, deviceId: string) => {
+export const api: CreateApi = (
+  token: string,
+  deviceId: string,
+  spotifyPlayerHandle: any
+) => {
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -115,6 +119,9 @@ export const api: CreateApi = (token: string, deviceId: string) => {
           }
         | undefined
     ) => {
+      // Spotify's player needs to be 'activated' on user interaction, do it centrally here
+      spotifyPlayerHandle?.activateElement();
+
       const queryParams = new URLSearchParams({
         device_id: deviceId,
       });
