@@ -8,6 +8,28 @@ It does not work if the user is not added to the Spotify's portal, contact maint
 
 # Preview
 
+Login
+![image](https://github.com/user-attachments/assets/7da9a79d-0a24-4e24-b025-983301f8c45e)
+
+Search
+![image](https://github.com/user-attachments/assets/c94a129a-a600-40bc-98ad-4a8171130d2e)
+
+![image](https://github.com/user-attachments/assets/3f3b0816-9eb3-40a4-958d-73f6c29051a3)
+
+
+Artist view
+![image](https://github.com/user-attachments/assets/26f05a56-2562-4aad-bcbe-21f7c32d7bd6)
+
+![image](https://github.com/user-attachments/assets/8a64900e-18b5-49a9-b9f0-1660a7b3b5c5)
+
+
+Album view
+![image](https://github.com/user-attachments/assets/b1ffb251-e58f-4c1f-8b42-6fa1b029592f)
+
+![image](https://github.com/user-attachments/assets/9341e7c6-bf63-40ba-9b91-bccb9dd5fd34)
+
+
+
 # Spotify web player
 
 https://developer.spotify.com/documentation/web-playback-sdk/howtos/web-app-player
