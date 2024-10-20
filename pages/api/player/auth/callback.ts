@@ -3,6 +3,7 @@ import { serialize } from "cookie";
 
 const spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const spotify_client_id = process.env.SPOTIFY_CLIENT_ID;
+const appDomain = process.env.APP_DOMAIN;
 
 export const ACCESS_TOKEN_COOKIE_NAME = "tl_musicplayer_spotify_api_token";
 
@@ -17,7 +18,7 @@ export default async function handler(
     url: "https://accounts.spotify.com/api/token",
     form: {
       code: code,
-      redirect_uri: "http://localhost:3000/api/player/auth/callback",
+      redirect_uri: `${appDomain}/api/player/auth/callback`,
       grant_type: "authorization_code",
     },
     headers: {
