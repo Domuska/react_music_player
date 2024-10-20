@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { AllowedSearchTypes } from "../../../components/Spotify/SpotifyApi";
 import { PropsWithChildren, useContext } from "react";
-import { SpotifyApiContext, SpotifyPlayerHandleContext } from "../context";
+import { SpotifyApiContext } from "../context";
 import { Search } from "../../../components/TopBar/Search";
 import { SearchResultContext } from "./searchContext";
 import {
@@ -107,11 +107,6 @@ export default function ({ children }: PropsWithChildren) {
 
   const context = useContext(SpotifyApiContext);
   const spotifyApiRef = context?.spotifyApiRef;
-
-  const playerHandle = useContext(SpotifyPlayerHandleContext);
-  // magic function that needs to be called to enable playback on Safari.
-  // this would need to be in many places.
-  playerHandle?.activateElement();
 
   const setSearch = (query: string) => {
     const queryParams = new URLSearchParams({
