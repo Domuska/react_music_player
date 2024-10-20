@@ -59,6 +59,7 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 
 ## todo
 
+- add Sentry or some other service for monitoring errors
 - vercel build is complaining about this:
   - The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/basic-features/eslint#migrating-existing-config
 - the search functionality in top bar and in the search page are very separate, they should be combined with better component composition. Now the search works because the query param is kept in sync.

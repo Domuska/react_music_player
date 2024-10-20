@@ -17,5 +17,3 @@ export const SpotifyApiContextWrapper = ({ children }: PropsWithChildren) => {
 
 export const CurrentPlaybackContext =
   createContext<PlaybackStatusResponse | null>(null);
-
-export const SpotifyPlayerHandleContext = createContext<any | null>(null);

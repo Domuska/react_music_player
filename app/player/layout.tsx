@@ -26,7 +26,6 @@ import {
   CurrentPlaybackContext,
   SpotifyApiContext,
   SpotifyApiContextWrapper,
-  SpotifyPlayerHandleContext,
 } from "./context";
 import { useRouter } from "next/navigation";
 import { BottomBar } from "../../components/BottomBar/BottomBar";
@@ -56,7 +55,6 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
   const router = useRouter();
   const [token, setToken] = useState<string>("");
-  const [spotifyPlayerHandle, setSpotifyPlayerHandle] = useState(null);
 
   const context = useContext(SpotifyApiContext);
   const spotifyApiRef = context?.spotifyApiRef;
@@ -98,9 +96,8 @@ const App = ({ children }: { children: React.ReactNode }) => {
         return;
       }
       setSpotifyApiRef(api(token, playerId, sdkPlayerHandle));
-      setSpotifyPlayerHandle(sdkPlayerHandle);
     },
-    [setSpotifyApiRef, setSpotifyPlayerHandle, token]
+    [setSpotifyApiRef, token]
   );
 
   if (!token) {
@@ -182,38 +179,35 @@ const App = ({ children }: { children: React.ReactNode }) => {
         onStateUpdate={onStateUpdate}
       />
 
-      {/* provide the Spotify player handle to children if they need it */}
-      <SpotifyPlayerHandleContext.Provider value={spotifyPlayerHandle}>
-        <div className={styles.container}>
-          <span className={styles.searchNavBar}>
-            {spotifyApiRef && <TopBar onSearch={onSearch} />}
-          </span>
+      <div className={styles.container}>
+        <span className={styles.searchNavBar}>
+          {spotifyApiRef && <TopBar onSearch={onSearch} />}
+        </span>
 
-          <div className={styles.libraryNav}>
-            <Library />
-          </div>
-
-          <div className={styles.mainContent}>
-            {/* //useQuery does not seem to narrow down type, use nullish coalescing https://github.com/TanStack/query/discussions/1331 */}
-            <CurrentPlaybackContext.Provider value={currentSpotifyData ?? null}>
-              {children}
-            </CurrentPlaybackContext.Provider>
-          </div>
-
-          <BottomBar
-            currentSpotifyData={currentSpotifyData}
-            isMuted={volumeState.isMuted}
-            onMuteClick={onMuteClick}
-            onOpenAlbum={onOpenAlbum}
-            onOpenArtist={onOpenArtist}
-            onSeek={onSeek}
-            onVolumeChange={onVolumeChange}
-            spotifyApiRef={spotifyApiRef ?? undefined}
-            spotifyOnPlayPauseClick={spotifyOnPlayPauseClick}
-            onOpenSearch={() => onSearch("")}
-          />
+        <div className={styles.libraryNav}>
+          <Library />
         </div>
-      </SpotifyPlayerHandleContext.Provider>
+
+        <div className={styles.mainContent}>
+          {/* //useQuery does not seem to narrow down type, use nullish coalescing https://github.com/TanStack/query/discussions/1331 */}
+          <CurrentPlaybackContext.Provider value={currentSpotifyData ?? null}>
+            {children}
+          </CurrentPlaybackContext.Provider>
+        </div>
+
+        <BottomBar
+          currentSpotifyData={currentSpotifyData}
+          isMuted={volumeState.isMuted}
+          onMuteClick={onMuteClick}
+          onOpenAlbum={onOpenAlbum}
+          onOpenArtist={onOpenArtist}
+          onSeek={onSeek}
+          onVolumeChange={onVolumeChange}
+          spotifyApiRef={spotifyApiRef ?? undefined}
+          spotifyOnPlayPauseClick={spotifyOnPlayPauseClick}
+          onOpenSearch={() => onSearch("")}
+        />
+      </div>
     </div>
   );
 };
