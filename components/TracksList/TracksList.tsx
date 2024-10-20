@@ -54,7 +54,7 @@ export const TracksList = ({
   };
 
   return (
-    <Container className="card">
+    <Container>
       <TracksTable>
         <THead>
           <tr>
@@ -100,7 +100,6 @@ const Container = styled.div`
   /* the color gradient change should stop sooner and just be all gray after that */
   /* background: linear-gradient(#ad3c34 10%, 25%, var(--main-bg-color) 90%); */
   color: var(--diminished-text-color);
-  padding: 20px;
   border-radius: 10px;
 `;
 
