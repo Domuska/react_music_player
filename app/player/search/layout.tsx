@@ -118,23 +118,6 @@ export default function ({ children }: PropsWithChildren) {
     router.push("/player/search?" + queryParams.toString());
   };
 
-  const setQueryParam = ({
-    newQuery,
-    newItemType,
-  }: {
-    newQuery?: string;
-    newItemType?: string;
-  }) => {
-    const sanitizedItemType = itemType ?? "album";
-    const sanitizedQuery = query ?? "";
-    const queryParams = new URLSearchParams({
-      itemType: newItemType ?? sanitizedItemType,
-      query: newQuery ?? sanitizedQuery,
-    });
-
-    router.push("/player/search?" + queryParams.toString());
-  };
-
   const fetchSpotifySearchData = async ({ pageParam }) => {
     if (spotifyApiRef && query) {
       const result = await spotifyApiRef.search(

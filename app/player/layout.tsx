@@ -32,11 +32,6 @@ import { BottomBar } from "../../components/BottomBar/BottomBar";
 import { Login } from "../../components/Login";
 
 const ONE_SECOND = 1000;
-const HALF_SECONDS = 500;
-
-const LoadingState = () => {
-  return <div>Imagine a spinner spinning</div>;
-};
 
 const queryClient = new QueryClient();
 
@@ -72,33 +67,29 @@ const App = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   // todo if we playback is not ongoing, no need to fetch data as often
-  const {
-    isPending: currentInfoPending,
-    error: currentInfoError,
-    data: currentSpotifyData,
-    refetch: refetchCurrentSpotifyData,
-  } = useQuery({
-    queryKey: ["currentData"],
-    queryFn: async () => {
-      const response = await spotifyApiRef.getPlaybackStatus();
-      if (!response) {
-        return null;
-      }
+  const { data: currentSpotifyData, refetch: refetchCurrentSpotifyData } =
+    useQuery({
+      queryKey: ["currentData"],
+      queryFn: async () => {
+        const response = await spotifyApiRef.getPlaybackStatus();
+        if (!response) {
+          return null;
+        }
 
-      if (response && response.currently_playing_type == "track") {
-        return response;
-      } else {
-        console.log(
-          "response currently playing type is " +
-            response?.currently_playing_type +
-            ". Not supported yet."
-        );
-        return null;
-      }
-    },
-    refetchInterval: ONE_SECOND,
-    enabled: !!spotifyApiRef,
-  });
+        if (response && response.currently_playing_type == "track") {
+          return response;
+        } else {
+          console.log(
+            "response currently playing type is " +
+              response?.currently_playing_type +
+              ". Not supported yet."
+          );
+          return null;
+        }
+      },
+      refetchInterval: ONE_SECOND,
+      enabled: !!spotifyApiRef,
+    });
 
   const onSpotifyPlayerReady = useCallback(
     (playerId: string) => {
@@ -195,7 +186,8 @@ const App = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         <div className={styles.mainContent}>
-          <CurrentPlaybackContext.Provider value={currentSpotifyData}>
+          {/* useQuery does not seem to narrow down type, use nullish coalescing https://github.com/TanStack/query/discussions/1331 */}
+          <CurrentPlaybackContext.Provider value={currentSpotifyData ?? null}>
             {children}
           </CurrentPlaybackContext.Provider>
         </div>

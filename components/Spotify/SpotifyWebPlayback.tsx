@@ -41,7 +41,7 @@ export const SpotifyWebPlayback = ({
 
     window.onSpotifyWebPlaybackSDKReady = () => {
       const player = new window.Spotify.Player({
-        name: "Web Playback SDK",
+        name: "T Music Spotify web SDK instance",
         getOAuthToken: (cb) => {
           cb(token);
         },
@@ -69,7 +69,7 @@ export const SpotifyWebPlayback = ({
         }
       );
 
-      player.setName("Spawtify");
+      player.setName("T Music");
 
       player.connect();
 
@@ -89,3 +89,14 @@ export const SpotifyWebPlayback = ({
 };
 
 export default SpotifyWebPlayback;
+
+// set interface so TypeScript does not complain about the Spotify custom properties on Window
+//stackoverflow.com/questions/12709074/how-do-you-explicitly-set-a-new-property-on-window-in-typescript
+declare global {
+  interface Window {
+    onSpotifyWebPlaybackSDKReady: VoidFunction;
+    // these are Spotify's SDK APIs, no much point in typing it, see
+    // https://developer.spotify.com/documentation/web-playback-sdk
+    Spotify: any;
+  }
+}

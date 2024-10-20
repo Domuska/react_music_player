@@ -44,7 +44,6 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 
 # roadmap
 
-- use Vercel to host the app
 - add a domain
 - mobile playback screen & seek bar
 - show playlists in left bar

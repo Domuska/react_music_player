@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { TracksList } from "../../../components/TracksList/TracksList";
 import { CurrentPlaybackContext, SpotifyApiContext } from "../context";
 import { useContext, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import invariant from "tiny-invariant";
 import { SpotifyAPi } from "../../../components/Spotify/SpotifyApi";
 import styled from "styled-components";
@@ -39,7 +39,6 @@ const getAlbumInfoText = (album: Album | null) => {
 };
 
 export default () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const albumId = searchParams?.get("albumId");
   const { spotifyApiRef } = useContext<{
@@ -49,7 +48,7 @@ export default () => {
 
   invariant(albumId, "Album id is required");
 
-  const { error: albumRequestError, data: albumData } = useSuspenseQuery({
+  const { data: albumData } = useSuspenseQuery({
     queryKey: ["albumData", albumId, spotifyApiRef],
     queryFn: async () => {
       if (!spotifyApiRef) {
