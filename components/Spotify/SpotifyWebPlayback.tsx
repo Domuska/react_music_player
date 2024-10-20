@@ -90,6 +90,8 @@ export const SpotifyWebPlayback = ({
 
 export default SpotifyWebPlayback;
 
+// set interface so TypeScript does not complain about the Spotify custom properties on Window
+//stackoverflow.com/questions/12709074/how-do-you-explicitly-set-a-new-property-on-window-in-typescript
 declare global {
   interface Window {
     onSpotifyWebPlaybackSDKReady: VoidFunction;
