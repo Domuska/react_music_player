@@ -9,7 +9,7 @@ export const ClickableTitle = ({
   onClick?: VoidFunction;
 }) => {
   return onClick ? (
-    <ButtonTitle>
+    <ButtonTitle onClick={onClick}>
       <Text>{text}</Text>
     </ButtonTitle>
   ) : (

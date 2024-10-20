@@ -173,8 +173,6 @@ const App = ({ children }: { children: React.ReactNode }) => {
     router.push("/player/album?" + queryParams.toString());
   };
 
-  console.log("hei maailma. Tässä layout, kuka siellä?");
-
   return (
     <div>
       {/* The Spotify playback component */}
@@ -188,7 +186,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
       <SpotifyPlayerHandleContext.Provider value={spotifyPlayerHandle}>
         <div className={styles.container}>
           <span className={styles.searchNavBar}>
-            <TopBar onSearch={onSearch} />
+            {spotifyApiRef && <TopBar onSearch={onSearch} />}
           </span>
 
           <div className={styles.libraryNav}>
