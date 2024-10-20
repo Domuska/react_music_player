@@ -16,19 +16,15 @@ Search
 
 ![image](https://github.com/user-attachments/assets/3f3b0816-9eb3-40a4-958d-73f6c29051a3)
 
-
 Artist view
 ![image](https://github.com/user-attachments/assets/26f05a56-2562-4aad-bcbe-21f7c32d7bd6)
 
 ![image](https://github.com/user-attachments/assets/8a64900e-18b5-49a9-b9f0-1660a7b3b5c5)
 
-
 Album view
 ![image](https://github.com/user-attachments/assets/b1ffb251-e58f-4c1f-8b42-6fa1b029592f)
 
 ![image](https://github.com/user-attachments/assets/9341e7c6-bf63-40ba-9b91-bccb9dd5fd34)
-
-
 
 # Spotify web player
 
@@ -67,6 +63,7 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
   - The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/basic-features/eslint#migrating-existing-config
 - the search functionality in top bar and in the search page are very separate, they should be combined with better component composition. Now the search works because the query param is kept in sync.
 - search page should look better if there is no search results yet
+- refactor mobile & desktop search bars to be together, they are now completely separate
 - the search bar & query param should be kept in sync
 - bottom bar could (should?) be a float instead of part of the grid
 - at least search (likely track list too) is re-rendering on every data fetch. Dis is bad.
