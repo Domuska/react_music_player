@@ -173,6 +173,8 @@ const App = ({ children }: { children: React.ReactNode }) => {
     router.push("/player/album?" + queryParams.toString());
   };
 
+  console.log("hei maailma. Tässä layout, kuka siellä?");
+
   return (
     <div>
       {/* The Spotify playback component */}
