@@ -65,11 +65,7 @@ type CreateApi = (
   spotifyPlayerHandle: any
 ) => SpotifyAPi;
 
-export const api: CreateApi = (
-  token: string,
-  deviceId: string,
-  spotifyPlayerHandle: any
-) => {
+export const api: CreateApi = (token: string, deviceId: string) => {
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -124,8 +120,6 @@ export const api: CreateApi = (
       });
       const url =
         "https://api.spotify.com/v1/me/player/play?" + queryParams.toString();
-
-      spotifyPlayerHandle?.activateElement();
 
       let body: StartPlaybackBody | null = null;
       if (params) {

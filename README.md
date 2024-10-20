@@ -44,6 +44,7 @@ https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/
 
 - add a domain
 - mobile playback screen & seek bar
+- proper unauthorized response handling
 - show playlists in left bar
 
 - side scroll bar in main content
