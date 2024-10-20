@@ -16,7 +16,7 @@ type Props = {
   onSeek: (ms: number) => Promise<void>;
   onVolumeChange: (newLevel: number) => void;
   onMuteClick: VoidFunction;
-  spotifyApiRef: SpotifyAPi;
+  spotifyApiRef?: SpotifyAPi;
   isMuted: boolean;
   onOpenSearch: React.ComponentProps<typeof MobileActionsBar>["onOpenSearch"];
 };
