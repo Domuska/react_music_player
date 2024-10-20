@@ -97,7 +97,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
       if (!setSpotifyApiRef) {
         return;
       }
-      setSpotifyApiRef(api(token, playerId));
+      setSpotifyApiRef(api(token, playerId, sdkPlayerHandle));
       setSpotifyPlayerHandle(sdkPlayerHandle);
     },
     [setSpotifyApiRef, setSpotifyPlayerHandle, token]

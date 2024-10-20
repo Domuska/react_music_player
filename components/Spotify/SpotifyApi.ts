@@ -59,9 +59,17 @@ export type AllowedSearchTypes =
   | "episode"
   | "audiobook";
 
-type CreateApi = (token: string, deviceId: string) => SpotifyAPi;
+type CreateApi = (
+  token: string,
+  deviceId: string,
+  spotifyPlayerHandle: any
+) => SpotifyAPi;
 
-export const api: CreateApi = (token: string, deviceId: string) => {
+export const api: CreateApi = (
+  token: string,
+  deviceId: string,
+  spotifyPlayerHandle: any
+) => {
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -116,6 +124,12 @@ export const api: CreateApi = (token: string, deviceId: string) => {
       });
       const url =
         "https://api.spotify.com/v1/me/player/play?" + queryParams.toString();
+
+      console.log(
+        "calling spotify player activate. Exists?",
+        !!spotifyPlayerHandle
+      );
+      spotifyPlayerHandle?.activateElement();
 
       let body: StartPlaybackBody | null = null;
       if (params) {

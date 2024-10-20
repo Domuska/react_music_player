@@ -75,7 +75,7 @@ export default () => {
         return (
           <PlayableItem
             key={item.id}
-            imageUrl={item.images?.[0].url}
+            imageUrl={item.images?.[0]?.url}
             name={item.name}
             onClick={() => openAlbumPage(item.id)}
             variant={"square"}
