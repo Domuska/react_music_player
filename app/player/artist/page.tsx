@@ -1,17 +1,18 @@
 "use client";
 
-import styled from "styled-components";
-import { SpotifyAPi } from "../../../components/Spotify/SpotifyApi";
 import { useSuspenseQueries } from "@tanstack/react-query";
-import { TracksList } from "../../../components/TracksList/TracksList";
-import { HorizontalItemContainer } from "../../../components/HorizontalItemContainer";
+import styled from "styled-components";
+import invariant from "tiny-invariant";
 import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
 import { ClickableTitle } from "../../../components/ClickableTitle";
+import { HorizontalItemContainer } from "../../../components/HorizontalItemContainer";
+import { SpotifyAPi } from "../../../components/Spotify/SpotifyApi";
+import { TracksList } from "../../../components/TracksList/TracksList";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useContext } from "react";
 import { CurrentPlaybackContext, SpotifyApiContext } from "../context";
-import invariant from "tiny-invariant";
+
 import { StickyHeadingRow } from "../../../components/StickyHeadingRow";
 
 export default () => {
@@ -92,7 +93,8 @@ export default () => {
   const imgSrc = artist?.images[0]?.url ?? "";
 
   const playTrack = (trackUri: string) => {
-    // we should pass in artist.uri as context, but the API doesn't support it :/
+    // we should pass in artist.uri as context along wit thsi track
+    // but the API doesn't support them together :/
     return spotifyApiRef.playPlayback({
       offset: trackUri,
     });
@@ -102,13 +104,11 @@ export default () => {
     spotifyApiRef.playPlayback({ context_uri: albumUri });
   };
 
-  const onPlayArtist = (artistUri: string) => {
-    spotifyApiRef.playPlayback({ context_uri: artistUri });
-  };
-
-  const onPlayPause = () => {
+  const onPlayPause = (artistUri?: string) => {
     if (isPlaying) {
       spotifyApiRef.pausePlayback();
+    } else if (artistUri) {
+      spotifyApiRef.playPlayback({ context_uri: artistUri });
     } else {
       spotifyApiRef.playPlayback();
     }
@@ -139,7 +139,7 @@ export default () => {
         <ArtistName>{artist.name}</ArtistName>
 
         <HeadingPlayButton
-          onClick={() => onPlayArtist(artist.uri)}
+          onClick={() => onPlayPause(artist.uri)}
           isPaused={!isPlaying}
           size="48px"
           colorVariant="mainAction"
@@ -148,7 +148,7 @@ export default () => {
 
       <HiddenStickyRowOnSmallScreen
         artistName={artist.name}
-        onPlay={() => onPlayArtist(artist.uri)}
+        onPlay={() => onPlayPause(artist.uri)}
         isPaused={!isPlaying}
       />
 
@@ -197,7 +197,7 @@ export default () => {
               PlayButton: () => (
                 <PlayPauseButton
                   isPaused={true}
-                  onClick={() => onPlayArtist(artist.uri)}
+                  onClick={() => onPlayPause(artist.uri)}
                   colorVariant="mainAction"
                   size="48px"
                 />
