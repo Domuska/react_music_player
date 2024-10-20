@@ -10,7 +10,7 @@ import {
 } from "react";
 import { Library } from "../../components/Library";
 import SpotifyWebPlayback from "../../components/Spotify/SpotifyWebPlayback";
-import { api, SpotifyAPi } from "../../components/Spotify/SpotifyApi";
+import { api } from "../../components/Spotify/SpotifyApi";
 import { ACCESS_TOKEN_COOKIE_NAME } from "../../pages/api/player/auth/callback";
 import { getCookieByName } from "../../utils/getCookieByName";
 import { sleep } from "../../utils/sleep";
@@ -26,6 +26,7 @@ import {
   CurrentPlaybackContext,
   SpotifyApiContext,
   SpotifyApiContextWrapper,
+  SpotifyPlayerHandleContext,
 } from "./context";
 import { useRouter } from "next/navigation";
 import { BottomBar } from "../../components/BottomBar/BottomBar";
@@ -55,11 +56,11 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
   const router = useRouter();
   const [token, setToken] = useState<string>("");
+  const [spotifyPlayerHandle, setSpotifyPlayerHandle] = useState(null);
 
-  const { spotifyApiRef, setSpotifyApiRef } = useContext<{
-    spotifyApiRef: SpotifyAPi;
-    setSpotifyApiRef: any;
-  }>(SpotifyApiContext);
+  const context = useContext(SpotifyApiContext);
+  const spotifyApiRef = context?.spotifyApiRef;
+  const setSpotifyApiRef = context?.setSpotifyApiRef;
 
   useEffect(() => {
     const access_token = getCookieByName(ACCESS_TOKEN_COOKIE_NAME);
@@ -71,7 +72,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
     useQuery({
       queryKey: ["currentData"],
       queryFn: async () => {
-        const response = await spotifyApiRef.getPlaybackStatus();
+        const response = await spotifyApiRef?.getPlaybackStatus();
         if (!response) {
           return null;
         }
@@ -92,10 +93,14 @@ const App = ({ children }: { children: React.ReactNode }) => {
     });
 
   const onSpotifyPlayerReady = useCallback(
-    (playerId: string) => {
+    (playerId: string, sdkPlayerHandle: any) => {
+      if (!setSpotifyApiRef) {
+        return;
+      }
       setSpotifyApiRef(api(token, playerId));
+      setSpotifyPlayerHandle(sdkPlayerHandle);
     },
-    [setSpotifyApiRef, token]
+    [setSpotifyApiRef, setSpotifyPlayerHandle, token]
   );
 
   if (!token) {
@@ -104,9 +109,9 @@ const App = ({ children }: { children: React.ReactNode }) => {
 
   const spotifyOnPlayPauseClick = async () => {
     if (currentSpotifyData?.is_playing) {
-      await spotifyApiRef.pausePlayback();
+      await spotifyApiRef?.pausePlayback();
     } else {
-      await spotifyApiRef.playPlayback();
+      await spotifyApiRef?.playPlayback();
     }
     // the API is fairly slow, if we call it immediately the playback status is not updated
     await sleep(500);
@@ -114,7 +119,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
   };
 
   const onSeek = async (timeMs: number) => {
-    await spotifyApiRef.seek(timeMs);
+    await spotifyApiRef?.seek(timeMs);
     await sleep(700);
     refetchCurrentSpotifyData();
   };
@@ -123,7 +128,7 @@ const App = ({ children }: { children: React.ReactNode }) => {
     if (volumeState.isMuted) {
       setVolumeState({ isMuted: false, volumeBeforeMute: newVolume });
     }
-    await spotifyApiRef.setVolume(newVolume);
+    await spotifyApiRef?.setVolume(newVolume);
     refetchCurrentSpotifyData();
   };
 
@@ -176,35 +181,39 @@ const App = ({ children }: { children: React.ReactNode }) => {
         onPlayerReady={onSpotifyPlayerReady}
         onStateUpdate={onStateUpdate}
       />
-      <div className={styles.container}>
-        <span className={styles.searchNavBar}>
-          <TopBar onSearch={onSearch} />
-        </span>
 
-        <div className={styles.libraryNav}>
-          <Library />
+      {/* provide the Spotify player handle to children if they need it */}
+      <SpotifyPlayerHandleContext.Provider value={spotifyPlayerHandle}>
+        <div className={styles.container}>
+          <span className={styles.searchNavBar}>
+            <TopBar onSearch={onSearch} />
+          </span>
+
+          <div className={styles.libraryNav}>
+            <Library />
+          </div>
+
+          <div className={styles.mainContent}>
+            {/* //useQuery does not seem to narrow down type, use nullish coalescing https://github.com/TanStack/query/discussions/1331 */}
+            <CurrentPlaybackContext.Provider value={currentSpotifyData ?? null}>
+              {children}
+            </CurrentPlaybackContext.Provider>
+          </div>
+
+          <BottomBar
+            currentSpotifyData={currentSpotifyData}
+            isMuted={volumeState.isMuted}
+            onMuteClick={onMuteClick}
+            onOpenAlbum={onOpenAlbum}
+            onOpenArtist={onOpenArtist}
+            onSeek={onSeek}
+            onVolumeChange={onVolumeChange}
+            spotifyApiRef={spotifyApiRef ?? undefined}
+            spotifyOnPlayPauseClick={spotifyOnPlayPauseClick}
+            onOpenSearch={() => onSearch("")}
+          />
         </div>
-
-        <div className={styles.mainContent}>
-          {/* useQuery does not seem to narrow down type, use nullish coalescing https://github.com/TanStack/query/discussions/1331 */}
-          <CurrentPlaybackContext.Provider value={currentSpotifyData ?? null}>
-            {children}
-          </CurrentPlaybackContext.Provider>
-        </div>
-
-        <BottomBar
-          currentSpotifyData={currentSpotifyData}
-          isMuted={volumeState.isMuted}
-          onMuteClick={onMuteClick}
-          onOpenAlbum={onOpenAlbum}
-          onOpenArtist={onOpenArtist}
-          onSeek={onSeek}
-          onVolumeChange={onVolumeChange}
-          spotifyApiRef={spotifyApiRef}
-          spotifyOnPlayPauseClick={spotifyOnPlayPauseClick}
-          onOpenSearch={() => onSearch("")}
-        />
-      </div>
+      </SpotifyPlayerHandleContext.Provider>
     </div>
   );
 };

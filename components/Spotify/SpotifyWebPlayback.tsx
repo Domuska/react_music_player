@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const ONE_SECOND = 1000;
 
@@ -11,7 +11,7 @@ export const SpotifyWebPlayback = ({
   onStateUpdate,
 }: {
   token: string;
-  onPlayerReady: (deviceId: string) => void;
+  onPlayerReady: (deviceId: string, sdkInstance: any) => void;
   onStateUpdate: (newState: any) => void;
 }) => {
   // todo type this
@@ -52,7 +52,7 @@ export const SpotifyWebPlayback = ({
 
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
-        onPlayerReady(device_id);
+        onPlayerReady(device_id, player);
       });
 
       player.addListener("not_ready", ({ device_id }) => {
@@ -79,13 +79,7 @@ export const SpotifyWebPlayback = ({
     };
   }, [onPlayerReady, token]);
 
-  return (
-    <>
-      <div className="container">
-        <div className="main-wrapper"></div>
-      </div>
-    </>
-  );
+  return null;
 };
 
 export default SpotifyWebPlayback;
