@@ -75,6 +75,9 @@ export const api: CreateApi = (
     Authorization: `Bearer ${token}`,
   };
 
+  console.log("Create API constructor");
+  console.log(spotifyPlayerHandle);
+
   return {
     getPlaybackStatus: async () => {
       const url = "https://api.spotify.com/v1/me/player";
