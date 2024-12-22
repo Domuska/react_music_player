@@ -1,6 +1,6 @@
 "use client";
 
-import { useSuspenseQueries } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import styled from "styled-components";
 import invariant from "tiny-invariant";
 import { PlayPauseButton } from "../../../components/Buttons/PlayPauseButton";
@@ -14,6 +14,14 @@ import { useContext } from "react";
 import { CurrentPlaybackContext, SpotifyApiContext } from "../context";
 
 import { StickyHeadingRow } from "../../../components/StickyHeadingRow";
+import { Spinner } from "../../../components/Spinner";
+
+const FailedToLoadResult = ({ error }: { error: string }) => {
+  const ErrorText = styled.p`
+    color: ${(props) => props.theme.colors.textOnMainBg};
+  `;
+  return <ErrorText>{error}</ErrorText>;
+};
 
 export default () => {
   const router = useRouter();
@@ -30,10 +38,13 @@ export default () => {
     queryKey: ["artist", artistId, spotifyApiRef],
     queryFn: async () => {
       if (!spotifyApiRef) {
-        return null;
+        throw Error("No spotify API client");
       }
       const result = await spotifyApiRef.fetchArtist(artistId);
-      return result;
+      if (!result.success) {
+        throw Error(result.error);
+      }
+      return result.data;
     },
   };
 
@@ -41,10 +52,13 @@ export default () => {
     queryKey: ["artist-top-tracks", artistId, spotifyApiRef],
     queryFn: async () => {
       if (!spotifyApiRef) {
-        return [];
+        throw Error("No spotify API client");
       }
       const result = await spotifyApiRef.fetchArtistTopTracks(artistId);
-      return result;
+      if (!result.success) {
+        throw Error(result.error);
+      }
+      return result.data;
     },
   };
 
@@ -52,10 +66,13 @@ export default () => {
     queryKey: ["artist-albums", artistId, spotifyApiRef],
     queryFn: async () => {
       if (!spotifyApiRef) {
-        return [];
+        throw Error("No spotify API client");
       }
       const result = await spotifyApiRef.fetchArtistAlbums(artistId);
-      return result;
+      if (!result.success) {
+        throw Error(result.error);
+      }
+      return result.data;
     },
   };
 
@@ -63,15 +80,18 @@ export default () => {
     queryKey: ["artist-related-artists", artistId, spotifyApiRef],
     queryFn: async () => {
       if (!spotifyApiRef) {
-        return [];
+        throw Error("No spotify API client");
       }
       const result = await spotifyApiRef.fetchArtistRelatedArtists(artistId);
-      return result;
+      if (!result.success) {
+        throw Error(result.error);
+      }
+      return result.data;
     },
   };
 
   const [artistResult, topTracksResult, albumsResult, relatedArtistsResult] =
-    useSuspenseQueries({
+    useQueries({
       queries: [fetchArtist, fetchTopTracks, fetchAlbums, fetchRelatedArtists],
     });
 
@@ -153,60 +173,79 @@ export default () => {
       />
 
       <ContentContainer>
-        <PopularTracksContainer>
-          <ClickableTitle text="Popular" />
-          <TracksList
-            displayMode="album"
-            isPlaybackPaused={!isPlaying}
-            currentlyPlayingTrackId={currentlyPlayingItem?.id}
-            onPlayPause={onPlayPause}
-            playTrack={playTrack}
-            tracks={topTracks}
-            isTracksListInPlaybackContext={context?.uri === artist.uri}
+        {topTracksResult.isFetching && <Spinner />}
+        {topTracksResult.isError && (
+          <FailedToLoadResult error="Failed to load top tracks" />
+        )}
+        {topTracks && (
+          <PopularTracksContainer>
+            <ClickableTitle text="Popular" />
+            <TracksList
+              displayMode="album"
+              isPlaybackPaused={!isPlaying}
+              currentlyPlayingTrackId={currentlyPlayingItem?.id}
+              onPlayPause={onPlayPause}
+              playTrack={playTrack}
+              tracks={topTracks}
+              isTracksListInPlaybackContext={context?.uri === artist.uri}
+            />
+          </PopularTracksContainer>
+        )}
+
+        {albumsResult.isFetching && <Spinner />}
+        {albumsResult.isError && (
+          <FailedToLoadResult error="Failed to load albums" />
+        )}
+        {albums && (
+          <HorizontalItemContainer
+            items={albums.map((album) => {
+              const image = album.images?.[0];
+              return {
+                ...album,
+                image,
+                onClick: () => onOpenAlbum(album.id),
+                PlayButton: () => (
+                  <PlayPauseButton
+                    isPaused={true}
+                    onClick={() => onPlayAlbum(album.uri)}
+                    colorVariant="mainAction"
+                    size="48px"
+                  />
+                ),
+              };
+            })}
+            variant="square"
+            title={{ text: "Discography", onClick: () => {} }}
           />
-        </PopularTracksContainer>
+        )}
 
-        <HorizontalItemContainer
-          items={albums.map((album) => {
-            const image = album.images?.[0];
-            return {
-              ...album,
-              image,
-              onClick: () => onOpenAlbum(album.id),
-              PlayButton: () => (
-                <PlayPauseButton
-                  isPaused={true}
-                  onClick={() => onPlayAlbum(album.uri)}
-                  colorVariant="mainAction"
-                  size="48px"
-                />
-              ),
-            };
-          })}
-          variant="square"
-          title={{ text: "Discography", onClick: () => {} }}
-        />
+        {relatedArtistsResult.isFetching && <Spinner />}
+        {relatedArtistsResult.isError && (
+          <FailedToLoadResult error="Failed to load related artists" />
+        )}
 
-        <HorizontalItemContainer
-          items={relatedArtists.map((artist) => {
-            const image = artist.images?.[0];
-            return {
-              ...artist,
-              image,
-              onClick: () => onOpenArtist(artist.id),
-              PlayButton: () => (
-                <PlayPauseButton
-                  isPaused={true}
-                  onClick={() => onPlayPause(artist.uri)}
-                  colorVariant="mainAction"
-                  size="48px"
-                />
-              ),
-            };
-          })}
-          variant="round"
-          title={{ text: "Similar artists", onClick: () => {} }}
-        />
+        {relatedArtists && (
+          <HorizontalItemContainer
+            items={relatedArtists.map((artist) => {
+              const image = artist.images?.[0];
+              return {
+                ...artist,
+                image,
+                onClick: () => onOpenArtist(artist.id),
+                PlayButton: () => (
+                  <PlayPauseButton
+                    isPaused={true}
+                    onClick={() => onPlayPause(artist.uri)}
+                    colorVariant="mainAction"
+                    size="48px"
+                  />
+                ),
+              };
+            })}
+            variant="round"
+            title={{ text: "Similar artists", onClick: () => {} }}
+          />
+        )}
       </ContentContainer>
     </>
   );

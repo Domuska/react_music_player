@@ -30,10 +30,24 @@ export type SpotifyAPi = {
     offset: number,
     resultLimit: number
   ) => Promise<SearchResponse>;
-  fetchArtist: (artistId: string) => Promise<Artist>;
-  fetchArtistTopTracks: (artistId: string) => Promise<Track[]>;
-  fetchArtistAlbums: (artistId: string) => Promise<Album[]>;
-  fetchArtistRelatedArtists: (artistId: string) => Promise<Artist[]>;
+  fetchArtist: (
+    artistId: string
+  ) => Promise<{ data: Artist; success: true } | ErrorResponse>;
+  fetchArtistTopTracks: (
+    artistId: string
+  ) => Promise<{ data: Track[]; success: true } | ErrorResponse>;
+  fetchArtistAlbums: (
+    artistId: string
+  ) => Promise<{ data: Album[]; success: true } | ErrorResponse>;
+  fetchArtistRelatedArtists: (
+    artistId: string
+  ) => Promise<{ data: Artist[]; success: true } | ErrorResponse>;
+};
+
+type ErrorResponse = {
+  status: number;
+  error: string;
+  success: false;
 };
 
 type StartPlaybackBody = {
@@ -213,25 +227,70 @@ export const api: CreateApi = (
     fetchArtist: async (id: string) => {
       const url = `https://api.spotify.com/v1/artists/${id}`;
       const result = await fetch(url, { method: "GET", headers });
-      return await result.json();
+      if (result.ok) {
+        const artist = await result.json();
+        return {
+          data: artist,
+          success: true,
+        };
+      }
+      return {
+        status: result.status,
+        error: result.statusText,
+        success: false,
+      };
     },
 
     fetchArtistTopTracks: async (id: string) => {
       const url = `https://api.spotify.com/v1/artists/${id}/top-tracks`;
       const result = await fetch(url, { method: "GET", headers });
-      return (await result.json()).tracks;
+      if (result.ok) {
+        const tracks = (await result.json()).tracks;
+        return {
+          data: tracks,
+          success: true,
+        };
+      }
+      return {
+        status: result.status,
+        error: result.statusText,
+        success: false,
+      };
     },
 
     fetchArtistAlbums: async (id: string) => {
       const url = `https://api.spotify.com/v1/artists/${id}/albums`;
       const result = await fetch(url, { method: "GET", headers });
-      return (await result.json()).items;
+      if (result.ok) {
+        const items = (await result.json()).items;
+        return {
+          data: items,
+          success: true,
+        };
+      }
+      return {
+        status: result.status,
+        error: result.statusText,
+        success: false,
+      };
     },
 
     fetchArtistRelatedArtists: async (id: string) => {
       const url = `https://api.spotify.com/v1/artists/${id}/related-artists`;
       const result = await fetch(url, { method: "GET", headers });
-      return (await result.json()).artists;
+
+      if (result.ok) {
+        const data = (await result.json()).artists;
+        return {
+          data,
+          success: true,
+        };
+      }
+      return {
+        status: result.status,
+        error: result.statusText,
+        success: false,
+      };
     },
   };
 };
